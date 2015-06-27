@@ -33,12 +33,12 @@ hero =
 
 -- UPDATE
 
-update : (Time, { x:Int, y:Int }) -> Model -> Model
-update (timeDelta, direction) model =
+update : (Time, { x:Int, y:Int }, (Int,Int)) -> Model -> Model
+update (timeDelta, direction, (dim_x,dim_y)) model =
   model
     |> newVelocity direction
     |> setDirection direction
-    |> updatePosition timeDelta
+    |> updatePosition timeDelta (dim_x,dim_y) 
 
 
 newVelocity : { x:Int, y:Int } -> Model -> Model
@@ -69,11 +69,13 @@ setDirection {x,y} model =
   }
 
 
-updatePosition : Time -> Model -> Model
-updatePosition dt ({x,y,vx,vy} as model) =
+updatePosition : Time -> (Int,Int) -> Model -> Model
+updatePosition dt (dim_x,dim_y) ({x,y,vx,vy} as model) =
+ let f = toFloat
+ in
   { model |
-      x <- clamp (-areaW/2) (areaW/2) (x + dt * vx),
-      y <- clamp (-areaH/2) (areaH/2) (y + dt * vy)
+      x <- clamp (f(-dim_x//2)) (f(dim_y//2)) (x + dt * vx),
+      y <- clamp (f(-dim_x//2)) (f(dim_y//2)) (y + dt * vy)
   }
 
 
@@ -84,14 +86,15 @@ view (w,h) {x,y,vx,vy,dir} =
   let
     verb = if vx == 0 && vy == 0 then "stand" else "walk"
     src = "imgs/hero/" ++ verb ++ "/" ++ dir ++ ".gif"
+    f = toFloat
   in
     container w h middle <|
-    collage areaW areaH
-      [ toForm (image areaW areaH "imgs/desert.png")
+    collage w h
+      [ toForm (image w h "imgs/desert.png")
       , toForm (image 42 48 src)
           |> move (x,y)
-      , toForm (Markdown.toElement "Arrows to move<br/>Shift to run")
-          |> move (70-areaW/2, 30-areaH/2)
+      , toForm (Markdown.toElement "tap corners to move")
+          |> move (f( 70-w//2),f (30-h//2))
       ]
 
 
@@ -102,15 +105,15 @@ main =
   Signal.map2 view Window.dimensions (Signal.foldp update hero input)
 
 
-input : Signal (Time, { x:Int, y:Int })
+input : Signal (Time, { x:Int, y:Int }, (Int,Int))
 input =
-  Signal.map2 (,) delta (Signal.map scaleTouches Touch.taps)
+  Signal.map3 (,,) delta (Signal.map2 scaleTouches Window.dimensions Touch.taps) Window.dimensions
 
-scaleTouches : {x:Int,y:Int} -> {x:Int,y:Int}
-scaleTouches {x,y} =
+scaleTouches : (Int,Int) -> {x:Int,y:Int} -> {x:Int,y:Int}
+scaleTouches (dim_x,dim_y) {x,y} =
   let
-     x' = if x>(areaW/2) then 1 else -1
-     y' = if y>(areaH/2) then -1 else 1
+     x' = if x>(dim_x//2) then 1 else -1
+     y' = if y>(dim_y//2) then -1 else 1
      recent = (x,y)/=(0,0)
   in 
      if recent then {x=x',y=y'} else {x=0,y=0}
