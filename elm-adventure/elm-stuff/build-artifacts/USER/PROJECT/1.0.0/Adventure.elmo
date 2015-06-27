@@ -22,33 +22,158 @@ Elm.Adventure.make = function (_elm) {
       return t / 20;
    },
    $Time.fps(25));
-   var setDirection = F2(function (_v0,
+   var scaleTouches = F2(function (_v0,
+   _v1) {
+      return function () {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var recent = !_U.eq({ctor: "_Tuple2"
+                                        ,_0: _v1.x
+                                        ,_1: _v1.y},
+                    {ctor: "_Tuple2",_0: 0,_1: 0});
+                    var y$ = _U.cmp(_v1.y,
+                    _v0._1 / 2 | 0) > 0 ? -1 : 1;
+                    var x$ = _U.cmp(_v1.x,
+                    _v0._0 / 2 | 0) > 0 ? 1 : -1;
+                    return recent ? {_: {}
+                                    ,x: x$
+                                    ,y: y$} : {_: {},x: 0,y: 0};
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 114 and 119");
+         }();
+      }();
+   });
+   var input = A4($Signal.map3,
+   F3(function (v0,v1,v2) {
+      return {ctor: "_Tuple3"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2};
+   }),
+   delta,
+   A3($Signal.map2,
+   scaleTouches,
+   $Window.dimensions,
+   $Touch.taps),
+   $Window.dimensions);
+   var view = F2(function (_v6,
+   _v7) {
+      return function () {
+         return function () {
+            switch (_v6.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var f = $Basics.toFloat;
+                    var verb = _U.eq(_v7.vx,
+                    0) && _U.eq(_v7.vy,
+                    0) ? "stand" : "walk";
+                    var src = A2($Basics._op["++"],
+                    "imgs/hero/",
+                    A2($Basics._op["++"],
+                    verb,
+                    A2($Basics._op["++"],
+                    "/",
+                    A2($Basics._op["++"],
+                    _v7.dir,
+                    ".gif"))));
+                    return A3($Graphics$Element.container,
+                    _v6._0,
+                    _v6._1,
+                    $Graphics$Element.middle)(A3($Graphics$Collage.collage,
+                    _v6._0,
+                    _v6._1,
+                    _L.fromArray([$Graphics$Collage.toForm(A3($Graphics$Element.image,
+                                 _v6._0,
+                                 _v6._1,
+                                 "imgs/desert.png"))
+                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                         ,_0: _v7.x
+                                                         ,_1: _v7.y})($Graphics$Collage.toForm(A3($Graphics$Element.image,
+                                 42,
+                                 48,
+                                 src)))
+                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                         ,_0: f(70 - (_v6._0 / 2 | 0))
+                                                         ,_1: f(30 - (_v6._1 / 2 | 0))})($Graphics$Collage.toForm($Markdown.toElement("tap corners to move")))])));
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 86 and 98");
+         }();
+      }();
+   });
+   var updatePosition = F3(function (dt,
+   _v12,
+   _v13) {
+      return function () {
+         return function () {
+            switch (_v12.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var f = $Basics.toFloat;
+                    return _U.replace([["x"
+                                       ,A3($Basics.clamp,
+                                       f((0 - _v12._0) / 2 | 0),
+                                       f(_v12._1 / 2 | 0),
+                                       _v13.x + dt * _v13.vx)]
+                                      ,["y"
+                                       ,A3($Basics.clamp,
+                                       f((0 - _v12._0) / 2 | 0),
+                                       f(_v12._1 / 2 | 0),
+                                       _v13.y + dt * _v13.vy)]],
+                    _v13);
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 74 and 79");
+         }();
+      }();
+   });
+   var setDirection = F2(function (_v18,
    model) {
       return function () {
          return _U.replace([["dir"
-                            ,_U.cmp(_v0.x,
-                            0) > 0 ? "east" : _U.cmp(_v0.x,
-                            0) < 0 ? "west" : _U.cmp(_v0.y,
-                            0) < 0 ? "south" : _U.cmp(_v0.y,
+                            ,_U.cmp(_v18.x,
+                            0) > 0 ? "east" : _U.cmp(_v18.x,
+                            0) < 0 ? "west" : _U.cmp(_v18.y,
+                            0) < 0 ? "south" : _U.cmp(_v18.y,
                             0) > 0 ? "north" : model.dir]],
          model);
       }();
    });
-   var newVelocity = F2(function (_v2,
+   var newVelocity = F2(function (_v20,
    model) {
       return function () {
          return function () {
             var scale = 1;
             var newVel = function (n) {
-               return _U.eq(_v2.x,
-               0) || _U.eq(_v2.y,
+               return _U.eq(_v20.x,
+               0) || _U.eq(_v20.y,
                0) ? scale * $Basics.toFloat(n) : scale * $Basics.toFloat(n) / $Basics.sqrt(2);
             };
             return _U.replace([["vx"
-                               ,newVel(_v2.x)]
-                              ,["vy",newVel(_v2.y)]],
+                               ,newVel(_v20.x)]
+                              ,["vy",newVel(_v20.y)]],
             model);
          }();
+      }();
+   });
+   var update = F2(function (_v22,
+   model) {
+      return function () {
+         switch (_v22.ctor)
+         {case "_Tuple3":
+            switch (_v22._2.ctor)
+              {case "_Tuple2":
+                 return A2(updatePosition,
+                   _v22._0,
+                   {ctor: "_Tuple2"
+                   ,_0: _v22._2._0
+                   ,_1: _v22._2._1})(setDirection(_v22._1)(newVelocity(_v22._1)(model)));}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 38 and 41");
       }();
    });
    var Model = F5(function (a,
@@ -69,105 +194,6 @@ Elm.Adventure.make = function (_elm) {
    0,
    0,
    "south");
-   var areaH = 600;
-   var areaW = 500;
-   var updatePosition = F2(function (dt,
-   _v4) {
-      return function () {
-         return _U.replace([["x"
-                            ,A3($Basics.clamp,
-                            (0 - areaW) / 2,
-                            areaW / 2,
-                            _v4.x + dt * _v4.vx)]
-                           ,["y"
-                            ,A3($Basics.clamp,
-                            (0 - areaH) / 2,
-                            areaH / 2,
-                            _v4.y + dt * _v4.vy)]],
-         _v4);
-      }();
-   });
-   var update = F2(function (_v6,
-   model) {
-      return function () {
-         switch (_v6.ctor)
-         {case "_Tuple2":
-            return updatePosition(_v6._0)(setDirection(_v6._1)(newVelocity(_v6._1)(model)));}
-         _U.badCase($moduleName,
-         "between lines 38 and 41");
-      }();
-   });
-   var view = F2(function (_v10,
-   _v11) {
-      return function () {
-         return function () {
-            switch (_v10.ctor)
-            {case "_Tuple2":
-               return function () {
-                    var verb = _U.eq(_v11.vx,
-                    0) && _U.eq(_v11.vy,
-                    0) ? "stand" : "walk";
-                    var src = A2($Basics._op["++"],
-                    "imgs/hero/",
-                    A2($Basics._op["++"],
-                    verb,
-                    A2($Basics._op["++"],
-                    "/",
-                    A2($Basics._op["++"],
-                    _v11.dir,
-                    ".gif"))));
-                    return A3($Graphics$Element.container,
-                    _v10._0,
-                    _v10._1,
-                    $Graphics$Element.middle)(A3($Graphics$Collage.collage,
-                    areaW,
-                    areaH,
-                    _L.fromArray([$Graphics$Collage.toForm(A3($Graphics$Element.image,
-                                 areaW,
-                                 areaH,
-                                 "imgs/desert.png"))
-                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
-                                                         ,_0: _v11.x
-                                                         ,_1: _v11.y})($Graphics$Collage.toForm(A3($Graphics$Element.image,
-                                 42,
-                                 48,
-                                 src)))
-                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
-                                                         ,_0: 70 - areaW / 2
-                                                         ,_1: 30 - areaH / 2})($Graphics$Collage.toForm($Markdown.toElement("Arrows to move<br/>Shift to run")))])));
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 84 and 95");
-         }();
-      }();
-   });
-   var scaleTouches = function (_v16) {
-      return function () {
-         return function () {
-            var recent = !_U.eq({ctor: "_Tuple2"
-                                ,_0: _v16.x
-                                ,_1: _v16.y},
-            {ctor: "_Tuple2",_0: 0,_1: 0});
-            var y$ = _U.cmp(_v16.y,
-            areaH / 2) > 0 ? -1 : 1;
-            var x$ = _U.cmp(_v16.x,
-            areaW / 2) > 0 ? 1 : -1;
-            return recent ? {_: {}
-                            ,x: x$
-                            ,y: y$} : {_: {},x: 0,y: 0};
-         }();
-      }();
-   };
-   var input = A3($Signal.map2,
-   F2(function (v0,v1) {
-      return {ctor: "_Tuple2"
-             ,_0: v0
-             ,_1: v1};
-   }),
-   delta,
-   A2($Signal.map,
-   scaleTouches,
-   $Touch.taps));
    var main = A3($Signal.map2,
    view,
    $Window.dimensions,
@@ -175,6 +201,8 @@ Elm.Adventure.make = function (_elm) {
    update,
    hero,
    input));
+   var areaH = 600;
+   var areaW = 500;
    _elm.Adventure.values = {_op: _op
                            ,areaW: areaW
                            ,areaH: areaH
