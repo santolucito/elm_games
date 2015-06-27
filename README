@@ -1,0 +1,17 @@
+Connecting Elm to Phonegap to create FRP apps!
+
+Don't use any raw css, stick to doing everything in Elm. 
+Probably some way to use both Elm HTML and Phonegap HTML, but will figure that out later.
+
+onyl use relative paths for images "imgs/hero.png", not "/imgs/hero.png"
+
+'elm-make MyProgram.elm' gives you the .js file to put into the phonegap project
+
+then just add 'Elm.fullscreen(Elm.MyProgram);' in a sensible place in the index.js file of phonegap
+right now I just put it in 
+   
+    initialize: function() {...
+
+probably a better place to put it, but works for now
+
+Finally, zip that shit up and send it to Phonegap Build. all done!

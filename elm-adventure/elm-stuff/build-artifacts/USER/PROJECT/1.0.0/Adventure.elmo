@@ -1,0 +1,193 @@
+Elm.Adventure = Elm.Adventure || {};
+Elm.Adventure.make = function (_elm) {
+   "use strict";
+   _elm.Adventure = _elm.Adventure || {};
+   if (_elm.Adventure.values)
+   return _elm.Adventure.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Adventure",
+   $Basics = Elm.Basics.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Markdown = Elm.Markdown.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Touch = Elm.Touch.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var delta = A2($Signal.map,
+   function (t) {
+      return t / 20;
+   },
+   $Time.fps(25));
+   var setDirection = F2(function (_v0,
+   model) {
+      return function () {
+         return _U.replace([["dir"
+                            ,_U.cmp(_v0.x,
+                            0) > 0 ? "east" : _U.cmp(_v0.x,
+                            0) < 0 ? "west" : _U.cmp(_v0.y,
+                            0) < 0 ? "south" : _U.cmp(_v0.y,
+                            0) > 0 ? "north" : model.dir]],
+         model);
+      }();
+   });
+   var newVelocity = F2(function (_v2,
+   model) {
+      return function () {
+         return function () {
+            var scale = 1;
+            var newVel = function (n) {
+               return _U.eq(_v2.x,
+               0) || _U.eq(_v2.y,
+               0) ? scale * $Basics.toFloat(n) : scale * $Basics.toFloat(n) / $Basics.sqrt(2);
+            };
+            return _U.replace([["vx"
+                               ,newVel(_v2.x)]
+                              ,["vy",newVel(_v2.y)]],
+            model);
+         }();
+      }();
+   });
+   var Model = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,dir: e
+             ,vx: c
+             ,vy: d
+             ,x: a
+             ,y: b};
+   });
+   var hero = A5(Model,
+   0,
+   0,
+   0,
+   0,
+   "south");
+   var areaH = 600;
+   var areaW = 500;
+   var updatePosition = F2(function (dt,
+   _v4) {
+      return function () {
+         return _U.replace([["x"
+                            ,A3($Basics.clamp,
+                            (0 - areaW) / 2,
+                            areaW / 2,
+                            _v4.x + dt * _v4.vx)]
+                           ,["y"
+                            ,A3($Basics.clamp,
+                            (0 - areaH) / 2,
+                            areaH / 2,
+                            _v4.y + dt * _v4.vy)]],
+         _v4);
+      }();
+   });
+   var update = F2(function (_v6,
+   model) {
+      return function () {
+         switch (_v6.ctor)
+         {case "_Tuple2":
+            return updatePosition(_v6._0)(setDirection(_v6._1)(newVelocity(_v6._1)(model)));}
+         _U.badCase($moduleName,
+         "between lines 38 and 41");
+      }();
+   });
+   var view = F2(function (_v10,
+   _v11) {
+      return function () {
+         return function () {
+            switch (_v10.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var verb = _U.eq(_v11.vx,
+                    0) && _U.eq(_v11.vy,
+                    0) ? "stand" : "walk";
+                    var src = A2($Basics._op["++"],
+                    "imgs/hero/",
+                    A2($Basics._op["++"],
+                    verb,
+                    A2($Basics._op["++"],
+                    "/",
+                    A2($Basics._op["++"],
+                    _v11.dir,
+                    ".gif"))));
+                    return A3($Graphics$Element.container,
+                    _v10._0,
+                    _v10._1,
+                    $Graphics$Element.middle)(A3($Graphics$Collage.collage,
+                    areaW,
+                    areaH,
+                    _L.fromArray([$Graphics$Collage.toForm(A3($Graphics$Element.image,
+                                 areaW,
+                                 areaH,
+                                 "imgs/desert.png"))
+                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                         ,_0: _v11.x
+                                                         ,_1: _v11.y})($Graphics$Collage.toForm(A3($Graphics$Element.image,
+                                 42,
+                                 48,
+                                 src)))
+                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                         ,_0: 70 - areaW / 2
+                                                         ,_1: 30 - areaH / 2})($Graphics$Collage.toForm($Markdown.toElement("Arrows to move<br/>Shift to run")))])));
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 84 and 95");
+         }();
+      }();
+   });
+   var scaleTouches = function (_v16) {
+      return function () {
+         return function () {
+            var recent = !_U.eq({ctor: "_Tuple2"
+                                ,_0: _v16.x
+                                ,_1: _v16.y},
+            {ctor: "_Tuple2",_0: 0,_1: 0});
+            var y$ = _U.cmp(_v16.y,
+            areaH / 2) > 0 ? -1 : 1;
+            var x$ = _U.cmp(_v16.x,
+            areaW / 2) > 0 ? 1 : -1;
+            return recent ? {_: {}
+                            ,x: x$
+                            ,y: y$} : {_: {},x: 0,y: 0};
+         }();
+      }();
+   };
+   var input = A3($Signal.map2,
+   F2(function (v0,v1) {
+      return {ctor: "_Tuple2"
+             ,_0: v0
+             ,_1: v1};
+   }),
+   delta,
+   A2($Signal.map,
+   scaleTouches,
+   $Touch.taps));
+   var main = A3($Signal.map2,
+   view,
+   $Window.dimensions,
+   A3($Signal.foldp,
+   update,
+   hero,
+   input));
+   _elm.Adventure.values = {_op: _op
+                           ,areaW: areaW
+                           ,areaH: areaH
+                           ,Model: Model
+                           ,hero: hero
+                           ,update: update
+                           ,newVelocity: newVelocity
+                           ,setDirection: setDirection
+                           ,updatePosition: updatePosition
+                           ,view: view
+                           ,main: main
+                           ,input: input
+                           ,scaleTouches: scaleTouches
+                           ,delta: delta};
+   return _elm.Adventure.values;
+};
