@@ -46,6 +46,7 @@ Elm.Adventure.make = function (_elm) {
          }();
       }();
    });
+   var dimensions = $Window.dimensions;
    var input = A4($Signal.map3,
    F3(function (v0,v1,v2) {
       return {ctor: "_Tuple3"
@@ -88,7 +89,7 @@ Elm.Adventure.make = function (_elm) {
                     _L.fromArray([$Graphics$Collage.toForm(A3($Graphics$Element.image,
                                  _v6._0,
                                  _v6._1,
-                                 "imgs/desert.png"))
+                                 "imgs/desert_test.png"))
                                  ,$Graphics$Collage.move({ctor: "_Tuple2"
                                                          ,_0: _v7.x
                                                          ,_1: _v7.y})($Graphics$Collage.toForm(A3($Graphics$Element.image,
@@ -96,11 +97,11 @@ Elm.Adventure.make = function (_elm) {
                                  48,
                                  src)))
                                  ,$Graphics$Collage.move({ctor: "_Tuple2"
-                                                         ,_0: f(70 - (_v6._0 / 2 | 0))
+                                                         ,_0: f(100 - (_v6._0 / 2 | 0))
                                                          ,_1: f(30 - (_v6._1 / 2 | 0))})($Graphics$Collage.toForm($Markdown.toElement("tap corners to move")))])));
                  }();}
             _U.badCase($moduleName,
-            "between lines 86 and 98");
+            "between lines 83 and 95");
          }();
       }();
    });
@@ -126,7 +127,7 @@ Elm.Adventure.make = function (_elm) {
                     _v13);
                  }();}
             _U.badCase($moduleName,
-            "between lines 74 and 79");
+            "between lines 71 and 76");
          }();
       }();
    });
@@ -173,7 +174,7 @@ Elm.Adventure.make = function (_elm) {
                    ,_1: _v22._2._1})(setDirection(_v22._1)(newVelocity(_v22._1)(model)));}
               break;}
          _U.badCase($moduleName,
-         "between lines 38 and 41");
+         "between lines 35 and 38");
       }();
    });
    var Model = F5(function (a,
@@ -201,11 +202,7 @@ Elm.Adventure.make = function (_elm) {
    update,
    hero,
    input));
-   var areaH = 600;
-   var areaW = 500;
    _elm.Adventure.values = {_op: _op
-                           ,areaW: areaW
-                           ,areaH: areaH
                            ,Model: Model
                            ,hero: hero
                            ,update: update
@@ -215,6 +212,7 @@ Elm.Adventure.make = function (_elm) {
                            ,view: view
                            ,main: main
                            ,input: input
+                           ,dimensions: dimensions
                            ,scaleTouches: scaleTouches
                            ,delta: delta};
    return _elm.Adventure.values;

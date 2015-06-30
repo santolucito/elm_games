@@ -1,0 +1,201 @@
+Elm.Monster = Elm.Monster || {};
+Elm.Monster.make = function (_elm) {
+   "use strict";
+   _elm.Monster = _elm.Monster || {};
+   if (_elm.Monster.values)
+   return _elm.Monster.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Monster",
+   $Basics = Elm.Basics.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Touch = Elm.Touch.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var delta = A2($Signal.map,
+   function (t) {
+      return t / 20;
+   },
+   $Time.fps(25));
+   var scaleTouches = F2(function (_v0,
+   _v1) {
+      return function () {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var recent = !_U.eq({ctor: "_Tuple2"
+                                        ,_0: _v1.x
+                                        ,_1: _v1.y},
+                    {ctor: "_Tuple2",_0: 0,_1: 0});
+                    var y$ = (_v1.y / _v0._1 | 0) * 3 - 4;
+                    var x$ = (_v1.x / _v0._0 | 0) * 3 - 4;
+                    return recent ? {_: {}
+                                    ,x: x$
+                                    ,y: y$} : {_: {},x: 0,y: 0};
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 116 and 121");
+         }();
+      }();
+   });
+   var dimensions = $Window.dimensions;
+   var input = A4($Signal.map3,
+   F3(function (v0,v1,v2) {
+      return {ctor: "_Tuple3"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2};
+   }),
+   delta,
+   A3($Signal.map2,
+   scaleTouches,
+   $Window.dimensions,
+   $Touch.taps),
+   $Window.dimensions);
+   var view = F2(function (_v6,
+   board) {
+      return function () {
+         switch (_v6.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var mapT = function (_v10) {
+                    return function () {
+                       switch (_v10.ctor)
+                       {case "_Tuple2":
+                          return {ctor: "_Tuple2"
+                                 ,_0: $Basics.toFloat(150 * _v10._0)
+                                 ,_1: $Basics.toFloat(80 * _v10._1)};}
+                       _U.badCase($moduleName,
+                       "on line 92, column 19 to 52");
+                    }();
+                 };
+                 var locs = A2($List.map,
+                 function (c) {
+                    return mapT(c.pos);
+                 },
+                 board);
+                 var s = function (c) {
+                    return $Basics.not(c.selected) ? A2($Basics._op["++"],
+                    c.name,
+                    ".png") : A2($Basics._op["++"],
+                    c.name,
+                    "_clicked.png");
+                 };
+                 var f = function (x) {
+                    return $Graphics$Collage.toForm(A3($Graphics$Element.image,
+                    _v6._0 / 9 | 0,
+                    _v6._1 / 9 | 0,
+                    A2($Basics._op["++"],
+                    "imgs/",
+                    s(x))));
+                 };
+                 var imgs = A2($List.map,
+                 f,
+                 board);
+                 var fin = A3($List.map2,
+                 $Graphics$Collage.move,
+                 locs,
+                 imgs);
+                 return A3($Graphics$Element.container,
+                 _v6._0,
+                 _v6._1,
+                 $Graphics$Element.middle)(A2($Graphics$Collage.collage,
+                 _v6._0,
+                 _v6._1)(_L.fromArray([$Graphics$Collage.group(fin)])));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 88 and 98");
+      }();
+   });
+   var processTaps = F2(function (_v14,
+   b) {
+      return function () {
+         return function () {
+            var f = function (c) {
+               return _U.eq({ctor: "_Tuple2"
+                            ,_0: _v14.x
+                            ,_1: _v14.y},
+               c.pos) ? _U.replace([["selected"
+                                    ,true]],
+               c) : c;
+            };
+            return A2($List.map,f,b);
+         }();
+      }();
+   });
+   var update = F2(function (_v16,
+   board) {
+      return function () {
+         switch (_v16.ctor)
+         {case "_Tuple3":
+            return A2(processTaps,
+              _v16._1,
+              board);}
+         _U.badCase($moduleName,
+         "on line 46, column 3 to 24");
+      }();
+   });
+   var Card = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,cal: a
+             ,name: d
+             ,pos: b
+             ,selected: c};
+   });
+   var testCard = A4(Card,
+   100,
+   {ctor: "_Tuple2",_0: 0,_1: 0},
+   false,
+   "hotdog");
+   var def_card = function (x) {
+      return _U.replace([["pos"
+                         ,x]],
+      testCard);
+   };
+   var board = function () {
+      var poses = $List.concat($List.take(9)(A2($List.map,
+      function (y) {
+         return A2($List.map,
+         function (x) {
+            return {ctor: "_Tuple2"
+                   ,_0: x
+                   ,_1: y};
+         },
+         _L.fromArray([-1,0,1]));
+      },
+      _L.fromArray([-1,0,1]))));
+      return A2($List.map,
+      def_card,
+      poses);
+   }();
+   var main = A3($Signal.map2,
+   view,
+   $Window.dimensions,
+   A3($Signal.foldp,
+   update,
+   board,
+   input));
+   _elm.Monster.values = {_op: _op
+                         ,Card: Card
+                         ,testCard: testCard
+                         ,def_card: def_card
+                         ,board: board
+                         ,update: update
+                         ,processTaps: processTaps
+                         ,view: view
+                         ,main: main
+                         ,input: input
+                         ,dimensions: dimensions
+                         ,scaleTouches: scaleTouches
+                         ,delta: delta};
+   return _elm.Monster.values;
+};

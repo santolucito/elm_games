@@ -69,6 +69,7 @@
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
     <!--<gap:plugin name="com.admob.plugin" version="3.0.0" source="plugins.cordova.io" />-->
     <gap:plugin name="com.google.cordova.admob" source="plugins.cordova.io" />
+    <gap:plugin name="com.google.cordova.admob" source="plugins.cordova.io" />
 
     <!--
         <gap:plugin name="com.phonegap.plugins.barcodescanner" />

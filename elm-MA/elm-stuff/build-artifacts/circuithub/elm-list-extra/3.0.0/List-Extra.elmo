@@ -1,0 +1,143 @@
+Elm.List = Elm.List || {};
+Elm.List.Extra = Elm.List.Extra || {};
+Elm.List.Extra.make = function (_elm) {
+   "use strict";
+   _elm.List = _elm.List || {};
+   _elm.List.Extra = _elm.List.Extra || {};
+   if (_elm.List.Extra.values)
+   return _elm.List.Extra.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "List.Extra",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm);
+   var zip5 = $List.map5(F5(function (v0,
+   v1,
+   v2,
+   v3,
+   v4) {
+      return {ctor: "_Tuple5"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2
+             ,_3: v3
+             ,_4: v4};
+   }));
+   var zip4 = $List.map4(F4(function (v0,
+   v1,
+   v2,
+   v3) {
+      return {ctor: "_Tuple4"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2
+             ,_3: v3};
+   }));
+   var zip3 = $List.map3(F3(function (v0,
+   v1,
+   v2) {
+      return {ctor: "_Tuple3"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2};
+   }));
+   var zip = $List.map2(F2(function (v0,
+   v1) {
+      return {ctor: "_Tuple2"
+             ,_0: v0
+             ,_1: v1};
+   }));
+   var andMap = F2(function (fl,
+   l) {
+      return A3($List.map2,
+      F2(function (x,y) {
+         return x(y);
+      }),
+      fl,
+      l);
+   });
+   var dropWhile = F2(function (predicate,
+   list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            return predicate(list._0) ? A2(dropWhile,
+              predicate,
+              list._1) : list;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 55 and 67");
+      }();
+   });
+   var takeWhile = F2(function (predicate,
+   list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            return predicate(list._0) ? A2($List._op["::"],
+              list._0,
+              A2(takeWhile,
+              predicate,
+              list._1)) : _L.fromArray([]);
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 46 and 52");
+      }();
+   });
+   var minimumBy = F2(function (f,
+   ls) {
+      return function () {
+         var minBy = F3(function (f,
+         x,
+         y) {
+            return _U.cmp(f(x),
+            f(y)) < 0 ? x : y;
+         });
+         return function () {
+            switch (ls.ctor)
+            {case "::":
+               return $Maybe.Just(A3($List.foldl,
+                 minBy(f),
+                 ls._0,
+                 ls._1));}
+            return $Maybe.Nothing;
+         }();
+      }();
+   });
+   var maximumBy = F2(function (f,
+   ls) {
+      return function () {
+         var maxBy = F3(function (f,
+         x,
+         y) {
+            return _U.cmp(f(x),
+            f(y)) > 0 ? x : y;
+         });
+         return function () {
+            switch (ls.ctor)
+            {case "::":
+               return $Maybe.Just(A3($List.foldl,
+                 maxBy(f),
+                 ls._0,
+                 ls._1));}
+            return $Maybe.Nothing;
+         }();
+      }();
+   });
+   _elm.List.Extra.values = {_op: _op
+                            ,minimumBy: minimumBy
+                            ,maximumBy: maximumBy
+                            ,andMap: andMap
+                            ,takeWhile: takeWhile
+                            ,dropWhile: dropWhile
+                            ,zip: zip
+                            ,zip3: zip3
+                            ,zip4: zip4
+                            ,zip5: zip5};
+   return _elm.List.Extra.values;
+};

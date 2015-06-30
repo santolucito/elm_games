@@ -13,9 +13,6 @@ import Touch
 
 -- MODEL
 
-areaW = 500
-areaH = 600
-
 
 type alias Model =
   { x : Float
@@ -90,11 +87,11 @@ view (w,h) {x,y,vx,vy,dir} =
   in
     container w h middle <|
     collage w h
-      [ toForm (image w h "imgs/desert.png")
+      [ toForm (image w h "imgs/desert_test.png")
       , toForm (image 42 48 src)
           |> move (x,y)
       , toForm (Markdown.toElement "tap corners to move")
-          |> move (f( 70-w//2),f (30-h//2))
+          |> move (f( 100-w//2),f (30-h//2))
       ]
 
 
@@ -104,10 +101,13 @@ main : Signal Element
 main =
   Signal.map2 view Window.dimensions (Signal.foldp update hero input)
 
-
 input : Signal (Time, { x:Int, y:Int }, (Int,Int))
 input =
   Signal.map3 (,,) delta (Signal.map2 scaleTouches Window.dimensions Touch.taps) Window.dimensions
+
+dimensions : Signal (Int,Int)
+dimensions = 
+  Window.dimensions
 
 scaleTouches : (Int,Int) -> {x:Int,y:Int} -> {x:Int,y:Int}
 scaleTouches (dim_x,dim_y) {x,y} =
