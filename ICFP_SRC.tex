@@ -85,56 +85,73 @@ keyword1, keyword2
 Functional Reactive Programming (FRP) is an exciting and popular way to make interactive applications in a functional style.
 However, creating production level applications with FRP remains prohibitivly difficult, especially for mobile platforms.
 While many functional programmers have the programming experience to write FRP applications, technicial issues have kept this circle to only the most dedicated FRP researchers.
-Using Javascript as an intermediate language for FRP code eliminates most of these technical hurdles and makes publishing applications written with FRP an option for more users.
-
+Using Javascript as an intermediate language for FRP code eliminates most of the technical hurdles to publishing applications written with FRP, allowing more programmers to use FRP in production.
 
 %motivation
 
-FRP exists as libraries in Haskell, the dedicated FRP language Elm, and Sodium is a project to port FRP to more language like Java and C.
-However, FRP often feels most natural in functional language like Haskell and Elm.
-Building a system that easily 
-works very well in high-level functioal languages, but Android is in Java.
-We want to write FRP programs for Android.
-Many FRP libraries exist in Haskell, and Elm is a dedicated FRP language that is very similar to Haskell.
+Development of interactive apps tends to be faster and easier using FRP.
+One particular strength is that prototypes can be generated very quickly, and these prototypes are easily extented to full applications.
+This has been used in many interactive multimedia applications such as music, robotics, and games\cite{}.
 
-Apps can be developed and maintained much faster using FRP.
-prototypes can be generated very quickly.
+\section{Background}
+%related/motivation
+FRP implementations include many libraries in Haskell, the dedicated FRP language Elm, and the Sodium project which ports FRP to more language like Java and C.
+FRP often feels most natural in high-level functional languages like Haskell and Elm, but mobile development requires device specific languages (e.g Java for Android).
+Ideally, FRP programs could be cross-compiled to the target platform without significant interference in the development process.
 
-The development of FRP and functional languages in general relies on adoption by industry.
-Simplifying the work flow to bring FRP code to market will encourage future work in FRP.
-
-%related
-Ivan Perez from Keera Stuios has cross-compiled haskell to andoird and published a game.
-His approach is complicatd and closed-source at the moment.
-Java has an FRP library, but Java is not well suited for FRP.
+For development on Apple's iOS platform, a cross-compiler exists for GHC that could provide a way to use a Haskell FRP library to develop iOS apps.
+This platform has not yet been a focus for FRP researchers, likely due to a community preference for Android, but also the difficultly installing the cross-compiler.
+Windows phone development remains equally unexplored.
+Perez, in work with Keera Studios, has succesfully cross-compiled Haskell to Android and published the game \textit{Magic Cookies}\cite{}.
+Although promising, the source code for this remains closed source and the setup has been difficult to reproduce due to many installation steps.
 
 %soltn
-Compile FRP program to an intermediate language, then compile to Android.
-The intermediate language 
-By using ghcjs, we can compile our Haskell FRP program to js.
-Then using Phonegap, we can comile that generated js to an Android application.
-This is unique because it removes all the cross platform difficulties.
+To simplify the process, we compile FRP program to an intermediate language, then use a \textit{platform agnostic} tool to compile the intermediate language to any target device desired.
+The intermediate language presented here is Javascript and platform agnostic tool is Phonegap.
+For Haskell, ghcjs can compile program to Javascript, while Elm is compiled to Javascript by default.
+Phonegap is a program developed to allow users to create apps for all platforms by writing Javascript. 
+We instead send the generated (and incomprehensible) Javascript to Phonegap to create a package for any mobile device.
+Here Javascript is functioning as an intermediate language - the user does not need to look at it for the system to work.
 
+%Performance
+Performance is a concern when using an intermediate language without optimizations. 
+A common measure for performance in FRP systems is the frames per second (fps) that can be displayed, or the frame rate.
+Any number above 32 fps is generally acceptable, and in our proof of concept app we were able to acheive a frame rate of XX fps.
+However, this is only for a 2D game, so performance measures for more complex system will be needed in future work.
+
+\bf{BEGIN NOT FINISHED SEC}
 %APIs
-There are two kinds of APIs for moblie development, software and hardware.
+Mobile development also relies on the use of two kinds of APIs, software and hardware.
 Software APIs (e.g. google maps) would require a .jar file loaded to the android project - now we just use the javascript API for that library.
 Hardware APIs (e.g. acceleration data) use device specific APIs.
 Some javascript APIs exist for functionality most devices have, like aceleraometers.
 
+Use a double-level FFI, just as with compiling.
 If native code is necessary, Phonegap provides \texit{plugins} as a foregin function interface (FFI) to javscript.
 Plugin code can be called via the FFI in javscript, which is in turn called through the source languages FFI.
 Both ghcjs and Elm provide a javascript FFI. 
 
 Development may also be split between any combination of the FRP language, javascript, and the target language.
+\bf{END NOT FINISHED SEC}
+
+This approach is unique because it treats the high-level language of one tool as an intermediate language for another. 
+It is unique in its simplicity because it leverages Phonegap to unify the workflow for all platforms - iOS, Android and Windows apps are all created from the same system.
+There is no need to install a different cross-compiler for each target device.
+This approach also works well in practice, providing good performance and access to low-level APIs when needed.
 
 
-%Results
+\bf{BEGIN NOT FINISHED SEC}
+\section{Results}
 We developed a proof of concept app using Elm and have provided the source code and app files at \www{github.com/santolucito/elm_games}.
 This app uses FRP to read the touch interface native to the mobile hardware and control a game.
 The app also uses a plugin to show ads, mixing javascript code with Elm.
 It can run at ?? frames per second on an Nexus 5 running Android verison X.XX.
 pass in (fps 200) as the time signal to a display of "toString (1000/t)" to meausre actual FPS - capped at 200 on laptop. 
  
+The development of FRP and functional languages in general relies on adoption by industry.
+Simplifying the workflow to bring FRP code to market will encourage future work in FRP.
+\bf{END NOT FINISHED SEC}
+
 \appendix
 \section{Appendix Title}
 
