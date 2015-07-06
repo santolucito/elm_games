@@ -1,0 +1,170 @@
+%-----------------------------------------------------------------------------
+%
+%               Template for sigplanconf LaTeX Class
+%
+% Name:         sigplanconf-template.tex
+%
+% Purpose:      A template for sigplanconf.cls, which is a LaTeX 2e class
+%               file for SIGPLAN conference proceedings.
+%
+% Guide:        Refer to "Author's Guide to the ACM SIGPLAN Class,"
+%               sigplanconf-guide.pdf
+%
+% Author:       Paul C. Anagnostopoulos
+%               Windfall Software
+%               978 371-2316
+%               paul@windfall.com
+%
+% Created:      15 February 2005
+%
+%-----------------------------------------------------------------------------
+
+
+\documentclass{sigplanconf}
+
+% The following \documentclass options may be useful:
+
+% preprint      Remove this option only once the paper is in final form.
+% 10pt          To set in 10-point type instead of 9-point.
+% 11pt          To set in 11-point type instead of 9-point.
+% authoryear    To obtain author/year citation style instead of numeric.
+
+\usepackage{amsmath}
+
+
+\begin{document}
+
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
+\conferenceinfo{CONF 'yy}{Month d--d, 20yy, City, ST, Country} 
+\copyrightyear{20yy} 
+\copyrightdata{978-1-nnnn-nnnn-n/yy/mm} 
+\doi{nnnnnnn.nnnnnnn}
+
+% Uncomment one of the following two, if you are not going for the 
+% traditional copyright transfer agreement.
+
+%\exclusivelicense                % ACM gets exclusive license to publish, 
+                                  % you retain copyright
+
+%\permissiontopublish             % ACM gets nonexclusive license to publish
+                                  % (paid open-access papers, 
+                                  % short abstracts)
+
+\titlebanner{banner above paper title}        % These are ignored unless
+\preprintfooter{short description of paper}   % 'preprint' option specified.
+
+\title{Javascript as an Intermediate Language for FRP}
+\subtitle{Subtitle Text, if any}
+
+\authorinfo{Name1}
+           {Affiliation1}
+           {Email1}
+
+\maketitle
+
+%\begin{abstract}
+%\end{abstract}
+
+\category{CR-number}{subcategory}{third-level}
+
+% general terms are not compulsory anymore, 
+% you may leave them out
+\terms
+term1, term2
+
+\keywords
+keyword1, keyword2
+
+\section{Introduction}
+
+
+%probelm
+Functional Reactive Programming (FRP) is an exciting and popular way to make interactive applications in a functional style.
+However, creating production level applications with FRP remains prohibitivly difficult, especially for mobile platforms.
+While many functional programmers have the programming experience to write FRP applications, technicial issues have kept this circle to only the most dedicated FRP researchers.
+Using Javascript as an intermediate language for FRP code eliminates most of these technical hurdles and makes publishing applications written with FRP an option for more users.
+
+
+%motivation
+
+FRP exists as libraries in Haskell, the dedicated FRP language Elm, and Sodium is a project to port FRP to more language like Java and C.
+However, FRP often feels most natural in functional language like Haskell and Elm.
+Building a system that easily 
+works very well in high-level functioal languages, but Android is in Java.
+We want to write FRP programs for Android.
+Many FRP libraries exist in Haskell, and Elm is a dedicated FRP language that is very similar to Haskell.
+
+Apps can be developed and maintained much faster using FRP.
+prototypes can be generated very quickly.
+
+The development of FRP and functional languages in general relies on adoption by industry.
+Simplifying the work flow to bring FRP code to market will encourage future work in FRP.
+
+%related
+Ivan Perez from Keera Stuios has cross-compiled haskell to andoird and published a game.
+His approach is complicatd and closed-source at the moment.
+Java has an FRP library, but Java is not well suited for FRP.
+
+%soltn
+Compile FRP program to an intermediate language, then compile to Android.
+The intermediate language 
+By using ghcjs, we can compile our Haskell FRP program to js.
+Then using Phonegap, we can comile that generated js to an Android application.
+This is unique because it removes all the cross platform difficulties.
+
+%APIs
+There are two kinds of APIs for moblie development, software and hardware.
+Software APIs (e.g. google maps) would require a .jar file loaded to the android project - now we just use the javascript API for that library.
+Hardware APIs (e.g. acceleration data) use device specific APIs.
+Some javascript APIs exist for functionality most devices have, like aceleraometers.
+
+If native code is necessary, Phonegap provides \texit{plugins} as a foregin function interface (FFI) to javscript.
+Plugin code can be called via the FFI in javscript, which is in turn called through the source languages FFI.
+Both ghcjs and Elm provide a javascript FFI. 
+
+Development may also be split between any combination of the FRP language, javascript, and the target language.
+
+
+%Results
+We developed a proof of concept app using Elm and have provided the source code and app files at \www{github.com/santolucito/elm_games}.
+This app uses FRP to read the touch interface native to the mobile hardware and control a game.
+The app also uses a plugin to show ads, mixing javascript code with Elm.
+It can run at ?? frames per second on an Nexus 5 running Android verison X.XX.
+pass in (fps 200) as the time signal to a display of "toString (1000/t)" to meausre actual FPS - capped at 200 on laptop. 
+ 
+\appendix
+\section{Appendix Title}
+
+This is the text of the appendix, if you need one.
+
+\acks
+
+Acknowledgments, if needed.
+
+% We recommend abbrvnat bibliography style.
+
+\bibliographystyle{abbrvnat}
+
+% The bibliography should be embedded for final submission.
+
+\begin{thebibliography}{}
+\softraggedright
+
+\bibitem[Smith et~al.(2009)Smith, Jones]{smith02}
+P. Q. Smith, and X. Y. Jones. ...reference text...
+
+\end{thebibliography}
+
+
+\end{document}
+
+%                       Revision History
+%                       -------- -------
+%  Date         Person  Ver.    Change
+%  ----         ------  ----    ------
+
+%  2013.06.29   TU      0.1--4  comments on permission/copyright notices
+
