@@ -104,12 +104,6 @@ Phonegap is a program developed to allow users to create apps for all platforms 
 We instead send the generated (and incomprehensible) Javascript to Phonegap to create a package for any mobile device.
 Here Javascript is functioning as an intermediate language - the user does not need to look at it for the system to work.
 
-%Performance
-Performance is a concern when using an intermediate language without optimizations. 
-A common measure for performance in FRP systems is the frames per second (fps) that can be displayed, or the frame rate.
-Any number above 32 fps is generally acceptable, and in our proof of concept app we were able to acheive a frame rate of XX fps.
-However, this is only for a 2D game, so performance measures for more complex system will be needed in future work.
-
 %APIs
 Mobile development also relies on the use of APIs.
 Many platform specific APIs have similar Javscript implementation, which can be used via the FRP languages FFI.
@@ -117,18 +111,22 @@ For APIs that require native code, Phonegap provides texit{plugins} as a foregin
 The Javascript plugin code can then be accessed via the FRP langauge through that FFI.
 Both ghcjs and Elm provide a javascript FFI to enable this chain. 
 
+%Performance
+Performance is a concern when using an intermediate language without optimizations. 
+A common measure for performance in FRP systems is the frames per second (fps) that can be displayed, or the frame rate.
+Any number above 32 fps is generally acceptable, and our proof of concept app maintains a frame rate of >150 fps on a Nexus 5 running Android 5.1.1.
+However, this is only for a 2D game, so performance measures for more complex systems will be needed in future work.
+
+\section{Results}
+This app uses FRP to read the touch interface native to the mobile hardware and control a game.
+The app also uses a plugin FFI to show ads, mixing javascript code with Elm.
+The source code and app files are avaible at \url{github.com/santolucito/elm_games}.
+
 This approach is unique because it treats the high-level language of one tool as an intermediate language for another. 
 It is unique in its simplicity because it leverages Phonegap to unify the workflow for all platforms - iOS, Android and Windows apps are all created from the same system.
 There is no need to install a different cross-compiler for each target device.
 This approach also works well in practice, providing good performance and access to low-level APIs when needed.
 
-
-\section{Results}
-We developed a proof of concept app using Elm and have provided the source code and app files at %\www{github.com/santolucito/elm_games}.
-This app uses FRP to read the touch interface native to the mobile hardware and control a game.
-The app also uses a plugin to show ads, mixing javascript code with Elm.
-It can run at ?? frames per second on an Nexus 5 running Android verison X.XX.
-pass in (fps 200) as the time signal to a display of "toString (1000/t)" to meausre actual FPS - capped at 200 on laptop. 
  
 The development of FRP and functional languages in general relies on adoption by industry.
 Simplifying the workflow to bring FRP code to market will encourage future work in FRP.
