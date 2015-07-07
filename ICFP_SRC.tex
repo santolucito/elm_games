@@ -31,6 +31,7 @@
 
 \usepackage{amsmath}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 
 \begin{document}
@@ -72,45 +73,49 @@
 Functional Reactive Programming (FRP) is an exciting and popular way to make interactive applications in a functional style.
 However, creating production level applications with FRP remains prohibitivly difficult, especially for mobile platforms.
 Each mobile platform only supports particular languages and archetictures, so many cross-compiling tools must be installed and managed.
-Many users are able to write FRP applications, but the lack of deployment options has kept this %circle to only the most dedicated FRP researchers.
+While many users are able to write FRP applications, the lack of deployment options has limited mobile FRP apps to only the most dedicated FRP researchers.
 
 We propose using Javascript as an intermediate language to eliminate most of the technical hurdles to publishing applications written with FRP, allowing more programmers to use FRP in production.
 We have developed a tool that automatically creates a mobile app package.
-It works for any for any mobile platform and takes an Elm program as input.
-Other languages like Haskell could easily be supported as well.
-The user can write exclusively in the FRP language, use a forgein function interface (FFI) to interface with lower level languages and hardware, or use FRP for only isolated pieces of the app.
+It works for any any mobile platform and takes an Elm program as input, though other languages like Haskell could also be supported.
+The user can develop exclusively in the FRP language, use a forgein function interface (FFI) to interface with lower level languages and hardware, or use FRP for only isolated pieces of the app.
 
 %motivation
 
 \section{Background}
 Althought deployment is difficult, development of interactive apps can be faster and easier using FRP.
 One particular strength is that prototypes can be generated very quickly, and these prototypes are easily extented to full applications.
-This has been used in many interactive multimedia applications such as music, robotics, and games\cite{}.
-
-%related/motivation
-FRP implementations include many libraries in Haskell, the dedicated FRP language Elm, and the Sodium project which ports FRP to more language like Java and C.
-FRP often feels most natural in high-level functional languages like Haskell and Elm, but mobile development requires device specific languages (e.g Java for Android).
-Ideally, FRP programs could be cross-compiled to the target platform without significant interference in the development process.
+This has been used in many interactive multimedia applications such as music, robotics, and games\cite{euterpea}.
+As an example, see Figure ~\ref{fig:easy} for a very short drawing application written in Elm.
+To write this in another style would be very verbose and likely difficult.
 
 %why FRP for mobile dev, why is it so good
 %example code in picture
-\begin{figure}[H]
- \centering
- \includegraphics{easy.png}
-\end{figure}
+\begin{figure*}
+  \includegraphics[width=\textwidth,height=4cm]{easy.png}
+  \caption{Easy code for a drawing app that traces the mouse (or finger for a touch screen) with colored shapes.}
+  \label{fig:easy}
+\end{figure*}
+
+%related/motivation
+FRP implementations include many libraries in Haskell, the dedicated FRP language Elm, and the Sodium project which ports FRP to more language like Java and C\cite{}.
+FRP research is most developed for functional languages like Haskell and Elm, but each mobile platform requires device specific languages (e.g Java for Android).
+Ideally, FRP programs could be cross-compiled to the target platform without significant interference in the development process.
+
 
 %reduce this section
-For development on Apple's iOS platform, a cross-compiler exists for GHC that could provide a way to use a Haskell FRP library to develop iOS apps.
+A GHC cross-compiler exists for Apple's iOS platform that could possibly provide a way to use a Haskell FRP library to develop iOS apps.
 Perez, in work with Keera Studios, has succesfully cross-compiled Haskell to Android and published the game \textit{Magic Cookies}\cite{}.
 Although promising, the source code for this remains closed source and the setup has been difficult to reproduce due to many installation steps.
 Windows phone development remains largely unexplored.
 These however require that all tool chains be installed and managed seperatly - a large cost for an average user.
 
+\section{Results}
 %soltn
 To simplify the process, we compile FRP programs to an intermediate language, then use a \textit{platform agnostic} tool to compile the intermediate language to any target device desired.
 The intermediate language presented here is Javascript and platform agnostic tool is Phonegap.
 For Haskell, ghcjs can compile program to Javascript, while Elm is compiled to Javascript by default.
-Phonegap is a program developed to allow users to create apps for all platforms by writing Javascript. 
+Phonegap allows users to create apps for any platforms by writing Javascript. 
 We instead send the generated (and incomprehensible) Javascript to Phonegap to create a package for any mobile device.
 Here Javascript is functioning as an intermediate language - the user does not need to look at it for the system to work.
 
@@ -119,25 +124,23 @@ Mobile development also relies on the use of APIs.
 Many platform specific APIs have similar Javscript implementation, which can be used via the FRP languages FFI.
 For APIs that require native code, Phonegap provides texit{plugins} as a foregin function interface (FFI) from javscript to the lower level language.
 The Javascript plugin code can then be accessed via the FRP langauge through that FFI.
-Both ghcjs and Elm provide a javascript FFI to enable this chain. 
+Both ghcjs and Elm provide a Javascript FFI to enable this chain. 
 
 %Performance
 Performance is a concern when using an intermediate language without optimizations. 
-%opts are not needed because...
-A common measure for performance in FRP systems is the frames per second (fps) that can be displayed, or the frame rate.
-Any number above 32 fps is generally acceptable, and our proof of concept app maintains a frame rate of >150 fps on a Nexus 5 running Android 5.1.1.
+Preliminary testing shows optimizations are not needed for simple game development using this tool. 
+A common measure for performance in FRP systems is the frames per second (fps) that can be displayed.
+Any number above 32 fps is generally acceptable, and our proof of concept app maintains $/gt$150 fps on a Nexus 5 running Android 5.1.1.
 However, this is only for a 2D game, so performance measures for more complex systems will be needed in future work.
 
-\section{Results}
-This app uses FRP to read the touch interface native to the mobile hardware and control a game.
-The app also uses a plugin FFI to show ads, mixing javascript code with Elm.
+Our demo app uses FRP to read the touch interface native to the mobile hardware and control a simple game.
+The app also uses a plugin FFI to show native ads, mixing Javascript code with Elm.
 The source code and app files are avaible at \url{github.com/santolucito/elm_games}.
 
 This approach is unique because it treats the high-level language of one tool as an intermediate language for another. 
 It is unique in its simplicity because it leverages Phonegap to unify the workflow for all platforms - iOS, Android and Windows apps are all created from the same system.
 There is no need to install a different cross-compiler for each target device.
 This approach also works well in practice, providing good performance and access to low-level APIs when needed.
-
  
 The development of FRP and functional languages in general relies on adoption by industry.
 Simplifying the workflow to bring FRP code to market will encourage future work in FRP.
@@ -151,8 +154,15 @@ Simplifying the workflow to bring FRP code to market will encourage future work 
 \begin{thebibliography}{}
 \softraggedright
 
-\bibitem[Smith et~al.(2009)Smith, Jones]{smith02}
-P. Q. Smith, and X. Y. Jones. ...reference text...
+\bibitem[Smith et~al.(2009)Hudak, Paul]{euterpeaii}
+
+@BOOK{euterpea,
+  author={Paul Hudak},
+  title = {The Haskell School of Music -- from Signal to Symphonies},
+  year = {2014},
+  month={January},
+  publisher = {Version 2.6}
+  }
 
 \end{thebibliography}
 
