@@ -85,7 +85,7 @@ The user can develop exclusively in the FRP language, use a forgein function int
 \section{Background}
 Althought deployment is difficult, development of interactive apps can be faster and easier using FRP.
 One particular strength is that prototypes can be generated very quickly, and these prototypes are easily extented to full applications.
-This has been used in many interactive multimedia applications such as music, robotics, and games\cite{euterpea}.
+This has been used in many interactive multimedia applications such as music, robotics, and games\cite{euterpea,robots,yampa}.
 As an example, see Figure ~\ref{fig:easy} for a very short drawing application written in Elm.
 To write this in another style would be very verbose and likely difficult.
 
@@ -98,14 +98,14 @@ To write this in another style would be very verbose and likely difficult.
 \end{figure*}
 
 %related/motivation
-FRP implementations include many libraries in Haskell, the dedicated FRP language Elm, and the Sodium project which ports FRP to more language like Java and C\cite{}.
+FRP implementations include many libraries in Haskell, the dedicated FRP language Elm, and the Sodium project which ports FRP to more language like Java and C\cite{euterpea,elm,sodium}.
 FRP research is most developed for functional languages like Haskell and Elm, but each mobile platform requires device specific languages (e.g Java for Android).
 Ideally, FRP programs could be cross-compiled to the target platform without significant interference in the development process.
 
 
 %reduce this section
 A GHC cross-compiler exists for Apple's iOS platform that could possibly provide a way to use a Haskell FRP library to develop iOS apps.
-Perez, in work with Keera Studios, has succesfully cross-compiled Haskell to Android and published the game \textit{Magic Cookies}\cite{}.
+Perez, in work with Keera Studios, has succesfully cross-compiled Haskell to Android and published the game \textit{Magic Cookies}\cite{cookies}.
 Although promising, the source code for this remains closed source and the setup has been difficult to reproduce due to many installation steps.
 Windows phone development remains largely unexplored.
 These however require that all tool chains be installed and managed seperatly - a large cost for an average user.
