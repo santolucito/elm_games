@@ -15,3 +15,6 @@ right now I just put it in
 probably a better place to put it, but works for now
 
 Finally, zip that shit up and send it to Phonegap Build. all done!
+
+
+alias adv-build='pushd .;cd ~/ElmApps/elm-adventure/; elm-make Adventure.elm; mv elm.js ~/ElmApps/phonegap-start/www/js; cd ~/ElmApps/; zip -r phonegap-start.zip phonegap-start/; mv phonegap-start.zip ~/Downloads/; popd'

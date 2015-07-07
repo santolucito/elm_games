@@ -78,8 +78,8 @@ updatePosition dt (dim_x,dim_y) ({x,y,vx,vy} as model) =
 
 -- VIEW
 
-view : (Int,Int) -> Model -> Element
-view (w,h) {x,y,vx,vy,dir} =
+view : Float -> (Int,Int) -> Model -> Element
+view t (w,h) {x,y,vx,vy,dir} =
   let
     verb = if vx == 0 && vy == 0 then "stand" else "walk"
     src = "imgs/hero/" ++ verb ++ "/" ++ dir ++ ".gif"
@@ -90,7 +90,7 @@ view (w,h) {x,y,vx,vy,dir} =
       [ toForm (image w h "imgs/desert_test.png")
       , toForm (image 42 48 src)
           |> move (x,y)
-      , toForm (Markdown.toElement "tap corners to move")
+      , toForm (Markdown.toElement (toString (1000/t)))
           |> move (f( 100-w//2),f (30-h//2))
       ]
 
@@ -99,9 +99,9 @@ view (w,h) {x,y,vx,vy,dir} =
 
 main : Signal Element
 main =
-  Signal.map2 view Window.dimensions (Signal.foldp update hero input)
+  Signal.map3 view delta Window.dimensions (Signal.foldp update hero input)
 
-input : Signal (Time, { x:Int, y:Int }, (Int,Int))
+input : Signal (Float, { x:Int, y:Int }, (Int,Int))
 input =
   Signal.map3 (,,) delta (Signal.map2 scaleTouches Window.dimensions Touch.taps) Window.dimensions
 
@@ -118,7 +118,7 @@ scaleTouches (dim_x,dim_y) {x,y} =
   in 
      if recent then {x=x',y=y'} else {x=0,y=0}
 
-delta : Signal Time
+delta : Signal Float
 delta =
-  Signal.map (\t -> t / 20) (fps 25)
+  Signal.map (\t -> t ) (fps 200)
 
