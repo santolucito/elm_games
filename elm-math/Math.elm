@@ -18,32 +18,17 @@ import StartApp
 --should be able to have any thinf that can be transformed
 -- Int, List a, Set a, Tree a
 type alias Model =
-    { listSeq : List ( List (Int))
+    { listSeq : List ( List (Int)),
+      goal : List (Int)
     }
 
 initM : Model
 initM =
-    { listSeq = [[1,2,3]]
+    { listSeq = [[1,2,3]],
+      goal = [1,2,3]
     }
 
 type alias Exp = String
-
---anything that has :: [a] -> [a]
--- map (+1) 
--- head
--- tail
--- rev 
-type Exp
-    = ListToList
-    | ListToXToList
-
-type ListToList
-    = String
-
-type ListToXToList
-    = String X
-
-type 
 
 -- UPDATE
 
@@ -63,7 +48,6 @@ update action model =
             listSeq <- List.append model.listSeq [newL]
         }
      
-
     RemoveExp ->
       { model |
           listSeq <- initList model.listSeq
@@ -72,23 +56,44 @@ update action model =
 eval : Exp -> List (Int) -> List(Int)
 eval exp l = 
  case exp of
-   "+" -> List.map (\x->x+1) l 
-   "-" -> List.map (\x->x-1) l 
+   "+" -> List.map (\x->(x+1) % 4) l 
+   "-" -> List.map (\x->(x-1) % 4) l 
+   "*" -> List.map (\x->(x*2) % 4) l 
+   "t" -> case l of
+           [] -> []
+           (x::xs) -> xs
+   "d" -> l++l
+   "r" -> List.reverse l
+
+wonGame : Model -> String
+wonGame m =
+  let
+    done = (List.length m.listSeq) == 5 
+    win = (lastList m.listSeq) == m.goal
+  in
+    if done
+      then if win then "winner" else "loser"
+      else "" 
 
 -- VIEW
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
   let
-    f s d = toForm (Markdown.toElement (toString s))
-            |> moveY (d*(-30))
-
-    lists = [fromElement <| collage 100 300 <| List.map2 f model.listSeq [0..100]]
-    mkButt exp = button [ onClick address (ApplyExp exp)] [ Html.text (toString <| exp) ]
+    f l d = group (List.map2 toImgs l [0..100])
+           |> moveY (d*(-50))
+    toImgs i x = 
+      toForm (image 42 42 ("imgs/"++toString i++".png"))
+      |> moveX (x*50)
+    lists = [fromElement <| collage 300 250 <| [move (-120,100) <| group <| List.map2 f model.listSeq [0..100]]]
+    result = 
+      toForm (Markdown.toElement (wonGame model))
+    goal = [fromElement <| collage 300 100 <| [move (-120,75) <| f model.goal 1,move (-50,-25) <|result]]
+    mkButt exp = button [onClick address (ApplyExp exp)] [ Html.text (toString <| exp) ]
     buttons =
-      List.map mkButt ["+","-"]
+      List.map mkButt ["+","-","*", "t","d","r"]
   in 
     div []
-      (List.append buttons lists)
+      (buttons++ lists++ goal)
 
 
 -- SIGNALS
