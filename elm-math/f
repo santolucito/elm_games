@@ -1,0 +1,2 @@
+elm-make Math.elm --output=test.html;
+./help

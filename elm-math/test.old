@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html><head><meta charset="UTF-8"><title>Math</title><style>html,head,body { padding:0; margin:0; }
+<html><head><link rel="stylesheet" type="text/css" href="test.css"><meta charset="UTF-8"><title>Math</title><style>html,head,body { padding:0; margin:0; }
+
 body { font-family: calibri, helvetica, arial, sans-serif; }</style><script type="text/javascript">var Elm = Elm || { Native: {} };Elm.Array = Elm.Array || {};
 Elm.Array.make = function (_elm) {
    "use strict";
@@ -3725,10 +3726,24 @@ Elm.Math.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp = Elm.StartApp.make(_elm);
-   var $eval = F2(function (op,l) {
+   var lastList = function (l) {
+      return A2($Maybe.withDefault,
+      _L.fromArray([]),
+      $List.head($List.reverse(l)));
+   };
+   var initList = function (l) {
+      return $List.reverse($Maybe.withDefault(l)($List.tail($List.reverse(l))));
+   };
+   var $eval = F2(function (exp,
+   l) {
       return function () {
-         switch (op)
-         {case "+": return A2($List.map,
+         switch (exp)
+         {case "*": return A2($List.map,
+              function (x) {
+                 return x * 1;
+              },
+              l);
+            case "+": return A2($List.map,
               function (x) {
                  return x + 1;
               },
@@ -3739,22 +3754,14 @@ Elm.Math.make = function (_elm) {
               },
               l);}
          _U.badCase($moduleName,
-         "between lines 61 and 63");
+         "between lines 75 and 78");
       }();
    });
-   var lastList = function (l) {
-      return A2($Maybe.withDefault,
-      _L.fromArray([]),
-      $List.head($List.reverse(l)));
-   };
-   var initList = function (l) {
-      return $List.reverse($Maybe.withDefault(l)($List.tail($List.reverse(l))));
-   };
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "ApplyOp":
+         {case "ApplyExp":
             return function () {
                  var newL = $eval(action._0)(lastList(model.listSeq));
                  return _U.replace([["listSeq"
@@ -3763,36 +3770,32 @@ Elm.Math.make = function (_elm) {
                                     _L.fromArray([newL]))]],
                  model);
               }();
-            case "RemoveOp":
+            case "RemoveExp":
             return _U.replace([["listSeq"
                                ,initList(model.listSeq)]],
               model);}
          _U.badCase($moduleName,
-         "between lines 38 and 51");
+         "between lines 58 and 71");
       }();
    });
-   var RemoveOp = {ctor: "RemoveOp"};
-   var ApplyOp = function (a) {
-      return {ctor: "ApplyOp"
+   var RemoveExp = {ctor: "RemoveExp"};
+   var ApplyExp = function (a) {
+      return {ctor: "ApplyExp"
              ,_0: a};
    };
    var view = F2(function (address,
    model) {
       return function () {
-         var mkButt = function (op) {
+         var mkButt = function (exp) {
             return A2($Html.button,
             _L.fromArray([A2($Html$Events.onClick,
             address,
-            ApplyOp(op))]),
-            _L.fromArray([$Html.text(A2($Basics._op["++"],
-            "Map ",
-            A2($Basics._op["++"],
-            op,
-            "1")))]));
+            ApplyExp(exp))]),
+            _L.fromArray([$Html.text($Basics.toString(exp))]));
          };
          var buttons = A2($List.map,
          mkButt,
-         _L.fromArray(["+","-"]));
+         _L.fromArray(["+","-","*"]));
          var f = F2(function (s,d) {
             return $Graphics$Collage.moveY(d * -30)($Graphics$Collage.toForm($Markdown.toElement($Basics.toString(s))));
          });
@@ -3821,14 +3824,14 @@ Elm.Math.make = function (_elm) {
    _elm.Math.values = {_op: _op
                       ,Model: Model
                       ,initM: initM
-                      ,ApplyOp: ApplyOp
-                      ,RemoveOp: RemoveOp
+                      ,ApplyExp: ApplyExp
+                      ,RemoveExp: RemoveExp
                       ,update: update
-                      ,initList: initList
-                      ,lastList: lastList
                       ,$eval: $eval
                       ,view: view
-                      ,main: main};
+                      ,main: main
+                      ,initList: initList
+                      ,lastList: lastList};
    return _elm.Math.values;
 };Elm.Maybe = Elm.Maybe || {};
 Elm.Maybe.make = function (_elm) {

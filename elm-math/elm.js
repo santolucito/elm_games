@@ -3732,30 +3732,13 @@ Elm.Math.make = function (_elm) {
    $moduleName = "Math",
    $Basics = Elm.Basics.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
-   $Markdown = Elm.Markdown.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp = Elm.StartApp.make(_elm);
-   var $eval = F2(function (op,l) {
-      return function () {
-         switch (op)
-         {case "+": return A2($List.map,
-              function (x) {
-                 return 1 + x;
-              },
-              l);
-            case "-": return A2($List.map,
-              function (x) {
-                 return 1 - x;
-              },
-              l);}
-         _U.badCase($moduleName,
-         "between lines 61 and 63");
-      }();
-   });
    var lastList = function (l) {
       return A2($Maybe.withDefault,
       _L.fromArray([]),
@@ -3764,11 +3747,40 @@ Elm.Math.make = function (_elm) {
    var initList = function (l) {
       return $List.reverse($Maybe.withDefault(l)($List.tail($List.reverse(l))));
    };
+   var $eval = F2(function (exp,
+   l) {
+      return function () {
+         switch (exp)
+         {case "*": return A2($List.map,
+              function (x) {
+                 return A2($Basics._op["%"],
+                 x * 2,
+                 4);
+              },
+              l);
+            case "+": return A2($List.map,
+              function (x) {
+                 return A2($Basics._op["%"],
+                 x + 1,
+                 4);
+              },
+              l);
+            case "-": return A2($List.map,
+              function (x) {
+                 return A2($Basics._op["%"],
+                 x - 1,
+                 4);
+              },
+              l);}
+         _U.badCase($moduleName,
+         "between lines 74 and 77");
+      }();
+   });
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "ApplyOp":
+         {case "ApplyExp":
             return function () {
                  var newL = $eval(action._0)(lastList(model.listSeq));
                  return _U.replace([["listSeq"
@@ -3777,45 +3789,56 @@ Elm.Math.make = function (_elm) {
                                     _L.fromArray([newL]))]],
                  model);
               }();
-            case "RemoveOp":
+            case "RemoveExp":
             return _U.replace([["listSeq"
                                ,initList(model.listSeq)]],
               model);}
          _U.badCase($moduleName,
-         "between lines 38 and 51");
+         "between lines 58 and 70");
       }();
    });
-   var RemoveOp = {ctor: "RemoveOp"};
-   var ApplyOp = function (a) {
-      return {ctor: "ApplyOp"
+   var RemoveExp = {ctor: "RemoveExp"};
+   var ApplyExp = function (a) {
+      return {ctor: "ApplyExp"
              ,_0: a};
    };
    var view = F2(function (address,
    model) {
       return function () {
-         var mkButt = function (op) {
+         var mkButt = function (exp) {
             return A2($Html.button,
             _L.fromArray([A2($Html$Events.onClick,
             address,
-            ApplyOp(op))]),
-            _L.fromArray([$Html.text(A2($Basics._op["++"],
-            "Map ",
-            A2($Basics._op["++"],
-            op,
-            "1")))]));
+            ApplyExp(exp))]),
+            _L.fromArray([$Html.text($Basics.toString(exp))]));
          };
          var buttons = A2($List.map,
          mkButt,
-         _L.fromArray(["+","-"]));
-         var f = F2(function (s,d) {
-            return $Graphics$Collage.moveY(d * -30)($Graphics$Collage.toForm($Markdown.toElement($Basics.toString(s))));
+         _L.fromArray(["+","-","*"]));
+         var toImgs = F2(function (i,x) {
+            return $Graphics$Collage.moveX(x * 50)($Graphics$Collage.toForm(A3($Graphics$Element.image,
+            42,
+            42,
+            A2($Basics._op["++"],
+            "imgs/",
+            A2($Basics._op["++"],
+            $Basics.toString(i),
+            ".png")))));
+         });
+         var f = F2(function (l,d) {
+            return $Graphics$Collage.moveY(d * -50)($Graphics$Collage.group(A3($List.map2,
+            toImgs,
+            l,
+            _L.range(0,100))));
          });
          var lists = _L.fromArray([$Html.fromElement(A2($Graphics$Collage.collage,
-         100,
-         300)(A3($List.map2,
+         300,
+         500)(_L.fromArray([$Graphics$Collage.move({ctor: "_Tuple2"
+                                                   ,_0: 200
+                                                   ,_1: -135})($Graphics$Collage.group(A3($List.map2,
          f,
          model.listSeq,
-         _L.range(0,100))))]);
+         _L.range(0,100))))])))]);
          return A2($Html.div,
          _L.fromArray([]),
          A2($List.append,buttons,lists));
@@ -3824,8 +3847,7 @@ Elm.Math.make = function (_elm) {
    var initM = {_: {}
                ,listSeq: _L.fromArray([_L.fromArray([1
                                                     ,2
-                                                    ,3])
-                                      ,_L.fromArray([2,3,4])])};
+                                                    ,3])])};
    var main = $StartApp.start({_: {}
                               ,model: initM
                               ,update: update
@@ -3836,14 +3858,14 @@ Elm.Math.make = function (_elm) {
    _elm.Math.values = {_op: _op
                       ,Model: Model
                       ,initM: initM
-                      ,ApplyOp: ApplyOp
-                      ,RemoveOp: RemoveOp
+                      ,ApplyExp: ApplyExp
+                      ,RemoveExp: RemoveExp
                       ,update: update
-                      ,initList: initList
-                      ,lastList: lastList
                       ,$eval: $eval
                       ,view: view
-                      ,main: main};
+                      ,main: main
+                      ,initList: initList
+                      ,lastList: lastList};
    return _elm.Math.values;
 };
 Elm.Maybe = Elm.Maybe || {};
