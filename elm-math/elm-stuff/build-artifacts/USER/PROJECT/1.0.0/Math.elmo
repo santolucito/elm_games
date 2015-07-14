@@ -36,70 +36,6 @@ Elm.Math.make = function (_elm) {
          return done ? win ? "winner" : "loser" : "";
       }();
    };
-   var $eval = F2(function (exp,
-   l) {
-      return function () {
-         switch (exp)
-         {case "*": return A2($List.map,
-              function (x) {
-                 return A2($Basics._op["%"],
-                 x * 2,
-                 4);
-              },
-              l);
-            case "+": return A2($List.map,
-              function (x) {
-                 return A2($Basics._op["%"],
-                 x + 1,
-                 4);
-              },
-              l);
-            case "-": return A2($List.map,
-              function (x) {
-                 return A2($Basics._op["%"],
-                 x - 1,
-                 4);
-              },
-              l);
-            case "d":
-            return A2($Basics._op["++"],
-              l,
-              l);
-            case "r":
-            return $List.reverse(l);
-            case "t": return function () {
-                 switch (l.ctor)
-                 {case "::": return l._1;
-                    case "[]":
-                    return _L.fromArray([]);}
-                 _U.badCase($moduleName,
-                 "between lines 80 and 83");
-              }();}
-         _U.badCase($moduleName,
-         "between lines 76 and 84");
-      }();
-   });
-   var update = F2(function (action,
-   model) {
-      return function () {
-         switch (action.ctor)
-         {case "ApplyExp":
-            return function () {
-                 var newL = $eval(action._0)(lastList(model.listSeq));
-                 return _U.replace([["listSeq"
-                                    ,A2($List.append,
-                                    model.listSeq,
-                                    _L.fromArray([newL]))]],
-                 model);
-              }();
-            case "RemoveExp":
-            return _U.replace([["listSeq"
-                               ,initList(model.listSeq)]],
-              model);}
-         _U.badCase($moduleName,
-         "between lines 60 and 72");
-      }();
-   });
    var RemoveExp = {ctor: "RemoveExp"};
    var ApplyExp = function (a) {
       return {ctor: "ApplyExp"
@@ -117,9 +53,9 @@ Elm.Math.make = function (_elm) {
          };
          var buttons = A2($List.map,
          mkButt,
-         _L.fromArray(["+"
+         _L.fromArray(["+h"
+                      ,"+"
                       ,"-"
-                      ,"*"
                       ,"t"
                       ,"d"
                       ,"r"]));
@@ -131,8 +67,12 @@ Elm.Math.make = function (_elm) {
             A2($Basics._op["++"],
             "imgs/",
             A2($Basics._op["++"],
-            $Basics.toString(i),
-            ".png")))));
+            $Basics.toString(i.rot),
+            A2($Basics._op["++"],
+            ".",
+            A2($Basics._op["++"],
+            $Basics.toString(i.color),
+            ".png")))))));
          });
          var f = F2(function (l,d) {
             return $Graphics$Collage.moveY(d * -50)($Graphics$Collage.group(A3($List.map2,
@@ -165,11 +105,111 @@ Elm.Math.make = function (_elm) {
          goal)));
       }();
    });
+   var mkI = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2": return {_: {}
+                                 ,color: _v0._1
+                                 ,rot: _v0._0};}
+         _U.badCase($moduleName,
+         "on line 30, column 15 to 33");
+      }();
+   };
    var initM = {_: {}
-               ,goal: _L.fromArray([1,2,3])
-               ,listSeq: _L.fromArray([_L.fromArray([1
-                                                    ,2
-                                                    ,3])])};
+               ,goal: A2($List.map,
+               mkI,
+               _L.fromArray([{ctor: "_Tuple2"
+                             ,_0: 1
+                             ,_1: 1}
+                            ,{ctor: "_Tuple2",_0: 1,_1: 2}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 1
+                             ,_1: 3}]))
+               ,listSeq: _L.fromArray([A2($List.map,
+               mkI,
+               _L.fromArray([{ctor: "_Tuple2"
+                             ,_0: 1
+                             ,_1: 1}
+                            ,{ctor: "_Tuple2",_0: 1,_1: 2}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 1
+                             ,_1: 3}]))])};
+   var $eval = F2(function (exp,
+   l) {
+      return function () {
+         switch (exp)
+         {case "+": return A2($List.map,
+              function (m) {
+                 return mkI({ctor: "_Tuple2"
+                            ,_0: A2($Basics._op["%"],
+                            m.rot + 1,
+                            4)
+                            ,_1: m.color});
+              },
+              l);
+            case "+h": return function () {
+                 switch (l.ctor)
+                 {case "::":
+                    return A2($List._op["::"],
+                      mkI({ctor: "_Tuple2"
+                          ,_0: A2($Basics._op["%"],
+                          l._0.rot + 1,
+                          4)
+                          ,_1: l._0.color}),
+                      l._1);
+                    case "[]":
+                    return _L.fromArray([]);}
+                 _U.badCase($moduleName,
+                 "between lines 66 and 69");
+              }();
+            case "-": return A2($List.map,
+              function (m) {
+                 return mkI({ctor: "_Tuple2"
+                            ,_0: A2($Basics._op["%"],
+                            m.rot - 1,
+                            4)
+                            ,_1: m.color});
+              },
+              l);
+            case "d":
+            return A2($Basics._op["++"],
+              l,
+              l);
+            case "r":
+            return $List.reverse(l);
+            case "t": return function () {
+                 switch (l.ctor)
+                 {case "::": return l._1;
+                    case "[]":
+                    return _L.fromArray([]);}
+                 _U.badCase($moduleName,
+                 "between lines 73 and 76");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 65 and 77");
+      }();
+   });
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "ApplyExp":
+            return function () {
+                 var newL = $eval(action._0)(lastList(model.listSeq));
+                 return _U.replace([["listSeq"
+                                    ,A2($List.append,
+                                    model.listSeq,
+                                    _L.fromArray([newL]))]],
+                 model);
+              }();
+            case "RemoveExp":
+            return _U.replace([["listSeq"
+                               ,initList(model.listSeq)]],
+              model);}
+         _U.badCase($moduleName,
+         "between lines 49 and 61");
+      }();
+   });
    var main = $StartApp.start({_: {}
                               ,model: initM
                               ,update: update
@@ -179,8 +219,15 @@ Elm.Math.make = function (_elm) {
              ,goal: b
              ,listSeq: a};
    });
+   var Item = F2(function (a,b) {
+      return {_: {}
+             ,color: b
+             ,rot: a};
+   });
    _elm.Math.values = {_op: _op
+                      ,Item: Item
                       ,Model: Model
+                      ,mkI: mkI
                       ,initM: initM
                       ,ApplyExp: ApplyExp
                       ,RemoveExp: RemoveExp

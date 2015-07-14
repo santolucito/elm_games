@@ -17,15 +17,22 @@ import StartApp
 
 --should be able to have any thinf that can be transformed
 -- Int, List a, Set a, Tree a
+type alias Item =
+    { rot : Int,
+      color : Int
+    } 
+
 type alias Model =
-    { listSeq : List ( List (Int)),
-      goal : List (Int)
+    { listSeq : List ( List (Item)),
+      goal : List (Item)
     }
+
+mkI (r,c) = { rot = r, color = c}
 
 initM : Model
 initM =
-    { listSeq = [[1,2,3]],
-      goal = [1,2,3]
+    { listSeq = [List.map mkI [(1,1),(1,2),(1,3)]],
+      goal = List.map mkI [(1,1),(1,2),(1,3)]
     }
 
 type alias Exp = String
@@ -53,12 +60,16 @@ update action model =
           listSeq <- initList model.listSeq
       }
 
-eval : Exp -> List (Int) -> List(Int)
+eval : Exp -> List (Item) -> List(Item)
 eval exp l = 
  case exp of
-   "+" -> List.map (\x->(x+1) % 4) l 
-   "-" -> List.map (\x->(x-1) % 4) l 
-   "*" -> List.map (\x->(x*2) % 4) l 
+   "+h" -> case l of
+            [] -> []
+            (x::xs) -> (mkI (((x.rot+1) % 4),x.color)) :: xs
+   "d" -> l++l
+   "+" -> List.map (\m->mkI (((m.rot+1) % 4),m.color)) l 
+   "-" -> List.map (\m->mkI (((m.rot-1) % 4),m.color)) l 
+   --"*" -> List.map (\m->(m*2) % 4) l 
    "t" -> case l of
            [] -> []
            (x::xs) -> xs
@@ -82,7 +93,7 @@ view address model =
     f l d = group (List.map2 toImgs l [0..100])
            |> moveY (d*(-50))
     toImgs i x = 
-      toForm (image 42 42 ("imgs/"++toString i++".png"))
+      toForm (image 42 42 ("imgs/"++toString i.rot++"."++toString i.color++".png"))
       |> moveX (x*50)
     lists = [fromElement <| collage 300 250 <| [move (-120,100) <| group <| List.map2 f model.listSeq [0..100]]]
     result = 
@@ -90,7 +101,7 @@ view address model =
     goal = [fromElement <| collage 300 100 <| [move (-120,75) <| f model.goal 1,move (-50,-25) <|result]]
     mkButt exp = button [onClick address (ApplyExp exp)] [ Html.text (toString <| exp) ]
     buttons =
-      List.map mkButt ["+","-","*", "t","d","r"]
+      List.map mkButt ["+h","+","-","t","d","r"]
   in 
     div []
       (buttons++ lists++ goal)
@@ -105,5 +116,5 @@ main =
 initList : List a -> List a
 initList l = (List.reverse <| (Maybe.withDefault l) <| List.tail <| List.reverse l)
 
-lastList : List (List (Int)) -> List (Int)
+lastList : List (List (Item)) -> List (Item)
 lastList l = Maybe.withDefault [] (List.head <| List.reverse l)
