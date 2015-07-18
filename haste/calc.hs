@@ -2,6 +2,8 @@ module Main where
 import Haste
 import Haste.DOM
 import Haste.Events
+--import Euterpea
+import Data.List
 
 main = withElems ["a","b","op","result"] calculator
 

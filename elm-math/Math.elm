@@ -93,7 +93,7 @@ view address model =
     f l d = group (List.map2 toImgs l [0..100])
            |> moveY (d*(-50))
     toImgs i x = 
-      toForm (image 42 42 ("imgs/"++toString i.rot++"."++toString i.color++".png"))
+      toForm (image 42 42 ("imgs/robots/fire."++toRotation i.rot++".png"))
       |> moveX (x*50)
     lists = [fromElement <| collage 300 250 <| [move (-120,100) <| group <| List.map2 f model.listSeq [0..100]]]
     result = 
@@ -102,9 +102,11 @@ view address model =
     mkButt exp = button [onClick address (ApplyExp exp)] [ Html.text (toString <| exp) ]
     buttons =
       List.map mkButt ["+h","+","-","t","d","r"]
+    
+    goal_word = [ Html.text "the goal config is below" ]
   in 
     div []
-      (buttons++ lists++ goal)
+      (buttons++ lists++ goal_word ++ goal)
 
 
 -- SIGNALS
@@ -118,3 +120,11 @@ initList l = (List.reverse <| (Maybe.withDefault l) <| List.tail <| List.reverse
 
 lastList : List (List (Item)) -> List (Item)
 lastList l = Maybe.withDefault [] (List.head <| List.reverse l)
+
+toRotation : Int -> String
+toRotation i =
+  case i of
+    0 -> "up"
+    1 -> "right"
+    2 -> "down"
+    3 -> "left"

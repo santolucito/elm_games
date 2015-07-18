@@ -19,6 +19,17 @@ Elm.Math.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp = Elm.StartApp.make(_elm);
+   var toRotation = function (i) {
+      return function () {
+         switch (i)
+         {case 0: return "up";
+            case 1: return "right";
+            case 2: return "down";
+            case 3: return "left";}
+         _U.badCase($moduleName,
+         "between lines 126 and 130");
+      }();
+   };
    var lastList = function (l) {
       return A2($Maybe.withDefault,
       _L.fromArray([]),
@@ -44,6 +55,7 @@ Elm.Math.make = function (_elm) {
    var view = F2(function (address,
    model) {
       return function () {
+         var goal_word = _L.fromArray([$Html.text("the goal config is below")]);
          var mkButt = function (exp) {
             return A2($Html.button,
             _L.fromArray([A2($Html$Events.onClick,
@@ -65,14 +77,10 @@ Elm.Math.make = function (_elm) {
             42,
             42,
             A2($Basics._op["++"],
-            "imgs/",
+            "imgs/robots/fire.",
             A2($Basics._op["++"],
-            $Basics.toString(i.rot),
-            A2($Basics._op["++"],
-            ".",
-            A2($Basics._op["++"],
-            $Basics.toString(i.color),
-            ".png")))))));
+            toRotation(i.rot),
+            ".png")))));
          });
          var f = F2(function (l,d) {
             return $Graphics$Collage.moveY(d * -50)($Graphics$Collage.group(A3($List.map2,
@@ -102,15 +110,17 @@ Elm.Math.make = function (_elm) {
          buttons,
          A2($Basics._op["++"],
          lists,
-         goal)));
+         A2($Basics._op["++"],
+         goal_word,
+         goal))));
       }();
    });
-   var mkI = function (_v0) {
+   var mkI = function (_v1) {
       return function () {
-         switch (_v0.ctor)
+         switch (_v1.ctor)
          {case "_Tuple2": return {_: {}
-                                 ,color: _v0._1
-                                 ,rot: _v0._0};}
+                                 ,color: _v1._1
+                                 ,rot: _v1._0};}
          _U.badCase($moduleName,
          "on line 30, column 15 to 33");
       }();
@@ -237,6 +247,7 @@ Elm.Math.make = function (_elm) {
                       ,view: view
                       ,main: main
                       ,initList: initList
-                      ,lastList: lastList};
+                      ,lastList: lastList
+                      ,toRotation: toRotation};
    return _elm.Math.values;
 };
