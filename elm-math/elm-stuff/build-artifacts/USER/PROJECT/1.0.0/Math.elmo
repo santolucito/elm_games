@@ -17,6 +17,7 @@ Elm.Math.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Markdown = Elm.Markdown.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp = Elm.StartApp.make(_elm);
    var toRotation = function (i) {
@@ -26,6 +27,17 @@ Elm.Math.make = function (_elm) {
             case 1: return "right";
             case 2: return "down";
             case 3: return "left";}
+         _U.badCase($moduleName,
+         "between lines 134 and 138");
+      }();
+   };
+   var toColor = function (i) {
+      return function () {
+         switch (i)
+         {case 0: return "red";
+            case 1: return "green";
+            case 2: return "blue";
+            case 3: return "black";}
          _U.badCase($moduleName,
          "between lines 126 and 130");
       }();
@@ -77,10 +89,14 @@ Elm.Math.make = function (_elm) {
             42,
             42,
             A2($Basics._op["++"],
-            "imgs/robots/fire.",
+            "imgs/robots/",
+            A2($Basics._op["++"],
+            toColor(i.color),
+            A2($Basics._op["++"],
+            ".",
             A2($Basics._op["++"],
             toRotation(i.rot),
-            ".png")))));
+            ".png")))))));
          });
          var f = F2(function (l,d) {
             return $Graphics$Collage.moveY(d * -50)($Graphics$Collage.group(A3($List.map2,
@@ -115,14 +131,14 @@ Elm.Math.make = function (_elm) {
          goal))));
       }();
    });
-   var mkI = function (_v1) {
+   var mkI = function (_v2) {
       return function () {
-         switch (_v1.ctor)
+         switch (_v2.ctor)
          {case "_Tuple2": return {_: {}
-                                 ,color: _v1._1
-                                 ,rot: _v1._0};}
+                                 ,color: _v2._1
+                                 ,rot: _v2._0};}
          _U.badCase($moduleName,
-         "on line 30, column 15 to 33");
+         "on line 30, column 13 to 34");
       }();
    };
    var initM = {_: {}
@@ -130,8 +146,8 @@ Elm.Math.make = function (_elm) {
                mkI,
                _L.fromArray([{ctor: "_Tuple2"
                              ,_0: 1
-                             ,_1: 1}
-                            ,{ctor: "_Tuple2",_0: 1,_1: 2}
+                             ,_1: 3}
+                            ,{ctor: "_Tuple2",_0: 2,_1: 2}
                             ,{ctor: "_Tuple2"
                              ,_0: 1
                              ,_1: 3}]))
@@ -248,6 +264,7 @@ Elm.Math.make = function (_elm) {
                       ,main: main
                       ,initList: initList
                       ,lastList: lastList
+                      ,toColor: toColor
                       ,toRotation: toRotation};
    return _elm.Math.values;
 };

@@ -32,7 +32,7 @@ mkI (r,c) = { rot = r, color = c}
 initM : Model
 initM =
     { listSeq = [List.map mkI [(1,1),(1,2),(1,3)]],
-      goal = List.map mkI [(1,1),(1,2),(1,3)]
+      goal = List.map mkI [(1,3),(2,2),(1,3)]
     }
 
 type alias Exp = String
@@ -93,7 +93,7 @@ view address model =
     f l d = group (List.map2 toImgs l [0..100])
            |> moveY (d*(-50))
     toImgs i x = 
-      toForm (image 42 42 ("imgs/robots/fire."++toRotation i.rot++".png"))
+      toForm (image 42 42 ("imgs/robots/"++toColor i.color++"."++toRotation i.rot++".png"))
       |> moveX (x*50)
     lists = [fromElement <| collage 300 250 <| [move (-120,100) <| group <| List.map2 f model.listSeq [0..100]]]
     result = 
@@ -120,6 +120,14 @@ initList l = (List.reverse <| (Maybe.withDefault l) <| List.tail <| List.reverse
 
 lastList : List (List (Item)) -> List (Item)
 lastList l = Maybe.withDefault [] (List.head <| List.reverse l)
+
+toColor : Int -> String
+toColor i =
+  case i of
+    0 -> "red"
+    1 -> "green"
+    2 -> "blue"
+    3 -> "black"
 
 toRotation : Int -> String
 toRotation i =
