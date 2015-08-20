@@ -22,7 +22,7 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
-        //Elm.fullscreen(Elm.Adventure);
+        Elm.fullscreen(Elm.Breakout);
     },
     // Bind Event Listeners
     //
