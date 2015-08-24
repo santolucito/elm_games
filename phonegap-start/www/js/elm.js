@@ -1,4 +1,97 @@
 var Elm = Elm || { Native: {} };
+Elm.Array = Elm.Array || {};
+Elm.Array.make = function (_elm) {
+   "use strict";
+   _elm.Array = _elm.Array || {};
+   if (_elm.Array.values)
+   return _elm.Array.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Array",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$Array = Elm.Native.Array.make(_elm);
+   var append = $Native$Array.append;
+   var length = $Native$Array.length;
+   var isEmpty = function (array) {
+      return _U.eq(length(array),
+      0);
+   };
+   var slice = $Native$Array.slice;
+   var set = $Native$Array.set;
+   var get = F2(function (i,
+   array) {
+      return _U.cmp(0,
+      i) < 1 && _U.cmp(i,
+      $Native$Array.length(array)) < 0 ? $Maybe.Just(A2($Native$Array.get,
+      i,
+      array)) : $Maybe.Nothing;
+   });
+   var push = $Native$Array.push;
+   var empty = $Native$Array.empty;
+   var filter = F2(function (isOkay,
+   arr) {
+      return function () {
+         var update = F2(function (x,
+         xs) {
+            return isOkay(x) ? A2($Native$Array.push,
+            x,
+            xs) : xs;
+         });
+         return A3($Native$Array.foldl,
+         update,
+         $Native$Array.empty,
+         arr);
+      }();
+   });
+   var foldr = $Native$Array.foldr;
+   var foldl = $Native$Array.foldl;
+   var indexedMap = $Native$Array.indexedMap;
+   var map = $Native$Array.map;
+   var toIndexedList = function (array) {
+      return A3($List.map2,
+      F2(function (v0,v1) {
+         return {ctor: "_Tuple2"
+                ,_0: v0
+                ,_1: v1};
+      }),
+      _L.range(0,
+      $Native$Array.length(array) - 1),
+      $Native$Array.toList(array));
+   };
+   var toList = $Native$Array.toList;
+   var fromList = $Native$Array.fromList;
+   var initialize = $Native$Array.initialize;
+   var repeat = F2(function (n,e) {
+      return A2(initialize,
+      n,
+      $Basics.always(e));
+   });
+   var Array = {ctor: "Array"};
+   _elm.Array.values = {_op: _op
+                       ,empty: empty
+                       ,repeat: repeat
+                       ,initialize: initialize
+                       ,fromList: fromList
+                       ,isEmpty: isEmpty
+                       ,length: length
+                       ,push: push
+                       ,append: append
+                       ,get: get
+                       ,set: set
+                       ,slice: slice
+                       ,toList: toList
+                       ,toIndexedList: toIndexedList
+                       ,map: map
+                       ,indexedMap: indexedMap
+                       ,filter: filter
+                       ,foldl: foldl
+                       ,foldr: foldr};
+   return _elm.Array.values;
+};
 Elm.Basics = Elm.Basics || {};
 Elm.Basics.make = function (_elm) {
    "use strict";
@@ -176,969 +269,6 @@ Elm.Basics.make = function (_elm) {
                         ,EQ: EQ
                         ,GT: GT};
    return _elm.Basics.values;
-};
-Elm.Breakout = Elm.Breakout || {};
-Elm.Breakout.make = function (_elm) {
-   "use strict";
-   _elm.Breakout = _elm.Breakout || {};
-   if (_elm.Breakout.values)
-   return _elm.Breakout.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Breakout",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $String = Elm.String.make(_elm),
-   $Text = Elm.Text.make(_elm),
-   $Time = Elm.Time.make(_elm),
-   $Touch = Elm.Touch.make(_elm),
-   $Window = Elm.Window.make(_elm);
-   var display = F2(function (background,
-   foreground) {
-      return $Graphics$Element.layers(_L.fromArray([background
-                                                   ,foreground]));
-   });
-   var noForm = $Graphics$Collage.filled(A4($Color.rgba,
-   0,
-   0,
-   0,
-   0))(A2($Graphics$Collage.rect,
-   0,
-   0));
-   var make = F3(function (color,
-   obj,
-   shape) {
-      return $Graphics$Collage.move({ctor: "_Tuple2"
-                                    ,_0: obj.x
-                                    ,_1: obj.y})($Graphics$Collage.filled(color)(shape));
-   });
-   var weightedAvg = F2(function (values,
-   weights) {
-      return function () {
-         var weightedVals = A3($List.map2,
-         F2(function (x,y) {
-            return x * y;
-         }),
-         values,
-         weights);
-         return $List.sum(weightedVals) / $List.sum(weights);
-      }();
-   });
-   var stepV = F3(function (v,
-   lowerCollision,
-   upperCollision) {
-      return lowerCollision ? $Basics.abs(v) : upperCollision ? 0 - $Basics.abs(v) : v;
-   });
-   var near = F3(function (k,c,n) {
-      return _U.cmp(n,
-      k - c) > -1 && _U.cmp(n,
-      k + c) < 1;
-   });
-   var within = F2(function (ball,
-   box) {
-      return A2(near,
-      box.x,
-      ball.r + box.w / 2)(ball.x) && A2(near,
-      box.y,
-      ball.r + box.h / 2)(ball.y);
-   });
-   var stepObj = F2(function (t,
-   _v0) {
-      return function () {
-         return _U.replace([["x"
-                            ,_v0.x + _v0.vx * t]
-                           ,["y",_v0.y + _v0.vy * t]],
-         _v0);
-      }();
-   });
-   var Game = F6(function (a,
-   b,
-   c,
-   d,
-   e,
-   f) {
-      return {_: {}
-             ,bricks: d
-             ,contacts: f
-             ,gameBall: b
-             ,player: c
-             ,spareBalls: e
-             ,state: a};
-   });
-   var brick = F4(function (x,
-   y,
-   w,
-   h) {
-      return {_: {}
-             ,h: h
-             ,w: w
-             ,x: x
-             ,y: y};
-   });
-   var player = F6(function (x,
-   y,
-   vx,
-   vy,
-   w,
-   h) {
-      return {_: {}
-             ,h: h
-             ,vx: vx
-             ,vy: vy
-             ,w: w
-             ,x: x
-             ,y: y};
-   });
-   var ball = F5(function (x,
-   y,
-   vx,
-   vy,
-   r) {
-      return {_: {}
-             ,r: r
-             ,vx: vx
-             ,vy: vy
-             ,x: x
-             ,y: y};
-   });
-   var Lost = {ctor: "Lost"};
-   var Won = {ctor: "Won"};
-   var Serve = {ctor: "Serve"};
-   var Play = {ctor: "Play"};
-   var Sized = F3(function (a,
-   b,
-   c) {
-      return _U.insert("h",
-      b,
-      _U.insert("w",a,c));
-   });
-   var Moving = F3(function (a,
-   b,
-   c) {
-      return _U.insert("vy",
-      b,
-      _U.insert("vx",a,c));
-   });
-   var Positioned = F3(function (a,
-   b,
-   c) {
-      return _U.insert("y",
-      b,
-      _U.insert("x",a,c));
-   });
-   var Input = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,delta: c
-             ,dir: b
-             ,space: a};
-   });
-   var maybe = F3(function (def,
-   f,
-   val) {
-      return A2($Maybe.withDefault,
-      def,
-      A2($Maybe.map,f,val));
-   });
-   var touchInQuadrant = F3(function (q,
-   _v2,
-   touch) {
-      return function () {
-         switch (_v2.ctor)
-         {case "_Tuple2":
-            return function () {
-                 var $ = function () {
-                    switch (q)
-                    {case 1: return {ctor: "_Tuple3"
-                                    ,_0: true
-                                    ,_1: F2(function (x,y) {
-                                       return _U.cmp(x,y) > 0;
-                                    })
-                                    ,_2: F2(function (x,y) {
-                                       return _U.cmp(x,y) < 0;
-                                    })};
-                       case 2: return {ctor: "_Tuple3"
-                                      ,_0: true
-                                      ,_1: F2(function (x,y) {
-                                         return _U.cmp(x,y) < 0;
-                                      })
-                                      ,_2: F2(function (x,y) {
-                                         return _U.cmp(x,y) < 0;
-                                      })};
-                       case 3: return {ctor: "_Tuple3"
-                                      ,_0: true
-                                      ,_1: F2(function (x,y) {
-                                         return _U.cmp(x,y) < 0;
-                                      })
-                                      ,_2: F2(function (x,y) {
-                                         return _U.cmp(x,y) > 0;
-                                      })};
-                       case 4: return {ctor: "_Tuple3"
-                                      ,_0: true
-                                      ,_1: F2(function (x,y) {
-                                         return _U.cmp(x,y) > 0;
-                                      })
-                                      ,_2: F2(function (x,y) {
-                                         return _U.cmp(x,y) > 0;
-                                      })};}
-                    return {ctor: "_Tuple3"
-                           ,_0: false
-                           ,_1: F2(function (x,y) {
-                              return _U.eq(x,y);
-                           })
-                           ,_2: F2(function (x,y) {
-                              return _U.eq(x,y);
-                           })};
-                 }(),
-                 qExists = $._0,
-                 xCmp = $._1,
-                 yCmp = $._2;
-                 var $ = {ctor: "_Tuple2"
-                         ,_0: $Basics.toFloat(touch.x)
-                         ,_1: $Basics.toFloat(touch.y)},
-                 x = $._0,
-                 y = $._1;
-                 var $ = {ctor: "_Tuple2"
-                         ,_0: $Basics.toFloat(_v2._0) / 2
-                         ,_1: $Basics.toFloat(_v2._1) / 2},
-                 centerX = $._0,
-                 centerY = $._1;
-                 return qExists ? $Maybe.Just(A2(xCmp,
-                 x,
-                 centerX) && A2(yCmp,
-                 y,
-                 centerY)) : $Maybe.Nothing;
-              }();}
-         _U.badCase($moduleName,
-         "between lines 89 and 99");
-      }();
-   });
-   var touchUpperRight = function ($) {
-      return F2(function (x,y) {
-         return function ($) {
-            return x(y($));
-         };
-      })(A2(maybe,
-      false,
-      $Basics.identity))(touchInQuadrant(1)($));
-   };
-   var touchUpperLeft = function ($) {
-      return F2(function (x,y) {
-         return function ($) {
-            return x(y($));
-         };
-      })(A2(maybe,
-      false,
-      $Basics.identity))(touchInQuadrant(2)($));
-   };
-   var touchUpper = F2(function (_v7,
-   t) {
-      return function () {
-         switch (_v7.ctor)
-         {case "_Tuple2":
-            return A2(touchUpperLeft,
-              {ctor: "_Tuple2"
-              ,_0: _v7._0
-              ,_1: _v7._1},
-              t) || A2(touchUpperRight,
-              {ctor: "_Tuple2"
-              ,_0: _v7._0
-              ,_1: _v7._1},
-              t);}
-         _U.badCase($moduleName,
-         "on line 119, column 22 to 71");
-      }();
-   });
-   var spaceSignal = function () {
-      var f = F3(function (space,
-      touches,
-      _v11) {
-         return function () {
-            switch (_v11.ctor)
-            {case "_Tuple2":
-               return space || A2($List.any,
-                 touchUpper({ctor: "_Tuple2"
-                            ,_0: _v11._0
-                            ,_1: _v11._1}),
-                 touches);}
-            _U.badCase($moduleName,
-            "on line 125, column 29 to 73");
-         }();
-      });
-      return A4($Signal.map3,
-      f,
-      $Keyboard.space,
-      $Touch.touches,
-      $Window.dimensions);
-   }();
-   var touchLowerLeft = function ($) {
-      return F2(function (x,y) {
-         return function ($) {
-            return x(y($));
-         };
-      })(A2(maybe,
-      false,
-      $Basics.identity))(touchInQuadrant(3)($));
-   };
-   var touchLowerRight = function ($) {
-      return F2(function (x,y) {
-         return function ($) {
-            return x(y($));
-         };
-      })(A2(maybe,
-      false,
-      $Basics.identity))(touchInQuadrant(4)($));
-   };
-   var dirSignal = function () {
-      var f = F3(function (arrows,
-      touches,
-      _v15) {
-         return function () {
-            switch (_v15.ctor)
-            {case "_Tuple2":
-               return function () {
-                    var touchRight = A2($List.any,
-                    touchLowerRight({ctor: "_Tuple2"
-                                    ,_0: _v15._0
-                                    ,_1: _v15._1}),
-                    touches) ? 1 : 0;
-                    var touchLeft = A2($List.any,
-                    touchLowerLeft({ctor: "_Tuple2"
-                                   ,_0: _v15._0
-                                   ,_1: _v15._1}),
-                    touches) ? 1 : 0;
-                    return arrows.x + touchRight - touchLeft;
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 135 and 139");
-         }();
-      });
-      return A4($Signal.map3,
-      f,
-      $Keyboard.arrows,
-      $Touch.touches,
-      $Window.dimensions);
-   }();
-   var quadrantCol = A4($Color.rgba,
-   0,
-   0,
-   0,
-   0.4);
-   var displayQuadrants = F2(function (_v19,
-   state) {
-      return function () {
-         switch (_v19.ctor)
-         {case "_Tuple2":
-            return function () {
-                 var grid = $Graphics$Collage.group(_L.fromArray([$Graphics$Collage.traced($Graphics$Collage.solid(quadrantCol))(_L.fromArray([{ctor: "_Tuple2"
-                                                                                                                                               ,_0: 0
-                                                                                                                                               ,_1: 0}
-                                                                                                                                              ,{ctor: "_Tuple2"
-                                                                                                                                               ,_0: 0
-                                                                                                                                               ,_1: (0 - _v19._1) / 2}]))
-                                                                 ,$Graphics$Collage.traced($Graphics$Collage.solid(quadrantCol))(_L.fromArray([{ctor: "_Tuple2"
-                                                                                                                                               ,_0: (0 - _v19._0) / 2
-                                                                                                                                               ,_1: 0}
-                                                                                                                                              ,{ctor: "_Tuple2"
-                                                                                                                                               ,_0: _v19._0 / 2
-                                                                                                                                               ,_1: 0}]))]));
-                 return _U.eq(state,
-                 Serve) ? grid : noForm;
-              }();}
-         _U.badCase($moduleName,
-         "between lines 368 and 374");
-      }();
-   });
-   var textBlue = A3($Color.rgb,
-   160,
-   160,
-   200);
-   var txt = function (f) {
-      return function ($) {
-         return $Graphics$Element.leftAligned(f($Text.monospace($Text.color(textBlue)($Text.fromString($)))));
-      };
-   };
-   var breakoutBlue = A3($Color.rgb,
-   60,
-   60,
-   100);
-   var endTextHeight = 24;
-   var brickColorFactor = 1.0e-2;
-   var brickColor = function (b) {
-      return A3($Color.hsl,
-      brickColorFactor * (b.x + b.y),
-      1,
-      0.5);
-   };
-   var lostMsg = "Serve to restart. ;)";
-   var wonMsg = "Congratulations! Serve to restart.";
-   var manualMsg = A2($Basics._op["++"],
-   "SPACE to serve, &larr; and &rarr; to move;",
-   " or just touch the quadrants");
-   var speedFactor = 1;
-   var pointsPerContact = -1;
-   var pointsPerBall = -10;
-   var pointsPerBrick = 100;
-   var brickCols = 7;
-   var brickRows = 6;
-   var startSpareBalls = 2;
-   var calcPoints = F3(function (bricksLeft,
-   spareBalls,
-   contacts) {
-      return function () {
-         var maxBricks = brickRows * brickCols;
-         var maxPoints = pointsPerBrick * maxBricks;
-         var bricksGone = maxBricks - bricksLeft;
-         var points = pointsPerBrick * bricksGone + pointsPerBall * (startSpareBalls - spareBalls) + pointsPerContact * contacts;
-         return {ctor: "_Tuple2"
-                ,_0: points
-                ,_1: maxPoints};
-      }();
-   });
-   var pointsText = F3(function (bricksLeft,
-   spareBalls,
-   contacts) {
-      return function () {
-         var $ = A3(calcPoints,
-         bricksLeft,
-         spareBalls,
-         contacts),
-         points = $._0,
-         maxPoints = $._1;
-         var maxPointsStrLen = $String.length($Basics.toString(maxPoints));
-         return A2($Basics._op["++"],
-         "points: ",
-         A2($String.padLeft,
-         maxPointsStrLen,
-         _U.chr(" "))($Basics.toString(points)));
-      }();
-   });
-   var ballRadius = 7;
-   var brickHeight = 10;
-   var brickWidth = 50;
-   var brickDistY = 33;
-   var brickDistX = 80;
-   var brickRow = function (y) {
-      return function () {
-         var xOff = $Basics.toFloat($Basics.ceiling((0 - brickCols) / 2)) * brickDistX;
-         return A2($List.map,
-         function (x) {
-            return A4(brick,
-            brickDistX * x + xOff,
-            y,
-            brickWidth,
-            brickHeight);
-         },
-         _L.range(0,brickCols - 1));
-      }();
-   };
-   var speedIncY = 1.02;
-   var speedIncX = 1.01;
-   var speedUp = function (_v23) {
-      return function () {
-         return _U.replace([["vx"
-                            ,speedIncX * _v23.vx]
-                           ,["vy",speedIncY * _v23.vy]],
-         _v23);
-      }();
-   };
-   var goBrickHits = F2(function (brick,
-   _v25) {
-      return function () {
-         switch (_v25.ctor)
-         {case "_Tuple2":
-            return function () {
-                 var hit = A2(within,
-                 _v25._0,
-                 brick);
-                 var bricks$ = hit ? _v25._1 : A2($List._op["::"],
-                 brick,
-                 _v25._1);
-                 var ball$ = hit ? speedUp(_U.replace([["vy"
-                                                       ,0 - _v25._0.vy]],
-                 _v25._0)) : _v25._0;
-                 return {ctor: "_Tuple2"
-                        ,_0: ball$
-                        ,_1: bricks$};
-              }();}
-         _U.badCase($moduleName,
-         "between lines 258 and 263");
-      }();
-   });
-   var serveSpeed = 200;
-   var traction = 0.55;
-   var stepServe = F2(function (_v29,
-   _v30) {
-      return function () {
-         return function () {
-            return function () {
-               var state$ = _v29.space ? Play : Serve;
-               var newBall = A5(ball,
-               _v30.player.x,
-               _v30.player.y + _v30.player.h / 2 + _v30.gameBall.r + 1,
-               traction * _v30.player.vx,
-               serveSpeed,
-               _v30.gameBall.r);
-               return _U.replace([["state"
-                                  ,state$]
-                                 ,["gameBall",newBall]],
-               _v30);
-            }();
-         }();
-      }();
-   });
-   var brake = 0.7;
-   var paddleHeight = 4;
-   var paddleWidths = 52;
-   var paddleSpeed = 110;
-   var framesPerSecond = 30;
-   var delta = $Signal.map(function (d) {
-      return speedFactor * d;
-   })(A2($Signal._op["<~"],
-   $Time.inSeconds,
-   $Time.fps(framesPerSecond)));
-   var input = A2($Signal.sampleOn,
-   delta,
-   A2($Signal._op["~"],
-   A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   Input,
-   spaceSignal),
-   dirSignal),
-   delta));
-   var $ = {ctor: "_Tuple2"
-           ,_0: 600
-           ,_1: 400},
-   gameWidth = $._0,
-   gameHeight = $._1;
-   var $ = {ctor: "_Tuple2"
-           ,_0: $Basics.toFloat(gameWidth) / 2
-           ,_1: $Basics.toFloat(gameHeight) / 2},
-   halfWidth = $._0,
-   halfHeight = $._1;
-   var msgTextPosY = 20 - halfHeight;
-   var pointsTextPos = {ctor: "_Tuple2"
-                       ,_0: 64 - halfWidth
-                       ,_1: halfHeight - 10};
-   var spareBallsTextPos = {ctor: "_Tuple2"
-                           ,_0: halfWidth - 69
-                           ,_1: halfHeight - 10};
-   var stepBall = F5(function (t,
-   _v33,
-   p,
-   bricks,
-   contacts) {
-      return function () {
-         return function () {
-            var hitCeiling = _U.cmp(_v33.y,
-            halfHeight - _v33.r) > 0;
-            var hitPlayer = A2(within,
-            _v33,
-            p);
-            var contacts$ = hitPlayer ? contacts + 1 : contacts;
-            var newVx = hitPlayer ? A2(weightedAvg,
-            _L.fromArray([p.vx,_v33.vx]),
-            _L.fromArray([traction
-                         ,1 - traction])) : A3(stepV,
-            _v33.vx,
-            _U.cmp(_v33.x,
-            _v33.r - halfWidth) < 0,
-            _U.cmp(_v33.x,
-            halfWidth - _v33.r) > 0);
-            var ball$ = A2(stepObj,
-            t,
-            _U.replace([["vx",newVx]
-                       ,["vy"
-                        ,A3(stepV,
-                        _v33.vy,
-                        hitPlayer,
-                        hitCeiling)]],
-            _v33));
-            return {ctor: "_Tuple2"
-                   ,_0: A3($List.foldr,
-                   goBrickHits,
-                   {ctor: "_Tuple2"
-                   ,_0: ball$
-                   ,_1: _L.fromArray([])},
-                   bricks)
-                   ,_1: contacts$};
-         }();
-      }();
-   });
-   var stepPlayer = F3(function (t,
-   dir,
-   p) {
-      return function () {
-         var p1 = A2(stepObj,
-         t,
-         _U.replace([["vx"
-                     ,p.vx * brake + $Basics.toFloat(dir) * paddleSpeed]],
-         p));
-         return _U.replace([["x"
-                            ,A3($Basics.clamp,
-                            p.w / 2 - halfWidth,
-                            halfWidth - p.w / 2,
-                            p1.x)]],
-         p1);
-      }();
-   });
-   var stepPlay = F2(function (_v35,
-   _v36) {
-      return function () {
-         return function () {
-            return function () {
-               var _ = A5(stepBall,
-               _v35.delta,
-               _v36.gameBall,
-               _v36.player,
-               _v36.bricks,
-               _v36.contacts);
-               var ball$ = function () {
-                  switch (_.ctor)
-                  {case "_Tuple2":
-                     switch (_._0.ctor)
-                       {case "_Tuple2":
-                          return _._0._0;}
-                       break;}
-                  _U.badCase($moduleName,
-                  "on line 313, column 7 to 53");
-               }();
-               var bricks$ = function () {
-                  switch (_.ctor)
-                  {case "_Tuple2":
-                     switch (_._0.ctor)
-                       {case "_Tuple2":
-                          return _._0._1;}
-                       break;}
-                  _U.badCase($moduleName,
-                  "on line 313, column 7 to 53");
-               }();
-               var contacts$ = function () {
-                  switch (_.ctor)
-                  {case "_Tuple2":
-                     switch (_._0.ctor)
-                       {case "_Tuple2": return _._1;}
-                       break;}
-                  _U.badCase($moduleName,
-                  "on line 313, column 7 to 53");
-               }();
-               var ballLost = _U.cmp(_v36.gameBall.y - _v36.gameBall.r,
-               0 - halfHeight) < 0;
-               var gameOver = ballLost && _U.eq(_v36.spareBalls,
-               0);
-               var spareBalls$ = ballLost ? _v36.spareBalls - 1 : _v36.spareBalls;
-               var state$ = gameOver ? Lost : ballLost ? Serve : $List.isEmpty(_v36.bricks) ? Won : Play;
-               return _U.replace([["state"
-                                  ,state$]
-                                 ,["gameBall",ball$]
-                                 ,["bricks",bricks$]
-                                 ,["spareBalls"
-                                  ,A2($Basics.max,0,spareBalls$)]
-                                 ,["contacts",contacts$]],
-               _v36);
-            }();
-         }();
-      }();
-   });
-   var paddleYPos = 40 - gameHeight / 2;
-   var defaultGame = {_: {}
-                     ,bricks: $List.concat($List.map(brickRow)(A2($List.map,
-                     F2(function (x,y) {
-                        return x * y;
-                     })(brickDistY),
-                     _L.range(0,brickRows - 1))))
-                     ,contacts: 0
-                     ,gameBall: A5(ball,
-                     0,
-                     paddleYPos + ballRadius,
-                     0,
-                     0,
-                     ballRadius)
-                     ,player: A6(player,
-                     0,
-                     paddleYPos,
-                     0,
-                     0,
-                     paddleWidths,
-                     paddleHeight)
-                     ,spareBalls: startSpareBalls
-                     ,state: Serve};
-   var stepGameOver = F2(function (_v54,
-   _v55) {
-      return function () {
-         return function () {
-            return _v54.space ? defaultGame : _v55;
-         }();
-      }();
-   });
-   var stepGame = F2(function (_v58,
-   _v59) {
-      return function () {
-         return function () {
-            return function () {
-               var func = _U.eq(_v59.state,
-               Play) ? stepPlay : _U.eq(_v59.state,
-               Serve) ? stepServe : stepGameOver;
-               return A2(func,
-               _v58,
-               _U.replace([["player"
-                           ,A3(stepPlayer,
-                           _v58.delta,
-                           _v58.dir,
-                           _v59.player)]],
-               _v59));
-            }();
-         }();
-      }();
-   });
-   var gameState = A3($Signal.foldp,
-   stepGame,
-   defaultGame,
-   input);
-   var bricksSignal = $Signal.dropRepeats(A2($Signal._op["<~"],
-   function (_) {
-      return _.bricks;
-   },
-   gameState));
-   var displayFullScreen = F2(function (_v62,
-   content) {
-      return function () {
-         switch (_v62.ctor)
-         {case "_Tuple2":
-            return function () {
-                 var gameScale = A2($Basics.min,
-                 $Basics.toFloat(_v62._0) / gameWidth,
-                 $Basics.toFloat(_v62._1) / gameHeight);
-                 return A3($Graphics$Collage.collage,
-                 _v62._0,
-                 _v62._1,
-                 _L.fromArray([$Graphics$Collage.scale(gameScale)(content)]));
-              }();}
-         _U.badCase($moduleName,
-         "between lines 447 and 450");
-      }();
-   });
-   var displayBricks = F2(function (_v66,
-   bricks) {
-      return function () {
-         switch (_v66.ctor)
-         {case "_Tuple2":
-            return function () {
-                 var gameScale = A2($Basics.min,
-                 $Basics.toFloat(_v66._0) / gameWidth,
-                 $Basics.toFloat(_v66._1) / gameHeight);
-                 var brickRects = $Graphics$Collage.group(A2($List.map,
-                 function (b) {
-                    return A2(make,
-                    brickColor(b),
-                    b)(A2($Graphics$Collage.rect,
-                    b.w,
-                    b.h));
-                 },
-                 bricks));
-                 var background = $Graphics$Collage.filled(breakoutBlue)(A2($Graphics$Collage.rect,
-                 gameWidth,
-                 gameHeight));
-                 return A2(displayFullScreen,
-                 {ctor: "_Tuple2"
-                 ,_0: _v66._0
-                 ,_1: _v66._1},
-                 $Graphics$Collage.group(_L.fromArray([background
-                                                      ,brickRects])));
-              }();}
-         _U.badCase($moduleName,
-         "between lines 402 and 408");
-      }();
-   });
-   var background = A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   displayBricks,
-   $Window.dimensions),
-   bricksSignal);
-   var displayForeground = F2(function (_v70,
-   _v71) {
-      return function () {
-         return function () {
-            switch (_v70.ctor)
-            {case "_Tuple2":
-               return function () {
-                    var quadrants = A2(displayQuadrants,
-                    {ctor: "_Tuple2"
-                    ,_0: gameWidth
-                    ,_1: gameHeight},
-                    _v71.state);
-                    var showEndText = _U.eq(_v71.state,
-                    Won) || _U.eq(_v71.state,Lost);
-                    var endMsg = function () {
-                       var _v76 = _v71.state;
-                       switch (_v76.ctor)
-                       {case "Lost": return lostMsg;
-                          case "Won": return wonMsg;}
-                       return "";
-                    }();
-                    var serveTextForm = _U.eq(_v71.state,
-                    Serve) ? $Graphics$Collage.move({ctor: "_Tuple2"
-                                                    ,_0: 0
-                                                    ,_1: msgTextPosY})($Graphics$Collage.toForm(A2(txt,
-                    $Basics.identity,
-                    manualMsg))) : noForm;
-                    var paddle = A2(make,
-                    $Color.darkGray,
-                    _v71.player)(A2($Graphics$Collage.rect,
-                    _v71.player.w,
-                    _v71.player.h));
-                    var ball = A2(make,
-                    $Color.lightGray,
-                    _v71.gameBall)($Graphics$Collage.circle(_v71.gameBall.r));
-                    var spareBallsMsg = A2($Basics._op["++"],
-                    "spare balls: ",
-                    $Basics.toString(_v71.spareBalls));
-                    var spareBallsForm = $Graphics$Collage.move(spareBallsTextPos)($Graphics$Collage.toForm(A2(txt,
-                    $Basics.identity,
-                    spareBallsMsg)));
-                    var pointsMsg = A3(pointsText,
-                    $List.length(_v71.bricks),
-                    _v71.spareBalls,
-                    _v71.contacts);
-                    var endText = A2(txt,
-                    $Text.height(endTextHeight),
-                    A2($Basics._op["++"],
-                    pointsMsg,
-                    A2($Basics._op["++"],
-                    "\n",
-                    endMsg)));
-                    var endTextForm = showEndText ? $Graphics$Collage.toForm(endText) : noForm;
-                    var pointsTextForm = $Graphics$Collage.move(pointsTextPos)($Graphics$Collage.toForm(A2(txt,
-                    $Basics.identity,
-                    pointsMsg)));
-                    return displayFullScreen({ctor: "_Tuple2"
-                                             ,_0: _v70._0
-                                             ,_1: _v70._1})($Graphics$Collage.group(_L.fromArray([paddle
-                                                                                                 ,ball
-                                                                                                 ,serveTextForm
-                                                                                                 ,pointsTextForm
-                                                                                                 ,spareBallsForm
-                                                                                                 ,endTextForm
-                                                                                                 ,quadrants])));
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 413 and 442");
-         }();
-      }();
-   });
-   var foreground = A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   displayForeground,
-   $Window.dimensions),
-   gameState);
-   var main = A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   display,
-   background),
-   foreground);
-   _elm.Breakout.values = {_op: _op
-                          ,gameHeight: gameHeight
-                          ,gameWidth: gameWidth
-                          ,halfHeight: halfHeight
-                          ,halfWidth: halfWidth
-                          ,framesPerSecond: framesPerSecond
-                          ,paddleSpeed: paddleSpeed
-                          ,paddleWidths: paddleWidths
-                          ,paddleHeight: paddleHeight
-                          ,brake: brake
-                          ,traction: traction
-                          ,serveSpeed: serveSpeed
-                          ,speedIncX: speedIncX
-                          ,speedIncY: speedIncY
-                          ,paddleYPos: paddleYPos
-                          ,brickDistX: brickDistX
-                          ,brickDistY: brickDistY
-                          ,brickWidth: brickWidth
-                          ,brickHeight: brickHeight
-                          ,ballRadius: ballRadius
-                          ,startSpareBalls: startSpareBalls
-                          ,brickRows: brickRows
-                          ,brickCols: brickCols
-                          ,pointsPerBrick: pointsPerBrick
-                          ,pointsPerBall: pointsPerBall
-                          ,pointsPerContact: pointsPerContact
-                          ,speedFactor: speedFactor
-                          ,manualMsg: manualMsg
-                          ,wonMsg: wonMsg
-                          ,lostMsg: lostMsg
-                          ,brickColorFactor: brickColorFactor
-                          ,endTextHeight: endTextHeight
-                          ,msgTextPosY: msgTextPosY
-                          ,pointsTextPos: pointsTextPos
-                          ,spareBallsTextPos: spareBallsTextPos
-                          ,breakoutBlue: breakoutBlue
-                          ,textBlue: textBlue
-                          ,quadrantCol: quadrantCol
-                          ,touchInQuadrant: touchInQuadrant
-                          ,maybe: maybe
-                          ,touchUpperRight: touchUpperRight
-                          ,touchUpperLeft: touchUpperLeft
-                          ,touchLowerLeft: touchLowerLeft
-                          ,touchLowerRight: touchLowerRight
-                          ,touchUpper: touchUpper
-                          ,spaceSignal: spaceSignal
-                          ,dirSignal: dirSignal
-                          ,delta: delta
-                          ,Input: Input
-                          ,input: input
-                          ,Positioned: Positioned
-                          ,Moving: Moving
-                          ,Sized: Sized
-                          ,Play: Play
-                          ,Serve: Serve
-                          ,Won: Won
-                          ,Lost: Lost
-                          ,ball: ball
-                          ,player: player
-                          ,brick: brick
-                          ,brickRow: brickRow
-                          ,Game: Game
-                          ,defaultGame: defaultGame
-                          ,stepObj: stepObj
-                          ,near: near
-                          ,within: within
-                          ,stepV: stepV
-                          ,speedUp: speedUp
-                          ,weightedAvg: weightedAvg
-                          ,goBrickHits: goBrickHits
-                          ,stepBall: stepBall
-                          ,stepPlayer: stepPlayer
-                          ,stepGame: stepGame
-                          ,stepPlay: stepPlay
-                          ,stepServe: stepServe
-                          ,stepGameOver: stepGameOver
-                          ,gameState: gameState
-                          ,txt: txt
-                          ,make: make
-                          ,brickColor: brickColor
-                          ,noForm: noForm
-                          ,displayQuadrants: displayQuadrants
-                          ,calcPoints: calcPoints
-                          ,pointsText: pointsText
-                          ,displayBricks: displayBricks
-                          ,displayForeground: displayForeground
-                          ,displayFullScreen: displayFullScreen
-                          ,bricksSignal: bricksSignal
-                          ,background: background
-                          ,foreground: foreground
-                          ,display: display
-                          ,main: main};
-   return _elm.Breakout.values;
 };
 Elm.Char = Elm.Char || {};
 Elm.Char.make = function (_elm) {
@@ -3558,6 +2688,381 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,Position: Position};
    return _elm.Graphics.Element.values;
 };
+Elm.Html = Elm.Html || {};
+Elm.Html.make = function (_elm) {
+   "use strict";
+   _elm.Html = _elm.Html || {};
+   if (_elm.Html.values)
+   return _elm.Html.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Html",
+   $Basics = Elm.Basics.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $VirtualDom = Elm.VirtualDom.make(_elm);
+   var fromElement = $VirtualDom.fromElement;
+   var toElement = $VirtualDom.toElement;
+   var text = $VirtualDom.text;
+   var node = $VirtualDom.node;
+   var body = node("body");
+   var section = node("section");
+   var nav = node("nav");
+   var article = node("article");
+   var aside = node("aside");
+   var h1 = node("h1");
+   var h2 = node("h2");
+   var h3 = node("h3");
+   var h4 = node("h4");
+   var h5 = node("h5");
+   var h6 = node("h6");
+   var header = node("header");
+   var footer = node("footer");
+   var address = node("address");
+   var main$ = node("main");
+   var p = node("p");
+   var hr = node("hr");
+   var pre = node("pre");
+   var blockquote = node("blockquote");
+   var ol = node("ol");
+   var ul = node("ul");
+   var li = node("li");
+   var dl = node("dl");
+   var dt = node("dt");
+   var dd = node("dd");
+   var figure = node("figure");
+   var figcaption = node("figcaption");
+   var div = node("div");
+   var a = node("a");
+   var em = node("em");
+   var strong = node("strong");
+   var small = node("small");
+   var s = node("s");
+   var cite = node("cite");
+   var q = node("q");
+   var dfn = node("dfn");
+   var abbr = node("abbr");
+   var time = node("time");
+   var code = node("code");
+   var $var = node("var");
+   var samp = node("samp");
+   var kbd = node("kbd");
+   var sub = node("sub");
+   var sup = node("sup");
+   var i = node("i");
+   var b = node("b");
+   var u = node("u");
+   var mark = node("mark");
+   var ruby = node("ruby");
+   var rt = node("rt");
+   var rp = node("rp");
+   var bdi = node("bdi");
+   var bdo = node("bdo");
+   var span = node("span");
+   var br = node("br");
+   var wbr = node("wbr");
+   var ins = node("ins");
+   var del = node("del");
+   var img = node("img");
+   var iframe = node("iframe");
+   var embed = node("embed");
+   var object = node("object");
+   var param = node("param");
+   var video = node("video");
+   var audio = node("audio");
+   var source = node("source");
+   var track = node("track");
+   var canvas = node("canvas");
+   var svg = node("svg");
+   var math = node("math");
+   var table = node("table");
+   var caption = node("caption");
+   var colgroup = node("colgroup");
+   var col = node("col");
+   var tbody = node("tbody");
+   var thead = node("thead");
+   var tfoot = node("tfoot");
+   var tr = node("tr");
+   var td = node("td");
+   var th = node("th");
+   var form = node("form");
+   var fieldset = node("fieldset");
+   var legend = node("legend");
+   var label = node("label");
+   var input = node("input");
+   var button = node("button");
+   var select = node("select");
+   var datalist = node("datalist");
+   var optgroup = node("optgroup");
+   var option = node("option");
+   var textarea = node("textarea");
+   var keygen = node("keygen");
+   var output = node("output");
+   var progress = node("progress");
+   var meter = node("meter");
+   var details = node("details");
+   var summary = node("summary");
+   var menuitem = node("menuitem");
+   var menu = node("menu");
+   _elm.Html.values = {_op: _op
+                      ,node: node
+                      ,text: text
+                      ,toElement: toElement
+                      ,fromElement: fromElement
+                      ,body: body
+                      ,section: section
+                      ,nav: nav
+                      ,article: article
+                      ,aside: aside
+                      ,h1: h1
+                      ,h2: h2
+                      ,h3: h3
+                      ,h4: h4
+                      ,h5: h5
+                      ,h6: h6
+                      ,header: header
+                      ,footer: footer
+                      ,address: address
+                      ,main$: main$
+                      ,p: p
+                      ,hr: hr
+                      ,pre: pre
+                      ,blockquote: blockquote
+                      ,ol: ol
+                      ,ul: ul
+                      ,li: li
+                      ,dl: dl
+                      ,dt: dt
+                      ,dd: dd
+                      ,figure: figure
+                      ,figcaption: figcaption
+                      ,div: div
+                      ,a: a
+                      ,em: em
+                      ,strong: strong
+                      ,small: small
+                      ,s: s
+                      ,cite: cite
+                      ,q: q
+                      ,dfn: dfn
+                      ,abbr: abbr
+                      ,time: time
+                      ,code: code
+                      ,$var: $var
+                      ,samp: samp
+                      ,kbd: kbd
+                      ,sub: sub
+                      ,sup: sup
+                      ,i: i
+                      ,b: b
+                      ,u: u
+                      ,mark: mark
+                      ,ruby: ruby
+                      ,rt: rt
+                      ,rp: rp
+                      ,bdi: bdi
+                      ,bdo: bdo
+                      ,span: span
+                      ,br: br
+                      ,wbr: wbr
+                      ,ins: ins
+                      ,del: del
+                      ,img: img
+                      ,iframe: iframe
+                      ,embed: embed
+                      ,object: object
+                      ,param: param
+                      ,video: video
+                      ,audio: audio
+                      ,source: source
+                      ,track: track
+                      ,canvas: canvas
+                      ,svg: svg
+                      ,math: math
+                      ,table: table
+                      ,caption: caption
+                      ,colgroup: colgroup
+                      ,col: col
+                      ,tbody: tbody
+                      ,thead: thead
+                      ,tfoot: tfoot
+                      ,tr: tr
+                      ,td: td
+                      ,th: th
+                      ,form: form
+                      ,fieldset: fieldset
+                      ,legend: legend
+                      ,label: label
+                      ,input: input
+                      ,button: button
+                      ,select: select
+                      ,datalist: datalist
+                      ,optgroup: optgroup
+                      ,option: option
+                      ,textarea: textarea
+                      ,keygen: keygen
+                      ,output: output
+                      ,progress: progress
+                      ,meter: meter
+                      ,details: details
+                      ,summary: summary
+                      ,menuitem: menuitem
+                      ,menu: menu};
+   return _elm.Html.values;
+};
+Elm.Json = Elm.Json || {};
+Elm.Json.Decode = Elm.Json.Decode || {};
+Elm.Json.Decode.make = function (_elm) {
+   "use strict";
+   _elm.Json = _elm.Json || {};
+   _elm.Json.Decode = _elm.Json.Decode || {};
+   if (_elm.Json.Decode.values)
+   return _elm.Json.Decode.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Json.Decode",
+   $Array = Elm.Array.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $Json$Encode = Elm.Json.Encode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$Json = Elm.Native.Json.make(_elm),
+   $Result = Elm.Result.make(_elm);
+   var tuple8 = $Native$Json.decodeTuple8;
+   var tuple7 = $Native$Json.decodeTuple7;
+   var tuple6 = $Native$Json.decodeTuple6;
+   var tuple5 = $Native$Json.decodeTuple5;
+   var tuple4 = $Native$Json.decodeTuple4;
+   var tuple3 = $Native$Json.decodeTuple3;
+   var tuple2 = $Native$Json.decodeTuple2;
+   var tuple1 = $Native$Json.decodeTuple1;
+   var succeed = $Native$Json.succeed;
+   var fail = $Native$Json.fail;
+   var andThen = $Native$Json.andThen;
+   var customDecoder = $Native$Json.customDecoder;
+   var decodeValue = $Native$Json.runDecoderValue;
+   var value = $Native$Json.decodeValue;
+   var maybe = $Native$Json.decodeMaybe;
+   var $null = $Native$Json.decodeNull;
+   var array = $Native$Json.decodeArray;
+   var list = $Native$Json.decodeList;
+   var bool = $Native$Json.decodeBool;
+   var $int = $Native$Json.decodeInt;
+   var $float = $Native$Json.decodeFloat;
+   var string = $Native$Json.decodeString;
+   var oneOf = $Native$Json.oneOf;
+   var keyValuePairs = $Native$Json.decodeKeyValuePairs;
+   var object8 = $Native$Json.decodeObject8;
+   var object7 = $Native$Json.decodeObject7;
+   var object6 = $Native$Json.decodeObject6;
+   var object5 = $Native$Json.decodeObject5;
+   var object4 = $Native$Json.decodeObject4;
+   var object3 = $Native$Json.decodeObject3;
+   var object2 = $Native$Json.decodeObject2;
+   var object1 = $Native$Json.decodeObject1;
+   _op[":="] = $Native$Json.decodeField;
+   var at = F2(function (fields,
+   decoder) {
+      return A3($List.foldr,
+      F2(function (x,y) {
+         return A2(_op[":="],x,y);
+      }),
+      decoder,
+      fields);
+   });
+   var decodeString = $Native$Json.runDecoderString;
+   var map = $Native$Json.decodeObject1;
+   var dict = function (decoder) {
+      return A2(map,
+      $Dict.fromList,
+      keyValuePairs(decoder));
+   };
+   var Decoder = {ctor: "Decoder"};
+   _elm.Json.Decode.values = {_op: _op
+                             ,decodeString: decodeString
+                             ,decodeValue: decodeValue
+                             ,string: string
+                             ,$int: $int
+                             ,$float: $float
+                             ,bool: bool
+                             ,$null: $null
+                             ,list: list
+                             ,array: array
+                             ,tuple1: tuple1
+                             ,tuple2: tuple2
+                             ,tuple3: tuple3
+                             ,tuple4: tuple4
+                             ,tuple5: tuple5
+                             ,tuple6: tuple6
+                             ,tuple7: tuple7
+                             ,tuple8: tuple8
+                             ,at: at
+                             ,object1: object1
+                             ,object2: object2
+                             ,object3: object3
+                             ,object4: object4
+                             ,object5: object5
+                             ,object6: object6
+                             ,object7: object7
+                             ,object8: object8
+                             ,keyValuePairs: keyValuePairs
+                             ,dict: dict
+                             ,maybe: maybe
+                             ,oneOf: oneOf
+                             ,map: map
+                             ,fail: fail
+                             ,succeed: succeed
+                             ,andThen: andThen
+                             ,value: value
+                             ,customDecoder: customDecoder
+                             ,Decoder: Decoder};
+   return _elm.Json.Decode.values;
+};
+Elm.Json = Elm.Json || {};
+Elm.Json.Encode = Elm.Json.Encode || {};
+Elm.Json.Encode.make = function (_elm) {
+   "use strict";
+   _elm.Json = _elm.Json || {};
+   _elm.Json.Encode = _elm.Json.Encode || {};
+   if (_elm.Json.Encode.values)
+   return _elm.Json.Encode.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Json.Encode",
+   $Array = Elm.Array.make(_elm),
+   $Native$Json = Elm.Native.Json.make(_elm);
+   var list = $Native$Json.encodeList;
+   var array = $Native$Json.encodeArray;
+   var object = $Native$Json.encodeObject;
+   var $null = $Native$Json.encodeNull;
+   var bool = $Native$Json.identity;
+   var $float = $Native$Json.identity;
+   var $int = $Native$Json.identity;
+   var string = $Native$Json.identity;
+   var encode = $Native$Json.encode;
+   var Value = {ctor: "Value"};
+   _elm.Json.Encode.values = {_op: _op
+                             ,encode: encode
+                             ,string: string
+                             ,$int: $int
+                             ,$float: $float
+                             ,bool: bool
+                             ,$null: $null
+                             ,list: list
+                             ,array: array
+                             ,object: object
+                             ,Value: Value};
+   return _elm.Json.Encode.values;
+};
 Elm.Keyboard = Elm.Keyboard || {};
 Elm.Keyboard.make = function (_elm) {
    "use strict";
@@ -4077,6 +3582,410 @@ Elm.List.make = function (_elm) {
                       ,sortWith: sortWith};
    return _elm.List.values;
 };
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Main",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Markdown = Elm.Markdown.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var make = F2(function (obj,
+   shape) {
+      return $Graphics$Collage.move({ctor: "_Tuple2"
+                                    ,_0: obj.x
+                                    ,_1: obj.y})($Graphics$Collage.filled($Color.white)(shape));
+   });
+   var stepObj = F2(function (delta,
+   _v0) {
+      return function () {
+         return _U.replace([["x"
+                            ,_v0.x + _v0.vx * delta]
+                           ,["y",_v0.y + _v0.vy * delta]],
+         _v0);
+      }();
+   });
+   var stepV = F3(function (v,
+   lowerCollision,
+   upperCollision) {
+      return lowerCollision ? $Basics.abs(v) : upperCollision ? 0 - $Basics.abs(v) : v;
+   });
+   var near = F3(function (k,c,n) {
+      return _U.cmp(n,
+      k - c) > -1 && _U.cmp(n,
+      k + c) < 1;
+   });
+   var within = F2(function (ball,
+   box) {
+      return A2(near,
+      box.x,
+      ball.r + box.w / 2)(ball.x) && A2(near,
+      box.y,
+      ball.r + box.h / 2)(ball.y);
+   });
+   var goBlockHits = F2(function (block,
+   _v2) {
+      return function () {
+         switch (_v2.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var hit = A2(within,
+                 _v2._0,
+                 block);
+                 var blocks$ = hit ? _v2._1 : A2($List._op["::"],
+                 block,
+                 _v2._1);
+                 var ball$ = hit ? _U.replace([["vy"
+                                               ,0 - _v2._0.vy]],
+                 _v2._0) : _v2._0;
+                 return {ctor: "_Tuple2"
+                        ,_0: ball$
+                        ,_1: blocks$};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 107 and 112");
+      }();
+   });
+   var GameState = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,ball: a
+             ,blocks: c
+             ,fps: d
+             ,player: b};
+   });
+   var $ = {ctor: "_Tuple2"
+           ,_0: 40
+           ,_1: 20},
+   blockWidth = $._0,
+   blockHeight = $._1;
+   var block = F4(function (x,
+   y,
+   w,
+   h) {
+      return {_: {}
+             ,h: h
+             ,w: w
+             ,x: x
+             ,y: y};
+   });
+   var Block = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,h: d
+             ,w: c
+             ,x: a
+             ,y: b};
+   });
+   var Player = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,h: f
+             ,vx: c
+             ,vy: d
+             ,w: e
+             ,x: a
+             ,y: b};
+   });
+   var Ball = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,r: e
+             ,vx: c
+             ,vy: d
+             ,x: a
+             ,y: b};
+   });
+   var $ = {ctor: "_Tuple2"
+           ,_0: 200
+           ,_1: 300},
+   halfWidth = $._0,
+   halfHeight = $._1;
+   var defaultGame = {_: {}
+                     ,ball: {_: {}
+                            ,r: 8
+                            ,vx: 200
+                            ,vy: 200
+                            ,x: 0
+                            ,y: 0}
+                     ,blocks: A2($List.map,
+                     function (x) {
+                        return A4(block,
+                        blockWidth * 2 * x,
+                        halfHeight / 2,
+                        blockWidth,
+                        blockHeight);
+                     },
+                     _L.range(-2,2))
+                     ,fps: 0
+                     ,player: {_: {}
+                              ,h: 10
+                              ,vx: 0
+                              ,vy: 0
+                              ,w: 40
+                              ,x: 0
+                              ,y: 20 - halfHeight}};
+   var stepPlayer = F3(function (delta,
+   dir,
+   player) {
+      return function () {
+         var player$ = A2(stepObj,
+         delta,
+         _U.replace([["vx"
+                     ,$Basics.toFloat(dir) * 200]],
+         player));
+         return _U.replace([["x"
+                            ,A3($Basics.clamp,
+                            22 - halfWidth,
+                            halfWidth - 22,
+                            player$.x)]],
+         player$);
+      }();
+   });
+   var stepBall = F4(function (delta,
+   _v6,
+   player,
+   blocks) {
+      return function () {
+         return function () {
+            var hitCeiling = _U.cmp(_v6.y,
+            halfHeight - _v6.r) > 0;
+            var hitPlayer = A2(within,
+            _v6,
+            player);
+            var ball$ = A2(stepObj,
+            delta,
+            _U.replace([["vx"
+                        ,A3(stepV,
+                        _v6.vx,
+                        _U.cmp(_v6.x,
+                        _v6.r - halfWidth) < 0,
+                        _U.cmp(_v6.x,
+                        halfWidth - _v6.r) > 0)]
+                       ,["vy"
+                        ,A3(stepV,
+                        _v6.vy,
+                        hitPlayer,
+                        hitCeiling)]],
+            _v6));
+            return A3($List.foldr,
+            goBlockHits,
+            {ctor: "_Tuple2"
+            ,_0: ball$
+            ,_1: _L.fromArray([])},
+            blocks);
+         }();
+      }();
+   });
+   var stepGame = F2(function (_v8,
+   _v9) {
+      return function () {
+         return function () {
+            return function () {
+               var player$ = A3(stepPlayer,
+               _v8.delta,
+               _v8.userInput.dir,
+               _v9.player);
+               var $ = A4(stepBall,
+               _v8.delta,
+               _v9.ball,
+               _v9.player,
+               _v9.blocks),
+               ball$ = $._0,
+               blocks$ = $._1;
+               return _U.replace([["ball"
+                                  ,ball$]
+                                 ,["blocks",blocks$]
+                                 ,["player",player$]
+                                 ,["fps",_v8.delta]],
+               _v9);
+            }();
+         }();
+      }();
+   });
+   var $ = {ctor: "_Tuple2"
+           ,_0: 400
+           ,_1: 600},
+   gameWidth = $._0,
+   gameHeight = $._1;
+   var display = F2(function (_v12,
+   _v13) {
+      return function () {
+         return function () {
+            switch (_v12.ctor)
+            {case "_Tuple2":
+               return A3($Graphics$Element.container,
+                 _v12._0,
+                 _v12._1,
+                 $Graphics$Element.middle)(A2($Graphics$Collage.collage,
+                 gameWidth,
+                 gameHeight)(_L.fromArray([$Graphics$Collage.filled($Color.green)(A2($Graphics$Collage.rect,
+                                          gameWidth,
+                                          gameHeight))
+                                          ,make(_v13.ball)($Graphics$Collage.circle(_v13.ball.r))
+                                          ,make(_v13.player)(A2($Graphics$Collage.rect,
+                                          _v13.player.w,
+                                          _v13.player.h))
+                                          ,$Graphics$Collage.group(A2($List.map,
+                                          function (b) {
+                                             return make(b)(A2($Graphics$Collage.rect,
+                                             b.w,
+                                             b.h));
+                                          },
+                                          _v13.blocks))
+                                          ,$Graphics$Collage.toForm($Markdown.toElement($Basics.toString(1 / _v13.fps)))])));}
+            _U.badCase($moduleName,
+            "between lines 138 and 148");
+         }();
+      }();
+   });
+   var Input = F2(function (a,b) {
+      return {_: {}
+             ,delta: a
+             ,userInput: b};
+   });
+   var UserInput = function (a) {
+      return {_: {},dir: a};
+   };
+   var userInput = A2($Signal._op["<~"],
+   UserInput,
+   A2($Signal._op["<~"],
+   function (_) {
+      return _.x;
+   },
+   $Keyboard.arrows));
+   var input = function () {
+      var delta = A2($Signal._op["<~"],
+      $Time.inSeconds,
+      $Time.fps(60));
+      return A2($Signal.sampleOn,
+      delta,
+      A2($Signal._op["~"],
+      A2($Signal._op["<~"],
+      Input,
+      delta),
+      userInput));
+   }();
+   var gameState = A3($Signal.foldp,
+   stepGame,
+   defaultGame,
+   input);
+   var main = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   display,
+   $Window.dimensions),
+   gameState);
+   _elm.Main.values = {_op: _op
+                      ,UserInput: UserInput
+                      ,userInput: userInput
+                      ,Input: Input
+                      ,gameHeight: gameHeight
+                      ,gameWidth: gameWidth
+                      ,halfHeight: halfHeight
+                      ,halfWidth: halfWidth
+                      ,Ball: Ball
+                      ,Player: Player
+                      ,Block: Block
+                      ,block: block
+                      ,blockHeight: blockHeight
+                      ,blockWidth: blockWidth
+                      ,GameState: GameState
+                      ,defaultGame: defaultGame
+                      ,stepGame: stepGame
+                      ,stepPlayer: stepPlayer
+                      ,stepBall: stepBall
+                      ,goBlockHits: goBlockHits
+                      ,near: near
+                      ,within: within
+                      ,stepV: stepV
+                      ,stepObj: stepObj
+                      ,display: display
+                      ,make: make
+                      ,input: input
+                      ,gameState: gameState
+                      ,main: main};
+   return _elm.Main.values;
+};
+Elm.Markdown = Elm.Markdown || {};
+Elm.Markdown.make = function (_elm) {
+   "use strict";
+   _elm.Markdown = _elm.Markdown || {};
+   if (_elm.Markdown.values)
+   return _elm.Markdown.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Markdown",
+   $Basics = Elm.Basics.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$Markdown = Elm.Native.Markdown.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var toElementWith = $Native$Markdown.toElementWith;
+   var toHtmlWith = $Native$Markdown.toHtmlWith;
+   var defaultOptions = {_: {}
+                        ,githubFlavored: $Maybe.Just({_: {}
+                                                     ,breaks: false
+                                                     ,tables: false})
+                        ,sanitize: false
+                        ,smartypants: false};
+   var Options = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,githubFlavored: a
+             ,sanitize: b
+             ,smartypants: c};
+   });
+   var toElement = function (string) {
+      return A2($Native$Markdown.toElementWith,
+      defaultOptions,
+      string);
+   };
+   var toHtml = function (string) {
+      return A2($Native$Markdown.toHtmlWith,
+      defaultOptions,
+      string);
+   };
+   _elm.Markdown.values = {_op: _op
+                          ,toHtml: toHtml
+                          ,toElement: toElement
+                          ,Options: Options
+                          ,defaultOptions: defaultOptions
+                          ,toHtmlWith: toHtmlWith
+                          ,toElementWith: toElementWith};
+   return _elm.Markdown.values;
+};
 Elm.Maybe = Elm.Maybe || {};
 Elm.Maybe.make = function (_elm) {
    "use strict";
@@ -4150,6 +4059,988 @@ Elm.Maybe.make = function (_elm) {
                        ,Nothing: Nothing};
    return _elm.Maybe.values;
 };
+Elm.Native.Array = {};
+Elm.Native.Array.make = function(localRuntime) {
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Array = localRuntime.Native.Array || {};
+	if (localRuntime.Native.Array.values)
+	{
+		return localRuntime.Native.Array.values;
+	}
+	if ('values' in Elm.Native.Array)
+	{
+		return localRuntime.Native.Array.values = Elm.Native.Array.values;
+	}
+
+	var List = Elm.Native.List.make(localRuntime);
+
+	// A RRB-Tree has two distinct data types.
+	// Leaf -> "height"  is always 0
+	//         "table"   is an array of elements
+	// Node -> "height"  is always greater than 0
+	//         "table"   is an array of child nodes
+	//         "lengths" is an array of accumulated lengths of the child nodes
+
+	// M is the maximal table size. 32 seems fast. E is the allowed increase
+	// of search steps when concatting to find an index. Lower values will
+	// decrease balancing, but will increase search steps.
+	var M = 32;
+	var E = 2;
+
+	// An empty array.
+	var empty = {
+		ctor: "_Array",
+		height: 0,
+		table: new Array()
+	};
+
+
+	function get(i, array)
+	{
+		if (i < 0 || i >= length(array))
+		{
+			throw new Error(
+				"Index " + i + " is out of range. Check the length of " +
+				"your array first or use getMaybe or getWithDefault.");
+		}
+		return unsafeGet(i, array);
+	}
+
+
+	function unsafeGet(i, array)
+	{
+		for (var x = array.height; x > 0; x--)
+		{
+			var slot = i >> (x * 5);
+			while (array.lengths[slot] <= i)
+			{
+				slot++;
+			}
+			if (slot > 0)
+			{
+				i -= array.lengths[slot - 1];
+			}
+			array = array.table[slot];
+		}
+		return array.table[i];
+	}
+
+
+	// Sets the value at the index i. Only the nodes leading to i will get
+	// copied and updated.
+	function set(i, item, array)
+	{
+		if (i < 0 || length(array) <= i)
+		{
+			return array;
+		}
+		return unsafeSet(i, item, array);
+	}
+
+
+	function unsafeSet(i, item, array)
+	{
+		array = nodeCopy(array);
+
+		if (array.height == 0)
+		{
+			array.table[i] = item;
+		}
+		else
+		{
+			var slot = getSlot(i, array);
+			if (slot > 0)
+			{
+				i -= array.lengths[slot - 1];
+			}
+			array.table[slot] = unsafeSet(i, item, array.table[slot]);
+		}
+		return array;
+	}
+
+
+	function initialize(len, f)
+	{
+		if (len == 0)
+		{
+			return empty;
+		}
+		var h = Math.floor( Math.log(len) / Math.log(M) );
+		return initialize_(f, h, 0, len);
+	}
+
+	function initialize_(f, h, from, to)
+	{
+		if (h == 0)
+		{
+			var table = new Array((to - from) % (M + 1));
+			for (var i = 0; i < table.length; i++)
+			{
+			  table[i] = f(from + i);
+			}
+			return {
+				ctor: "_Array",
+				height: 0,
+				table: table
+			};
+		}
+
+		var step = Math.pow(M, h);
+		var table = new Array(Math.ceil((to - from) / step));
+		var lengths = new Array(table.length);
+		for (var i = 0; i < table.length; i++)
+		{
+			table[i] = initialize_(f, h - 1, from + (i * step), Math.min(from + ((i + 1) * step), to));
+			lengths[i] = length(table[i]) + (i > 0 ? lengths[i-1] : 0);
+		}
+		return {
+			ctor: "_Array",
+			height: h,
+			table: table,
+			lengths: lengths
+		};
+	}
+
+	function fromList(list)
+	{
+		if (list == List.Nil)
+		{
+			return empty;
+		}
+
+		// Allocate M sized blocks (table) and write list elements to it.
+		var table = new Array(M);
+		var nodes = new Array();
+		var i = 0;
+
+		while (list.ctor !== '[]')
+		{
+			table[i] = list._0;
+			list = list._1;
+			i++;
+
+			// table is full, so we can push a leaf containing it into the
+			// next node.
+			if (i == M)
+			{
+				var leaf = {
+					ctor: "_Array",
+					height: 0,
+					table: table
+				};
+				fromListPush(leaf, nodes);
+				table = new Array(M);
+				i = 0;
+			}
+		}
+
+		// Maybe there is something left on the table.
+		if (i > 0)
+		{
+			var leaf = {
+				ctor: "_Array",
+				height: 0,
+				table: table.splice(0,i)
+			};
+			fromListPush(leaf, nodes);
+		}
+
+		// Go through all of the nodes and eventually push them into higher nodes.
+		for (var h = 0; h < nodes.length - 1; h++)
+		{
+			if (nodes[h].table.length > 0)
+			{
+				fromListPush(nodes[h], nodes);
+			}
+		}
+
+		var head = nodes[nodes.length - 1];
+		if (head.height > 0 && head.table.length == 1)
+		{
+			return head.table[0];
+		}
+		else
+		{
+			return head;
+		}
+	}
+
+	// Push a node into a higher node as a child.
+	function fromListPush(toPush, nodes)
+	{
+		var h = toPush.height;
+
+		// Maybe the node on this height does not exist.
+		if (nodes.length == h)
+		{
+			var node = {
+				ctor: "_Array",
+				height: h + 1,
+				table: new Array(),
+				lengths: new Array()
+			};
+			nodes.push(node);
+		}
+
+		nodes[h].table.push(toPush);
+		var len = length(toPush);
+		if (nodes[h].lengths.length > 0)
+		{
+			len += nodes[h].lengths[nodes[h].lengths.length - 1];
+		}
+		nodes[h].lengths.push(len);
+
+		if (nodes[h].table.length == M)
+		{
+			fromListPush(nodes[h], nodes);
+			nodes[h] = {
+				ctor: "_Array",
+				height: h + 1,
+				table: new Array(),
+				lengths: new Array()
+			};
+		}
+	}
+
+	// Pushes an item via push_ to the bottom right of a tree.
+	function push(item, a)
+	{
+		var pushed = push_(item, a);
+		if (pushed !== null)
+		{
+			return pushed;
+		}
+
+		var newTree = create(item, a.height);
+		return siblise(a, newTree);
+	}
+
+	// Recursively tries to push an item to the bottom-right most
+	// tree possible. If there is no space left for the item,
+	// null will be returned.
+	function push_(item, a)
+	{
+		// Handle resursion stop at leaf level.
+		if (a.height == 0)
+		{
+			if (a.table.length < M)
+			{
+				var newA = {
+					ctor: "_Array",
+					height: 0,
+					table: a.table.slice()
+				};
+				newA.table.push(item);
+				return newA;
+			}
+			else
+			{
+			  return null;
+			}
+		}
+
+		// Recursively push
+		var pushed = push_(item, botRight(a));
+
+		// There was space in the bottom right tree, so the slot will
+		// be updated.
+		if (pushed != null)
+		{
+			var newA = nodeCopy(a);
+			newA.table[newA.table.length - 1] = pushed;
+			newA.lengths[newA.lengths.length - 1]++;
+			return newA;
+		}
+
+		// When there was no space left, check if there is space left
+		// for a new slot with a tree which contains only the item
+		// at the bottom.
+		if (a.table.length < M)
+		{
+			var newSlot = create(item, a.height - 1);
+			var newA = nodeCopy(a);
+			newA.table.push(newSlot);
+			newA.lengths.push(newA.lengths[newA.lengths.length - 1] + length(newSlot));
+			return newA;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	// Converts an array into a list of elements.
+	function toList(a)
+	{
+		return toList_(List.Nil, a);
+	}
+
+	function toList_(list, a)
+	{
+		for (var i = a.table.length - 1; i >= 0; i--)
+		{
+			list =
+				a.height == 0
+					? List.Cons(a.table[i], list)
+					: toList_(list, a.table[i]);
+		}
+		return list;
+	}
+
+	// Maps a function over the elements of an array.
+	function map(f, a)
+	{
+		var newA = {
+			ctor: "_Array",
+			height: a.height,
+			table: new Array(a.table.length)
+		};
+		if (a.height > 0)
+		{
+			newA.lengths = a.lengths;
+		}
+		for (var i = 0; i < a.table.length; i++)
+		{
+			newA.table[i] =
+				a.height == 0
+					? f(a.table[i])
+					: map(f, a.table[i]);
+		}
+		return newA;
+	}
+
+	// Maps a function over the elements with their index as first argument.
+	function indexedMap(f, a)
+	{
+		return indexedMap_(f, a, 0);
+	}
+
+	function indexedMap_(f, a, from)
+	{
+		var newA = {
+			ctor: "_Array",
+			height: a.height,
+			table: new Array(a.table.length)
+		};
+		if (a.height > 0)
+		{
+			newA.lengths = a.lengths;
+		}
+		for (var i = 0; i < a.table.length; i++)
+		{
+			newA.table[i] =
+				a.height == 0
+					? A2(f, from + i, a.table[i])
+					: indexedMap_(f, a.table[i], i == 0 ? 0 : a.lengths[i - 1]);
+		}
+		return newA;
+	}
+
+	function foldl(f, b, a)
+	{
+		if (a.height == 0)
+		{
+			for (var i = 0; i < a.table.length; i++)
+			{
+				b = A2(f, a.table[i], b);
+			}
+		}
+		else
+		{
+			for (var i = 0; i < a.table.length; i++)
+			{
+				b = foldl(f, b, a.table[i]);
+			}
+		}
+		return b;
+	}
+
+	function foldr(f, b, a)
+	{
+		if (a.height == 0)
+		{
+			for (var i = a.table.length; i--; )
+			{
+				b = A2(f, a.table[i], b);
+			}
+		}
+		else
+		{
+			for (var i = a.table.length; i--; )
+			{
+				b = foldr(f, b, a.table[i]);
+			}
+		}
+		return b;
+	}
+
+	// TODO: currently, it slices the right, then the left. This can be
+	// optimized.
+	function slice(from, to, a)
+	{
+		if (from < 0)
+		{
+			from += length(a);
+		}
+		if (to < 0)
+		{
+			to += length(a);
+		}
+		return sliceLeft(from, sliceRight(to, a));
+	}
+
+	function sliceRight(to, a)
+	{
+		if (to == length(a))
+		{
+			return a;
+		}
+
+		// Handle leaf level.
+		if (a.height == 0)
+		{
+			var newA = { ctor:"_Array", height:0 };
+			newA.table = a.table.slice(0, to);
+			return newA;
+		}
+
+		// Slice the right recursively.
+		var right = getSlot(to, a);
+		var sliced = sliceRight(to - (right > 0 ? a.lengths[right - 1] : 0), a.table[right]);
+
+		// Maybe the a node is not even needed, as sliced contains the whole slice.
+		if (right == 0)
+		{
+			return sliced;
+		}
+
+		// Create new node.
+		var newA = {
+			ctor: "_Array",
+			height: a.height,
+			table: a.table.slice(0, right),
+			lengths: a.lengths.slice(0, right)
+		};
+		if (sliced.table.length > 0)
+		{
+			newA.table[right] = sliced;
+			newA.lengths[right] = length(sliced) + (right > 0 ? newA.lengths[right - 1] : 0);
+		}
+		return newA;
+	}
+
+	function sliceLeft(from, a)
+	{
+		if (from == 0)
+		{
+			return a;
+		}
+
+		// Handle leaf level.
+		if (a.height == 0)
+		{
+			var newA = { ctor:"_Array", height:0 };
+			newA.table = a.table.slice(from, a.table.length + 1);
+			return newA;
+		}
+
+		// Slice the left recursively.
+		var left = getSlot(from, a);
+		var sliced = sliceLeft(from - (left > 0 ? a.lengths[left - 1] : 0), a.table[left]);
+
+		// Maybe the a node is not even needed, as sliced contains the whole slice.
+		if (left == a.table.length - 1)
+		{
+			return sliced;
+		}
+
+		// Create new node.
+		var newA = {
+			ctor: "_Array",
+			height: a.height,
+			table: a.table.slice(left, a.table.length + 1),
+			lengths: new Array(a.table.length - left)
+		};
+		newA.table[0] = sliced;
+		var len = 0;
+		for (var i = 0; i < newA.table.length; i++)
+		{
+			len += length(newA.table[i]);
+			newA.lengths[i] = len;
+		}
+
+		return newA;
+	}
+
+	// Appends two trees.
+	function append(a,b)
+	{
+		if (a.table.length === 0)
+		{
+			return b;
+		}
+		if (b.table.length === 0)
+		{
+			return a;
+		}
+
+		var c = append_(a, b);
+
+		// Check if both nodes can be crunshed together.
+		if (c[0].table.length + c[1].table.length <= M)
+		{
+			if (c[0].table.length === 0)
+			{
+				return c[1];
+			}
+			if (c[1].table.length === 0)
+			{
+				return c[0];
+			}
+
+			// Adjust .table and .lengths
+			c[0].table = c[0].table.concat(c[1].table);
+			if (c[0].height > 0)
+			{
+				var len = length(c[0]);
+				for (var i = 0; i < c[1].lengths.length; i++)
+				{
+					c[1].lengths[i] += len;
+				}
+				c[0].lengths = c[0].lengths.concat(c[1].lengths);
+			}
+
+			return c[0];
+		}
+
+		if (c[0].height > 0)
+		{
+			var toRemove = calcToRemove(a, b);
+			if (toRemove > E)
+			{
+				c = shuffle(c[0], c[1], toRemove);
+			}
+		}
+
+		return siblise(c[0], c[1]);
+	}
+
+	// Returns an array of two nodes; right and left. One node _may_ be empty.
+	function append_(a, b)
+	{
+		if (a.height === 0 && b.height === 0)
+		{
+			return [a, b];
+		}
+
+		if (a.height !== 1 || b.height !== 1)
+		{
+			if (a.height === b.height)
+			{
+				a = nodeCopy(a);
+				b = nodeCopy(b);
+				var appended = append_(botRight(a), botLeft(b));
+
+				insertRight(a, appended[1]);
+				insertLeft(b, appended[0]);
+			}
+			else if (a.height > b.height)
+			{
+				a = nodeCopy(a);
+				var appended = append_(botRight(a), b);
+
+				insertRight(a, appended[0]);
+				b = parentise(appended[1], appended[1].height + 1);
+			}
+			else
+			{
+				b = nodeCopy(b);
+				var appended = append_(a, botLeft(b));
+
+				var left = appended[0].table.length === 0 ? 0 : 1;
+				var right = left === 0 ? 1 : 0;
+				insertLeft(b, appended[left]);
+				a = parentise(appended[right], appended[right].height + 1);
+			}
+		}
+
+		// Check if balancing is needed and return based on that.
+		if (a.table.length === 0 || b.table.length === 0)
+		{
+			return [a,b];
+		}
+
+		var toRemove = calcToRemove(a, b);
+		if (toRemove <= E)
+		{
+			return [a,b];
+		}
+		return shuffle(a, b, toRemove);
+	}
+
+	// Helperfunctions for append_. Replaces a child node at the side of the parent.
+	function insertRight(parent, node)
+	{
+		var index = parent.table.length - 1;
+		parent.table[index] = node;
+		parent.lengths[index] = length(node)
+		parent.lengths[index] += index > 0 ? parent.lengths[index - 1] : 0;
+	}
+
+	function insertLeft(parent, node)
+	{
+		if (node.table.length > 0)
+		{
+			parent.table[0] = node;
+			parent.lengths[0] = length(node);
+
+			var len = length(parent.table[0]);
+			for (var i = 1; i < parent.lengths.length; i++)
+			{
+				len += length(parent.table[i]);
+				parent.lengths[i] = len;
+			}
+		}
+		else
+		{
+			parent.table.shift();
+			for (var i = 1; i < parent.lengths.length; i++)
+			{
+				parent.lengths[i] = parent.lengths[i] - parent.lengths[0];
+			}
+			parent.lengths.shift();
+		}
+	}
+
+	// Returns the extra search steps for E. Refer to the paper.
+	function calcToRemove(a, b)
+	{
+		var subLengths = 0;
+		for (var i = 0; i < a.table.length; i++)
+		{
+			subLengths += a.table[i].table.length;
+		}
+		for (var i = 0; i < b.table.length; i++)
+		{
+			subLengths += b.table[i].table.length;
+		}
+
+		var toRemove = a.table.length + b.table.length
+		return toRemove - (Math.floor((subLengths - 1) / M) + 1);
+	}
+
+	// get2, set2 and saveSlot are helpers for accessing elements over two arrays.
+	function get2(a, b, index)
+	{
+		return index < a.length
+			? a[index]
+			: b[index - a.length];
+	}
+
+	function set2(a, b, index, value)
+	{
+		if (index < a.length)
+		{
+			a[index] = value;
+		}
+		else
+		{
+			b[index - a.length] = value;
+		}
+	}
+
+	function saveSlot(a, b, index, slot)
+	{
+		set2(a.table, b.table, index, slot);
+
+		var l = (index == 0 || index == a.lengths.length)
+			? 0
+			: get2(a.lengths, a.lengths, index - 1);
+
+		set2(a.lengths, b.lengths, index, l + length(slot));
+	}
+
+	// Creates a node or leaf with a given length at their arrays for perfomance.
+	// Is only used by shuffle.
+	function createNode(h, length)
+	{
+		if (length < 0)
+		{
+			length = 0;
+		}
+		var a = {
+			ctor: "_Array",
+			height: h,
+			table: new Array(length)
+		};
+		if (h > 0)
+		{
+			a.lengths = new Array(length);
+		}
+		return a;
+	}
+
+	// Returns an array of two balanced nodes.
+	function shuffle(a, b, toRemove)
+	{
+		var newA = createNode(a.height, Math.min(M, a.table.length + b.table.length - toRemove));
+		var newB = createNode(a.height, newA.table.length - (a.table.length + b.table.length - toRemove));
+
+		// Skip the slots with size M. More precise: copy the slot references
+		// to the new node
+		var read = 0;
+		while (get2(a.table, b.table, read).table.length % M == 0)
+		{
+			set2(newA.table, newB.table, read, get2(a.table, b.table, read));
+			set2(newA.lengths, newB.lengths, read, get2(a.lengths, b.lengths, read));
+			read++;
+		}
+
+		// Pulling items from left to right, caching in a slot before writing
+		// it into the new nodes.
+		var write = read;
+		var slot = new createNode(a.height - 1, 0);
+		var from = 0;
+
+		// If the current slot is still containing data, then there will be at
+		// least one more write, so we do not break this loop yet.
+		while (read - write - (slot.table.length > 0 ? 1 : 0) < toRemove)
+		{
+			// Find out the max possible items for copying.
+			var source = get2(a.table, b.table, read);
+			var to = Math.min(M - slot.table.length, source.table.length)
+
+			// Copy and adjust size table.
+			slot.table = slot.table.concat(source.table.slice(from, to));
+			if (slot.height > 0)
+			{
+				var len = slot.lengths.length;
+				for (var i = len; i < len + to - from; i++)
+				{
+					slot.lengths[i] = length(slot.table[i]);
+					slot.lengths[i] += (i > 0 ? slot.lengths[i - 1] : 0);
+				}
+			}
+
+			from += to;
+
+			// Only proceed to next slots[i] if the current one was
+			// fully copied.
+			if (source.table.length <= to)
+			{
+				read++; from = 0;
+			}
+
+			// Only create a new slot if the current one is filled up.
+			if (slot.table.length == M)
+			{
+				saveSlot(newA, newB, write, slot);
+				slot = createNode(a.height - 1,0);
+				write++;
+			}
+		}
+
+		// Cleanup after the loop. Copy the last slot into the new nodes.
+		if (slot.table.length > 0)
+		{
+			saveSlot(newA, newB, write, slot);
+			write++;
+		}
+
+		// Shift the untouched slots to the left
+		while (read < a.table.length + b.table.length )
+		{
+			saveSlot(newA, newB, write, get2(a.table, b.table, read));
+			read++;
+			write++;
+		}
+
+		return [newA, newB];
+	}
+
+	// Navigation functions
+	function botRight(a)
+	{
+		return a.table[a.table.length - 1];
+	}
+	function botLeft(a)
+	{
+		return a.table[0];
+	}
+
+	// Copies a node for updating. Note that you should not use this if
+	// only updating only one of "table" or "lengths" for performance reasons.
+	function nodeCopy(a)
+	{
+		var newA = {
+			ctor: "_Array",
+			height: a.height,
+			table: a.table.slice()
+		};
+		if (a.height > 0)
+		{
+			newA.lengths = a.lengths.slice();
+		}
+		return newA;
+	}
+
+	// Returns how many items are in the tree.
+	function length(array)
+	{
+		if (array.height == 0)
+		{
+			return array.table.length;
+		}
+		else
+		{
+			return array.lengths[array.lengths.length - 1];
+		}
+	}
+
+	// Calculates in which slot of "table" the item probably is, then
+	// find the exact slot via forward searching in  "lengths". Returns the index.
+	function getSlot(i, a)
+	{
+		var slot = i >> (5 * a.height);
+		while (a.lengths[slot] <= i)
+		{
+			slot++;
+		}
+		return slot;
+	}
+
+	// Recursively creates a tree with a given height containing
+	// only the given item.
+	function create(item, h)
+	{
+		if (h == 0)
+		{
+			return {
+				ctor: "_Array",
+				height: 0,
+				table: [item]
+			};
+		}
+		return {
+			ctor: "_Array",
+			height: h,
+			table: [create(item, h - 1)],
+			lengths: [1]
+		};
+	}
+
+	// Recursively creates a tree that contains the given tree.
+	function parentise(tree, h)
+	{
+		if (h == tree.height)
+		{
+			return tree;
+		}
+
+		return {
+			ctor: "_Array",
+			height: h,
+			table: [parentise(tree, h - 1)],
+			lengths: [length(tree)]
+		};
+	}
+
+	// Emphasizes blood brotherhood beneath two trees.
+	function siblise(a, b)
+	{
+		return {
+			ctor: "_Array",
+			height: a.height + 1,
+			table: [a, b],
+			lengths: [length(a), length(a) + length(b)]
+		};
+	}
+
+	function toJSArray(a)
+	{
+		var jsArray = new Array(length(a));
+		toJSArray_(jsArray, 0, a);
+		return jsArray;
+	}
+
+	function toJSArray_(jsArray, i, a)
+	{
+		for (var t = 0; t < a.table.length; t++)
+		{
+			if (a.height == 0)
+			{
+				jsArray[i + t] = a.table[t];
+			}
+			else
+			{
+				var inc = t == 0 ? 0 : a.lengths[t - 1];
+				toJSArray_(jsArray, i + inc, a.table[t]);
+			}
+		}
+	}
+
+	function fromJSArray(jsArray)
+	{
+		if (jsArray.length == 0)
+		{
+			return empty;
+		}
+		var h = Math.floor(Math.log(jsArray.length) / Math.log(M));
+		return fromJSArray_(jsArray, h, 0, jsArray.length);
+	}
+
+	function fromJSArray_(jsArray, h, from, to)
+	{
+		if (h == 0)
+		{
+			return {
+				ctor: "_Array",
+				height: 0,
+				table: jsArray.slice(from, to)
+			};
+		}
+
+		var step = Math.pow(M, h);
+		var table = new Array(Math.ceil((to - from) / step));
+		var lengths = new Array(table.length);
+		for (var i = 0; i < table.length; i++)
+		{
+			table[i] = fromJSArray_(jsArray, h - 1, from + (i * step), Math.min(from + ((i + 1) * step), to));
+			lengths[i] = length(table[i]) + (i > 0 ? lengths[i-1] : 0);
+		}
+		return {
+			ctor: "_Array",
+			height: h,
+			table: table,
+			lengths: lengths
+		};
+	}
+
+	Elm.Native.Array.values = {
+		empty: empty,
+		fromList: fromList,
+		toList: toList,
+		initialize: F2(initialize),
+		append: F2(append),
+		push: F2(push),
+		slice: F3(slice),
+		get: F2(get),
+		set: F3(set),
+		map: F2(map),
+		indexedMap: F2(indexedMap),
+		foldl: F3(foldl),
+		foldr: F3(foldr),
+		length: length,
+
+		toJSArray:toJSArray,
+		fromJSArray:fromJSArray
+	};
+
+	return localRuntime.Native.Array.values = Elm.Native.Array.values;
+
+}
+
 Elm.Native.Basics = {};
 Elm.Native.Basics.make = function(localRuntime) {
 
@@ -5794,6 +6685,493 @@ Elm.Native.Graphics.Element.make = function(localRuntime) {
 
 };
 
+Elm.Native.Json = {};
+Elm.Native.Json.make = function(localRuntime) {
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Json = localRuntime.Native.Json || {};
+	if (localRuntime.Native.Json.values) {
+		return localRuntime.Native.Json.values;
+	}
+
+	var ElmArray = Elm.Native.Array.make(localRuntime);
+	var List = Elm.Native.List.make(localRuntime);
+	var Maybe = Elm.Maybe.make(localRuntime);
+	var Result = Elm.Result.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+
+
+	function crash(expected, actual) {
+		throw new Error(
+			'expecting ' + expected + ' but got ' + JSON.stringify(actual)
+		);
+	}
+
+
+	// PRIMITIVE VALUES
+
+	function decodeNull(successValue) {
+		return function(value) {
+			if (value === null) {
+				return successValue;
+			}
+			crash('null', value);
+		};
+	}
+
+
+	function decodeString(value) {
+		if (typeof value === 'string' || value instanceof String) {
+			return value;
+		}
+		crash('a String', value);
+	}
+
+
+	function decodeFloat(value) {
+		if (typeof value === 'number') {
+			return value;
+		}
+		crash('a Float', value);
+	}
+
+
+	function decodeInt(value) {
+		if (typeof value === 'number' && (value|0) === value) {
+			return value;
+		}
+		crash('an Int', value);
+	}
+
+
+	function decodeBool(value) {
+		if (typeof value === 'boolean') {
+			return value;
+		}
+		crash('a Bool', value);
+	}
+
+
+	// ARRAY
+
+	function decodeArray(decoder) {
+		return function(value) {
+			if (value instanceof Array) {
+				var len = value.length;
+				var array = new Array(len);
+				for (var i = len; i-- ; ) {
+					array[i] = decoder(value[i]);
+				}
+				return ElmArray.fromJSArray(array);
+			}
+			crash('an Array', value);
+		};
+	}
+
+
+	// LIST
+
+	function decodeList(decoder) {
+		return function(value) {
+			if (value instanceof Array) {
+				var len = value.length;
+				var list = List.Nil;
+				for (var i = len; i-- ; ) {
+					list = List.Cons( decoder(value[i]), list );
+				}
+				return list;
+			}
+			crash('a List', value);
+		};
+	}
+
+
+	// MAYBE
+
+	function decodeMaybe(decoder) {
+		return function(value) {
+			try {
+				return Maybe.Just(decoder(value));
+			} catch(e) {
+				return Maybe.Nothing;
+			}
+		};
+	}
+
+
+	// FIELDS
+
+	function decodeField(field, decoder) {
+		return function(value) {
+			var subValue = value[field];
+			if (subValue !== undefined) {
+				return decoder(subValue);
+			}
+			crash("an object with field '" + field + "'", value);
+		};
+	}
+
+
+	// OBJECTS
+
+	function decodeKeyValuePairs(decoder) {
+		return function(value) {
+			var isObject =
+				typeof value === 'object'
+					&& value !== null
+					&& !(value instanceof Array);
+
+			if (isObject) {
+				var keyValuePairs = List.Nil;
+				for (var key in value) {
+					var elmValue = decoder(value[key]);
+					var pair = Utils.Tuple2(key, elmValue);
+					keyValuePairs = List.Cons(pair, keyValuePairs);
+				}
+				return keyValuePairs;
+			}
+
+			crash("an object", value);
+		};
+	}
+
+	function decodeObject1(f, d1) {
+		return function(value) {
+			return f(d1(value));
+		};
+	}
+
+	function decodeObject2(f, d1, d2) {
+		return function(value) {
+			return A2( f, d1(value), d2(value) );
+		};
+	}
+
+	function decodeObject3(f, d1, d2, d3) {
+		return function(value) {
+			return A3( f, d1(value), d2(value), d3(value) );
+		};
+	}
+
+	function decodeObject4(f, d1, d2, d3, d4) {
+		return function(value) {
+			return A4( f, d1(value), d2(value), d3(value), d4(value) );
+		};
+	}
+
+	function decodeObject5(f, d1, d2, d3, d4, d5) {
+		return function(value) {
+			return A5( f, d1(value), d2(value), d3(value), d4(value), d5(value) );
+		};
+	}
+
+	function decodeObject6(f, d1, d2, d3, d4, d5, d6) {
+		return function(value) {
+			return A6( f,
+				d1(value),
+				d2(value),
+				d3(value),
+				d4(value),
+				d5(value),
+				d6(value)
+			);
+		};
+	}
+
+	function decodeObject7(f, d1, d2, d3, d4, d5, d6, d7) {
+		return function(value) {
+			return A7( f,
+				d1(value),
+				d2(value),
+				d3(value),
+				d4(value),
+				d5(value),
+				d6(value),
+				d7(value)
+			);
+		};
+	}
+
+	function decodeObject8(f, d1, d2, d3, d4, d5, d6, d7, d8) {
+		return function(value) {
+			return A8( f,
+				d1(value),
+				d2(value),
+				d3(value),
+				d4(value),
+				d5(value),
+				d6(value),
+				d7(value),
+				d8(value)
+			);
+		};
+	}
+
+
+	// TUPLES
+
+	function decodeTuple1(f, d1) {
+		return function(value) {
+			if ( !(value instanceof Array) || value.length !== 1 ) {
+				crash('a Tuple of length 1', value);
+			}
+			return f( d1(value[0]) );
+		};
+	}
+
+	function decodeTuple2(f, d1, d2) {
+		return function(value) {
+			if ( !(value instanceof Array) || value.length !== 2 ) {
+				crash('a Tuple of length 2', value);
+			}
+			return A2( f, d1(value[0]), d2(value[1]) );
+		};
+	}
+
+	function decodeTuple3(f, d1, d2, d3) {
+		return function(value) {
+			if ( !(value instanceof Array) || value.length !== 3 ) {
+				crash('a Tuple of length 3', value);
+			}
+			return A3( f, d1(value[0]), d2(value[1]), d3(value[2]) );
+		};
+	}
+
+
+	function decodeTuple4(f, d1, d2, d3, d4) {
+		return function(value) {
+			if ( !(value instanceof Array) || value.length !== 4 ) {
+				crash('a Tuple of length 4', value);
+			}
+			return A4( f, d1(value[0]), d2(value[1]), d3(value[2]), d4(value[3]) );
+		};
+	}
+
+
+	function decodeTuple5(f, d1, d2, d3, d4, d5) {
+		return function(value) {
+			if ( !(value instanceof Array) || value.length !== 5 ) {
+				crash('a Tuple of length 5', value);
+			}
+			return A5( f,
+				d1(value[0]),
+				d2(value[1]),
+				d3(value[2]),
+				d4(value[3]),
+				d5(value[4])
+			);
+		};
+	}
+
+
+	function decodeTuple6(f, d1, d2, d3, d4, d5, d6) {
+		return function(value) {
+			if ( !(value instanceof Array) || value.length !== 6 ) {
+				crash('a Tuple of length 6', value);
+			}
+			return A6( f,
+				d1(value[0]),
+				d2(value[1]),
+				d3(value[2]),
+				d4(value[3]),
+				d5(value[4]),
+				d6(value[5])
+			);
+		};
+	}
+
+	function decodeTuple7(f, d1, d2, d3, d4, d5, d6, d7) {
+		return function(value) {
+			if ( !(value instanceof Array) || value.length !== 7 ) {
+				crash('a Tuple of length 7', value);
+			}
+			return A7( f,
+				d1(value[0]),
+				d2(value[1]),
+				d3(value[2]),
+				d4(value[3]),
+				d5(value[4]),
+				d6(value[5]),
+				d7(value[6])
+			);
+		};
+	}
+
+
+	function decodeTuple8(f, d1, d2, d3, d4, d5, d6, d7, d8) {
+		return function(value) {
+			if ( !(value instanceof Array) || value.length !== 8 ) {
+				crash('a Tuple of length 8', value);
+			}
+			return A8( f,
+				d1(value[0]),
+				d2(value[1]),
+				d3(value[2]),
+				d4(value[3]),
+				d5(value[4]),
+				d6(value[5]),
+				d7(value[6]),
+				d8(value[7])
+			);
+		};
+	}
+
+
+	// CUSTOM DECODERS
+
+	function decodeValue(value) {
+		return value;
+	}
+
+	function runDecoderValue(decoder, value) {
+		try {
+			return Result.Ok(decoder(value));
+		} catch(e) {
+			return Result.Err(e.message);
+		}
+	}
+
+	function customDecoder(decoder, callback) {
+		return function(value) {
+			var result = callback(decoder(value));
+			if (result.ctor === 'Err') {
+				throw new Error('custom decoder failed: ' + result._0);
+			}
+			return result._0;
+		}
+	}
+
+	function andThen(decode, callback) {
+		return function(value) {
+			var result = decode(value);
+			return callback(result)(value);
+		}
+	}
+
+	function fail(msg) {
+		return function(value) {
+			throw new Error(msg);
+		}
+	}
+
+	function succeed(successValue) {
+		return function(value) {
+			return successValue;
+		}
+	}
+
+
+	// ONE OF MANY
+
+	function oneOf(decoders) {
+		return function(value) {
+			var errors = [];
+			var temp = decoders;
+			while (temp.ctor !== '[]') {
+				try {
+					return temp._0(value);
+				} catch(e) {
+					errors.push(e.message);
+				}
+				temp = temp._1;
+			}
+			throw new Error('expecting one of the following:\n    ' + errors.join('\n    '));
+		}
+	}
+
+	function get(decoder, value) {
+		try {
+			return Result.Ok(decoder(value));
+		} catch(e) {
+			return Result.Err(e.message);
+		}
+	}
+
+
+	// ENCODE / DECODE
+
+	function runDecoderString(decoder, string) {
+		try {
+			return Result.Ok(decoder(JSON.parse(string)));
+		} catch(e) {
+			return Result.Err(e.message);
+		}
+	}
+
+	function encode(indentLevel, value) {
+		return JSON.stringify(value, null, indentLevel);
+	}
+
+	function identity(value) {
+		return value;
+	}
+
+	function encodeObject(keyValuePairs) {
+		var obj = {};
+		while (keyValuePairs.ctor !== '[]') {
+			var pair = keyValuePairs._0;
+			obj[pair._0] = pair._1;
+			keyValuePairs = keyValuePairs._1;
+		}
+		return obj;
+	}
+
+	return localRuntime.Native.Json.values = {
+		encode: F2(encode),
+		runDecoderString: F2(runDecoderString),
+		runDecoderValue: F2(runDecoderValue),
+
+		get: F2(get),
+		oneOf: oneOf,
+
+		decodeNull: decodeNull,
+		decodeInt: decodeInt,
+		decodeFloat: decodeFloat,
+		decodeString: decodeString,
+		decodeBool: decodeBool,
+
+		decodeMaybe: decodeMaybe,
+
+		decodeList: decodeList,
+		decodeArray: decodeArray,
+
+		decodeField: F2(decodeField),
+
+		decodeObject1: F2(decodeObject1),
+		decodeObject2: F3(decodeObject2),
+		decodeObject3: F4(decodeObject3),
+		decodeObject4: F5(decodeObject4),
+		decodeObject5: F6(decodeObject5),
+		decodeObject6: F7(decodeObject6),
+		decodeObject7: F8(decodeObject7),
+		decodeObject8: F9(decodeObject8),
+		decodeKeyValuePairs: decodeKeyValuePairs,
+
+		decodeTuple1: F2(decodeTuple1),
+		decodeTuple2: F3(decodeTuple2),
+		decodeTuple3: F4(decodeTuple3),
+		decodeTuple4: F5(decodeTuple4),
+		decodeTuple5: F6(decodeTuple5),
+		decodeTuple6: F7(decodeTuple6),
+		decodeTuple7: F8(decodeTuple7),
+		decodeTuple8: F9(decodeTuple8),
+
+		andThen: F2(andThen),
+		decodeValue: decodeValue,
+		customDecoder: F2(customDecoder),
+		fail: fail,
+		succeed: succeed,
+
+		identity: identity,
+		encodeNull: null,
+		encodeArray: ElmArray.toJSArray,
+		encodeList: List.toArray,
+		encodeObject: encodeObject
+
+	};
+
+};
+
 Elm.Native.Keyboard = {};
 Elm.Native.Keyboard.make = function(localRuntime) {
 
@@ -6070,6 +7448,108 @@ Elm.Native.List.make = function(localRuntime) {
 
 };
 
+
+// setup
+Elm.Native = Elm.Native || {};
+Elm.Native.Markdown = Elm.Native.Markdown || {};
+
+// definition
+Elm.Native.Markdown.make = function(localRuntime) {
+	'use strict';
+
+	// attempt to short-circuit
+	if ('values' in Elm.Native.Markdown)
+	{
+		return Elm.Native.Markdown.values;
+	}
+
+	var Element = Elm.Native.Graphics.Element.make(localRuntime);
+
+	/**
+	 * marked - a markdown parser
+	 * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
+	 * https://github.com/chjj/marked
+	 */
+	(function(){var block={newline:/^\n+/,code:/^( {4}[^\n]+\n*)+/,fences:noop,hr:/^( *[-*_]){3,} *(?:\n+|$)/,heading:/^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)/,nptable:noop,lheading:/^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,blockquote:/^( *>[^\n]+(\n(?!def)[^\n]+)*\n*)+/,list:/^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,html:/^ *(?:comment|closed|closing) *(?:\n{2,}|\s*$)/,def:/^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +["(]([^\n]+)[")])? *(?:\n+|$)/,table:noop,paragraph:/^((?:[^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+)\n*/,text:/^[^\n]+/};block.bullet=/(?:[*+-]|\d+\.)/;block.item=/^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;block.item=replace(block.item,"gm")(/bull/g,block.bullet)();block.list=replace(block.list)(/bull/g,block.bullet)("hr","\\n+(?=\\1?(?:[-*_] *){3,}(?:\\n+|$))")("def","\\n+(?="+block.def.source+")")();block.blockquote=replace(block.blockquote)("def",block.def)();block._tag="(?!(?:"+"a|em|strong|small|s|cite|q|dfn|abbr|data|time|code"+"|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo"+"|span|br|wbr|ins|del|img)\\b)\\w+(?!:/|[^\\w\\s@]*@)\\b";block.html=replace(block.html)("comment",/<!--[\s\S]*?-->/)("closed",/<(tag)[\s\S]+?<\/\1>/)("closing",/<tag(?:"[^"]*"|'[^']*'|[^'">])*?>/)(/tag/g,block._tag)();block.paragraph=replace(block.paragraph)("hr",block.hr)("heading",block.heading)("lheading",block.lheading)("blockquote",block.blockquote)("tag","<"+block._tag)("def",block.def)();block.normal=merge({},block);block.gfm=merge({},block.normal,{fences:/^ *(`{3,}|~{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/,paragraph:/^/});block.gfm.paragraph=replace(block.paragraph)("(?!","(?!"+block.gfm.fences.source.replace("\\1","\\2")+"|"+block.list.source.replace("\\1","\\3")+"|")();block.tables=merge({},block.gfm,{nptable:/^ *(\S.*\|.*)\n *([-:]+ *\|[-| :]*)\n((?:.*\|.*(?:\n|$))*)\n*/,table:/^ *\|(.+)\n *\|( *[-:]+[-| :]*)\n((?: *\|.*(?:\n|$))*)\n*/});function Lexer(options){this.tokens=[];this.tokens.links={};this.options=options||marked.defaults;this.rules=block.normal;if(this.options.gfm){if(this.options.tables){this.rules=block.tables}else{this.rules=block.gfm}}}Lexer.rules=block;Lexer.lex=function(src,options){var lexer=new Lexer(options);return lexer.lex(src)};Lexer.prototype.lex=function(src){src=src.replace(/\r\n|\r/g,"\n").replace(/\t/g,"    ").replace(/\u00a0/g," ").replace(/\u2424/g,"\n");return this.token(src,true)};Lexer.prototype.token=function(src,top,bq){var src=src.replace(/^ +$/gm,""),next,loose,cap,bull,b,item,space,i,l;while(src){if(cap=this.rules.newline.exec(src)){src=src.substring(cap[0].length);if(cap[0].length>1){this.tokens.push({type:"space"})}}if(cap=this.rules.code.exec(src)){src=src.substring(cap[0].length);cap=cap[0].replace(/^ {4}/gm,"");this.tokens.push({type:"code",text:!this.options.pedantic?cap.replace(/\n+$/,""):cap});continue}if(cap=this.rules.fences.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"code",lang:cap[2],text:cap[3]});continue}if(cap=this.rules.heading.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"heading",depth:cap[1].length,text:cap[2]});continue}if(top&&(cap=this.rules.nptable.exec(src))){src=src.substring(cap[0].length);item={type:"table",header:cap[1].replace(/^ *| *\| *$/g,"").split(/ *\| */),align:cap[2].replace(/^ *|\| *$/g,"").split(/ *\| */),cells:cap[3].replace(/\n$/,"").split("\n")};for(i=0;i<item.align.length;i++){if(/^ *-+: *$/.test(item.align[i])){item.align[i]="right"}else if(/^ *:-+: *$/.test(item.align[i])){item.align[i]="center"}else if(/^ *:-+ *$/.test(item.align[i])){item.align[i]="left"}else{item.align[i]=null}}for(i=0;i<item.cells.length;i++){item.cells[i]=item.cells[i].split(/ *\| */)}this.tokens.push(item);continue}if(cap=this.rules.lheading.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"heading",depth:cap[2]==="="?1:2,text:cap[1]});continue}if(cap=this.rules.hr.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"hr"});continue}if(cap=this.rules.blockquote.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"blockquote_start"});cap=cap[0].replace(/^ *> ?/gm,"");this.token(cap,top,true);this.tokens.push({type:"blockquote_end"});continue}if(cap=this.rules.list.exec(src)){src=src.substring(cap[0].length);bull=cap[2];this.tokens.push({type:"list_start",ordered:bull.length>1});cap=cap[0].match(this.rules.item);next=false;l=cap.length;i=0;for(;i<l;i++){item=cap[i];space=item.length;item=item.replace(/^ *([*+-]|\d+\.) +/,"");if(~item.indexOf("\n ")){space-=item.length;item=!this.options.pedantic?item.replace(new RegExp("^ {1,"+space+"}","gm"),""):item.replace(/^ {1,4}/gm,"")}if(this.options.smartLists&&i!==l-1){b=block.bullet.exec(cap[i+1])[0];if(bull!==b&&!(bull.length>1&&b.length>1)){src=cap.slice(i+1).join("\n")+src;i=l-1}}loose=next||/\n\n(?!\s*$)/.test(item);if(i!==l-1){next=item.charAt(item.length-1)==="\n";if(!loose)loose=next}this.tokens.push({type:loose?"loose_item_start":"list_item_start"});this.token(item,false,bq);this.tokens.push({type:"list_item_end"})}this.tokens.push({type:"list_end"});continue}if(cap=this.rules.html.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:this.options.sanitize?"paragraph":"html",pre:cap[1]==="pre"||cap[1]==="script"||cap[1]==="style",text:cap[0]});continue}if(!bq&&top&&(cap=this.rules.def.exec(src))){src=src.substring(cap[0].length);this.tokens.links[cap[1].toLowerCase()]={href:cap[2],title:cap[3]};continue}if(top&&(cap=this.rules.table.exec(src))){src=src.substring(cap[0].length);item={type:"table",header:cap[1].replace(/^ *| *\| *$/g,"").split(/ *\| */),align:cap[2].replace(/^ *|\| *$/g,"").split(/ *\| */),cells:cap[3].replace(/(?: *\| *)?\n$/,"").split("\n")};for(i=0;i<item.align.length;i++){if(/^ *-+: *$/.test(item.align[i])){item.align[i]="right"}else if(/^ *:-+: *$/.test(item.align[i])){item.align[i]="center"}else if(/^ *:-+ *$/.test(item.align[i])){item.align[i]="left"}else{item.align[i]=null}}for(i=0;i<item.cells.length;i++){item.cells[i]=item.cells[i].replace(/^ *\| *| *\| *$/g,"").split(/ *\| */)}this.tokens.push(item);continue}if(top&&(cap=this.rules.paragraph.exec(src))){src=src.substring(cap[0].length);this.tokens.push({type:"paragraph",text:cap[1].charAt(cap[1].length-1)==="\n"?cap[1].slice(0,-1):cap[1]});continue}if(cap=this.rules.text.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"text",text:cap[0]});continue}if(src){throw new Error("Infinite loop on byte: "+src.charCodeAt(0))}}return this.tokens};var inline={escape:/^\\([\\`*{}\[\]()#+\-.!_>])/,autolink:/^<([^ >]+(@|:\/)[^ >]+)>/,url:noop,tag:/^<!--[\s\S]*?-->|^<\/?\w+(?:"[^"]*"|'[^']*'|[^'">])*?>/,link:/^!?\[(inside)\]\(href\)/,reflink:/^!?\[(inside)\]\s*\[([^\]]*)\]/,nolink:/^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,strong:/^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,em:/^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,code:/^(`+)\s*([\s\S]*?[^`])\s*\1(?!`)/,br:/^ {2,}\n(?!\s*$)/,del:noop,text:/^[\s\S]+?(?=[\\<!\[_*`]| {2,}\n|$)/};inline._inside=/(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;inline._href=/\s*<?([\s\S]*?)>?(?:\s+['"]([\s\S]*?)['"])?\s*/;inline.link=replace(inline.link)("inside",inline._inside)("href",inline._href)();inline.reflink=replace(inline.reflink)("inside",inline._inside)();inline.normal=merge({},inline);inline.pedantic=merge({},inline.normal,{strong:/^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,em:/^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/});inline.gfm=merge({},inline.normal,{escape:replace(inline.escape)("])","~|])")(),url:/^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/,del:/^~~(?=\S)([\s\S]*?\S)~~/,text:replace(inline.text)("]|","~]|")("|","|https?://|")()});inline.breaks=merge({},inline.gfm,{br:replace(inline.br)("{2,}","*")(),text:replace(inline.gfm.text)("{2,}","*")()});function InlineLexer(links,options){this.options=options||marked.defaults;this.links=links;this.rules=inline.normal;this.renderer=this.options.renderer||new Renderer;this.renderer.options=this.options;if(!this.links){throw new Error("Tokens array requires a `links` property.")}if(this.options.gfm){if(this.options.breaks){this.rules=inline.breaks}else{this.rules=inline.gfm}}else if(this.options.pedantic){this.rules=inline.pedantic}}InlineLexer.rules=inline;InlineLexer.output=function(src,links,options){var inline=new InlineLexer(links,options);return inline.output(src)};InlineLexer.prototype.output=function(src){var out="",link,text,href,cap;while(src){if(cap=this.rules.escape.exec(src)){src=src.substring(cap[0].length);out+=cap[1];continue}if(cap=this.rules.autolink.exec(src)){src=src.substring(cap[0].length);if(cap[2]==="@"){text=cap[1].charAt(6)===":"?this.mangle(cap[1].substring(7)):this.mangle(cap[1]);href=this.mangle("mailto:")+text}else{text=escape(cap[1]);href=text}out+=this.renderer.link(href,null,text);continue}if(!this.inLink&&(cap=this.rules.url.exec(src))){src=src.substring(cap[0].length);text=escape(cap[1]);href=text;out+=this.renderer.link(href,null,text);continue}if(cap=this.rules.tag.exec(src)){if(!this.inLink&&/^<a /i.test(cap[0])){this.inLink=true}else if(this.inLink&&/^<\/a>/i.test(cap[0])){this.inLink=false}src=src.substring(cap[0].length);out+=this.options.sanitize?escape(cap[0]):cap[0];continue}if(cap=this.rules.link.exec(src)){src=src.substring(cap[0].length);this.inLink=true;out+=this.outputLink(cap,{href:cap[2],title:cap[3]});this.inLink=false;continue}if((cap=this.rules.reflink.exec(src))||(cap=this.rules.nolink.exec(src))){src=src.substring(cap[0].length);link=(cap[2]||cap[1]).replace(/\s+/g," ");link=this.links[link.toLowerCase()];if(!link||!link.href){out+=cap[0].charAt(0);src=cap[0].substring(1)+src;continue}this.inLink=true;out+=this.outputLink(cap,link);this.inLink=false;continue}if(cap=this.rules.strong.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.strong(this.output(cap[2]||cap[1]));continue}if(cap=this.rules.em.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.em(this.output(cap[2]||cap[1]));continue}if(cap=this.rules.code.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.codespan(escape(cap[2],true));continue}if(cap=this.rules.br.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.br();continue}if(cap=this.rules.del.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.del(this.output(cap[1]));continue}if(cap=this.rules.text.exec(src)){src=src.substring(cap[0].length);out+=escape(this.smartypants(cap[0]));continue}if(src){throw new Error("Infinite loop on byte: "+src.charCodeAt(0))}}return out};InlineLexer.prototype.outputLink=function(cap,link){var href=escape(link.href),title=link.title?escape(link.title):null;return cap[0].charAt(0)!=="!"?this.renderer.link(href,title,this.output(cap[1])):this.renderer.image(href,title,escape(cap[1]))};InlineLexer.prototype.smartypants=function(text){if(!this.options.smartypants)return text;return text.replace(/--/g,"—").replace(/(^|[-\u2014/(\[{"\s])'/g,"$1‘").replace(/'/g,"’").replace(/(^|[-\u2014/(\[{\u2018\s])"/g,"$1“").replace(/"/g,"”").replace(/\.{3}/g,"…")};InlineLexer.prototype.mangle=function(text){var out="",l=text.length,i=0,ch;for(;i<l;i++){ch=text.charCodeAt(i);if(Math.random()>.5){ch="x"+ch.toString(16)}out+="&#"+ch+";"}return out};function Renderer(options){this.options=options||{}}Renderer.prototype.code=function(code,lang,escaped){if(this.options.highlight){var out=this.options.highlight(code,lang);if(out!=null&&out!==code){escaped=true;code=out}}if(!lang){return"<pre><code>"+(escaped?code:escape(code,true))+"\n</code></pre>"}return'<pre><code class="'+this.options.langPrefix+escape(lang,true)+'">'+(escaped?code:escape(code,true))+"\n</code></pre>\n"};Renderer.prototype.blockquote=function(quote){return"<blockquote>\n"+quote+"</blockquote>\n"};Renderer.prototype.html=function(html){return html};Renderer.prototype.heading=function(text,level,raw){return"<h"+level+' id="'+this.options.headerPrefix+raw.toLowerCase().replace(/[^\w]+/g,"-")+'">'+text+"</h"+level+">\n"};Renderer.prototype.hr=function(){return this.options.xhtml?"<hr/>\n":"<hr>\n"};Renderer.prototype.list=function(body,ordered){var type=ordered?"ol":"ul";return"<"+type+">\n"+body+"</"+type+">\n"};Renderer.prototype.listitem=function(text){return"<li>"+text+"</li>\n"};Renderer.prototype.paragraph=function(text){return"<p>"+text+"</p>\n"};Renderer.prototype.table=function(header,body){return"<table>\n"+"<thead>\n"+header+"</thead>\n"+"<tbody>\n"+body+"</tbody>\n"+"</table>\n"};Renderer.prototype.tablerow=function(content){return"<tr>\n"+content+"</tr>\n"};Renderer.prototype.tablecell=function(content,flags){var type=flags.header?"th":"td";var tag=flags.align?"<"+type+' style="text-align:'+flags.align+'">':"<"+type+">";return tag+content+"</"+type+">\n"};Renderer.prototype.strong=function(text){return"<strong>"+text+"</strong>"};Renderer.prototype.em=function(text){return"<em>"+text+"</em>"};Renderer.prototype.codespan=function(text){return"<code>"+text+"</code>"};Renderer.prototype.br=function(){return this.options.xhtml?"<br/>":"<br>"};Renderer.prototype.del=function(text){return"<del>"+text+"</del>"};Renderer.prototype.link=function(href,title,text){if(this.options.sanitize){try{var prot=decodeURIComponent(unescape(href)).replace(/[^\w:]/g,"").toLowerCase()}catch(e){return""}if(prot.indexOf("javascript:")===0){return""}}var out='<a href="'+href+'"';if(title){out+=' title="'+title+'"'}out+=">"+text+"</a>";return out};Renderer.prototype.image=function(href,title,text){var out='<img src="'+href+'" alt="'+text+'"';if(title){out+=' title="'+title+'"'}out+=this.options.xhtml?"/>":">";return out};function Parser(options){this.tokens=[];this.token=null;this.options=options||marked.defaults;this.options.renderer=this.options.renderer||new Renderer;this.renderer=this.options.renderer;this.renderer.options=this.options}Parser.parse=function(src,options,renderer){var parser=new Parser(options,renderer);return parser.parse(src)};Parser.prototype.parse=function(src){this.inline=new InlineLexer(src.links,this.options,this.renderer);this.tokens=src.reverse();var out="";while(this.next()){out+=this.tok()}return out};Parser.prototype.next=function(){return this.token=this.tokens.pop()};Parser.prototype.peek=function(){return this.tokens[this.tokens.length-1]||0};Parser.prototype.parseText=function(){var body=this.token.text;while(this.peek().type==="text"){body+="\n"+this.next().text}return this.inline.output(body)};Parser.prototype.tok=function(){switch(this.token.type){case"space":{return""}case"hr":{return this.renderer.hr()}case"heading":{return this.renderer.heading(this.inline.output(this.token.text),this.token.depth,this.token.text)}case"code":{return this.renderer.code(this.token.text,this.token.lang,this.token.escaped)}case"table":{var header="",body="",i,row,cell,flags,j;cell="";for(i=0;i<this.token.header.length;i++){flags={header:true,align:this.token.align[i]};cell+=this.renderer.tablecell(this.inline.output(this.token.header[i]),{header:true,align:this.token.align[i]})}header+=this.renderer.tablerow(cell);for(i=0;i<this.token.cells.length;i++){row=this.token.cells[i];cell="";for(j=0;j<row.length;j++){cell+=this.renderer.tablecell(this.inline.output(row[j]),{header:false,align:this.token.align[j]})}body+=this.renderer.tablerow(cell)}return this.renderer.table(header,body)}case"blockquote_start":{var body="";while(this.next().type!=="blockquote_end"){body+=this.tok()}return this.renderer.blockquote(body)}case"list_start":{var body="",ordered=this.token.ordered;while(this.next().type!=="list_end"){body+=this.tok()}return this.renderer.list(body,ordered)}case"list_item_start":{var body="";while(this.next().type!=="list_item_end"){body+=this.token.type==="text"?this.parseText():this.tok()}return this.renderer.listitem(body)}case"loose_item_start":{var body="";while(this.next().type!=="list_item_end"){body+=this.tok()}return this.renderer.listitem(body)}case"html":{var html=!this.token.pre&&!this.options.pedantic?this.inline.output(this.token.text):this.token.text;return this.renderer.html(html)}case"paragraph":{return this.renderer.paragraph(this.inline.output(this.token.text))}case"text":{return this.renderer.paragraph(this.parseText())}}};function escape(html,encode){return html.replace(!encode?/&(?!#?\w+;)/g:/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}function unescape(html){return html.replace(/&([#\w]+);/g,function(_,n){n=n.toLowerCase();if(n==="colon")return":";if(n.charAt(0)==="#"){return n.charAt(1)==="x"?String.fromCharCode(parseInt(n.substring(2),16)):String.fromCharCode(+n.substring(1))}return""})}function replace(regex,opt){regex=regex.source;opt=opt||"";return function self(name,val){if(!name)return new RegExp(regex,opt);val=val.source||val;val=val.replace(/(^|[^\[])\^/g,"$1");regex=regex.replace(name,val);return self}}function noop(){}noop.exec=noop;function merge(obj){var i=1,target,key;for(;i<arguments.length;i++){target=arguments[i];for(key in target){if(Object.prototype.hasOwnProperty.call(target,key)){obj[key]=target[key]}}}return obj}function marked(src,opt,callback){if(callback||typeof opt==="function"){if(!callback){callback=opt;opt=null}opt=merge({},marked.defaults,opt||{});var highlight=opt.highlight,tokens,pending,i=0;try{tokens=Lexer.lex(src,opt)}catch(e){return callback(e)}pending=tokens.length;var done=function(err){if(err){opt.highlight=highlight;return callback(err)}var out;try{out=Parser.parse(tokens,opt)}catch(e){err=e}opt.highlight=highlight;return err?callback(err):callback(null,out)};if(!highlight||highlight.length<3){return done()}delete opt.highlight;if(!pending)return done();for(;i<tokens.length;i++){(function(token){if(token.type!=="code"){return--pending||done()}return highlight(token.text,token.lang,function(err,code){if(err)return done(err);if(code==null||code===token.text){return--pending||done()}token.text=code;token.escaped=true;--pending||done()})})(tokens[i])}return}try{if(opt)opt=merge({},marked.defaults,opt);return Parser.parse(Lexer.lex(src,opt),opt)}catch(e){e.message+="\nPlease report this to https://github.com/chjj/marked.";if((opt||marked.defaults).silent){return"<p>An error occured:</p><pre>"+escape(e.message+"",true)+"</pre>"}throw e}}marked.options=marked.setOptions=function(opt){merge(marked.defaults,opt);return marked};marked.defaults={gfm:true,tables:true,breaks:false,pedantic:false,sanitize:false,smartLists:false,silent:false,highlight:null,langPrefix:"lang-",smartypants:false,headerPrefix:"",renderer:new Renderer,xhtml:false};marked.Parser=Parser;marked.parser=Parser.parse;marked.Renderer=Renderer;marked.Lexer=Lexer;marked.lexer=Lexer.lex;marked.InlineLexer=InlineLexer;marked.inlineLexer=InlineLexer.output;marked.parse=marked;if(typeof module!=="undefined"&&typeof exports==="object"){module.exports=marked}else if(typeof define==="function"&&define.amd){define(function(){return marked})}else{this.marked=marked}}).call(function(){return this||(typeof window!=="undefined"?window:global)}());
+
+	marked.setOptions({
+		highlight: function (code, lang) {
+			if (typeof hljs !== 'undefined'
+				&& lang
+				&& hljs.listLanguages().indexOf(lang) >= 0)
+			{
+				return hljs.highlight(lang, code, true).value;
+			}
+			return code;
+		}
+	});
+
+	function formatOptions(options) {
+		var gfm = options.githubFlavored;
+		if (gfm.ctor === 'Just')
+		{
+			return {
+				gfm: true,
+				tables: gfm.tables,
+				breaks: gfm.breaks,
+				sanitize: options.sanitize,
+				smartypants: options.smartypants
+			};
+		}
+		else
+		{
+			return {
+				gfm: false,
+				tables: false,
+				breaks: false,
+				sanitize: options.sanitize,
+				smartypants: options.smartypants
+			};
+		}
+	}
+
+	function toHtmlWith(options, rawMarkdown)
+	{
+		return new MarkdownWidget(options, rawMarkdown);
+	}
+
+	function MarkdownWidget(options, rawMarkdown)
+	{
+		this.options = options;
+		this.markdown = rawMarkdown;
+	}
+
+	MarkdownWidget.prototype.type = "Widget";
+
+	MarkdownWidget.prototype.init = function init()
+	{
+		var html = marked(this.markdown, formatOptions(this.options));
+		var div = document.createElement('div');
+		div.innerHTML = html;
+		return div;
+	};
+
+	MarkdownWidget.prototype.update = function update(previous, node)
+	{
+		if (this.markdown !== previous.markdown || this.options != previous.options)
+		{
+			var html = marked(this.markdown, formatOptions(this.options));
+			node.innerHTML = html;
+		}
+		return node;
+	};
+
+
+	function toElementWith(options, rawMarkdown)
+	{
+		return Element.markdown(marked(rawMarkdown, formatOptions(options)));
+	}
+
+	return Elm.Native.Markdown.values = {
+		toHtmlWith: F2(toHtmlWith),
+		toElementWith: F2(toElementWith)
+	};
+};
 Elm.Native.Port = {};
 Elm.Native.Port.make = function(localRuntime) {
 
@@ -8474,184 +9954,6 @@ Elm.Native.Time.make = function(localRuntime)
 
 };
 
-Elm.Native = Elm.Native || {};
-Elm.Native.Touch = {};
-Elm.Native.Touch.make = function(localRuntime) {
-
-    localRuntime.Native = localRuntime.Native || {};
-    localRuntime.Native.Touch = localRuntime.Native.Touch || {};
-    if (localRuntime.Native.Touch.values)
-    {
-        return localRuntime.Native.Touch.values;
-    }
-
-    var Signal = Elm.Signal.make(localRuntime);
-    var NS = Elm.Native.Signal.make(localRuntime);
-    var List = Elm.Native.List.make(localRuntime);
-    var Utils = Elm.Native.Utils.make(localRuntime);
-
-    function Dict() {
-        this.keys = [];
-        this.values = [];
-
-        this.insert = function(key,value) {
-            this.keys.push(key);
-            this.values.push(value);
-        };
-        this.lookup = function(key) {
-            var i = this.keys.indexOf(key)
-            return i >= 0 ? this.values[i] : {x:0,y:0,t:0};
-        };
-        this.remove = function(key) {
-            var i = this.keys.indexOf(key);
-            if (i < 0) return;
-            var t = this.values[i];
-            this.keys.splice(i,1);
-            this.values.splice(i,1);
-            return t;
-        };
-        this.clear = function() {
-            this.keys = [];
-            this.values = [];
-        };
-    }
-
-    var root = NS.input('touch', []),
-    tapTime = 500,
-    hasTap = false,
-    tap = {_:{},x:0,y:0},
-    dict = new Dict();
-
-    function touch(t) {
-        var r = dict.lookup(t.identifier);
-        var point = Utils.getXY(t);
-        return {
-            _ : {},
-            id: t.identifier,
-            x : point._0,
-            y : point._1,
-            x0: r.x,
-            y0: r.y,
-            t0: r.t
-         };
-    }
-
-    var node = localRuntime.isFullscreen()
-        ? document
-        : localRuntime.node;
-
-    function start(e) {
-        var point = Utils.getXY(e);
-        dict.insert(e.identifier, {
-            x: point._0,
-            y: point._1,
-            t: localRuntime.timer.now()
-        });
-    }
-    function end(e) {
-        var t = dict.remove(e.identifier);
-        if (localRuntime.timer.now() - t.t < tapTime)
-        {
-            hasTap = true;
-            tap = {
-                _: {},
-                x: t.x,
-                y: t.y
-            };
-        }
-    }
-
-    function listen(name, f) {
-        function update(e) {
-            for (var i = e.changedTouches.length; i--; ) {
-                f(e.changedTouches[i]);
-            }
-            var ts = new Array(e.touches.length);
-            for (var i = e.touches.length; i--; ) {
-                ts[i] = touch(e.touches[i]);
-            }
-            localRuntime.notify(root.id, ts);
-            e.preventDefault();
-        }
-        localRuntime.addListener([root.id], node, name, update);
-    }
-
-    listen("touchstart", start);
-    listen("touchmove", function(_){});
-    listen("touchend", end);
-    listen("touchcancel", end);
-    listen("touchleave", end);
-
-    var mouseID = -1;
-    function move(e) {
-        var point = Utils.getXY(e);
-        for (var i = root.value.length; i--; ) {
-            if (root.value[i].id === mouseID)
-            {
-                root.value[i].x = point._0;
-                root.value[i].y = point._1;
-                localRuntime.notify(root.id, root.value);
-                break;
-            }
-        }
-    }
-    localRuntime.addListener([root.id], node, "mousedown", function down(e) {
-        node.addEventListener("mousemove", move);
-        e.identifier = mouseID;
-        start(e);
-        root.value.push(touch(e));
-        localRuntime.notify(root.id, root.value);
-    });
-    localRuntime.addListener([root.id], document, "mouseup", function up(e) {
-        node.removeEventListener("mousemove", move);
-        e.identifier = mouseID;
-        end(e);
-        for (var i = root.value.length; i--; ) {
-            if (root.value[i].id === mouseID)
-            {
-                root.value.splice(i, 1);
-                --mouseID;
-                break;
-            }
-        }
-        localRuntime.notify(root.id, root.value);
-    });
-    localRuntime.addListener([root.id], node, "blur", function blur(e) {
-        node.removeEventListener("mousemove", move);
-        if (root.value.length > 0)
-        {
-            localRuntime.notify(root.id, []);
-            --mouseID;
-        }
-        dict.clear();
-    });
-
-    function dependency(f) {
-        var sig = A2( Signal.map, f, root );
-        root.defaultNumberOfKids += 1;
-        sig.defaultNumberOfKids = 0;
-        return sig;
-    }
-
-    var touches = dependency(List.fromArray);
-
-    var taps = function() {
-        var sig = dependency(function(_) { return tap; });
-        sig.defaultNumberOfKids = 1;
-        function pred(_) {
-            var b = hasTap;
-            hasTap = false;
-            return b;
-        }
-        var sig2 = A3( Signal.filter, pred, {_:{},x:0,y:0}, sig);
-        sig2.defaultNumberOfKids = 0;
-        return sig2;
-    }();
-
-    return localRuntime.Native.Touch.values = { touches: touches, taps: taps };
-
-};
-
 Elm.Native.Transform2D = {};
 Elm.Native.Transform2D.make = function(localRuntime) {
 
@@ -9127,6 +10429,1526 @@ Elm.Native.Utils.make = function(localRuntime) {
 		badPort: badPort
 	};
 };
+
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var createElement = require("./vdom/create-element.js")
+
+module.exports = createElement
+
+},{"./vdom/create-element.js":6}],2:[function(require,module,exports){
+(function (global){
+var topLevel = typeof global !== 'undefined' ? global :
+    typeof window !== 'undefined' ? window : {}
+var minDoc = require('min-document');
+
+if (typeof document !== 'undefined') {
+    module.exports = document;
+} else {
+    var doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'];
+
+    if (!doccy) {
+        doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'] = minDoc;
+    }
+
+    module.exports = doccy;
+}
+
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"min-document":24}],3:[function(require,module,exports){
+"use strict";
+
+module.exports = function isObject(x) {
+	return typeof x === "object" && x !== null;
+};
+
+},{}],4:[function(require,module,exports){
+var nativeIsArray = Array.isArray
+var toString = Object.prototype.toString
+
+module.exports = nativeIsArray || isArray
+
+function isArray(obj) {
+    return toString.call(obj) === "[object Array]"
+}
+
+},{}],5:[function(require,module,exports){
+var isObject = require("is-object")
+var isHook = require("../vnode/is-vhook.js")
+
+module.exports = applyProperties
+
+function applyProperties(node, props, previous) {
+    for (var propName in props) {
+        var propValue = props[propName]
+
+        if (propValue === undefined) {
+            removeProperty(node, propName, propValue, previous);
+        } else if (isHook(propValue)) {
+            removeProperty(node, propName, propValue, previous)
+            if (propValue.hook) {
+                propValue.hook(node,
+                    propName,
+                    previous ? previous[propName] : undefined)
+            }
+        } else {
+            if (isObject(propValue)) {
+                patchObject(node, props, previous, propName, propValue);
+            } else {
+                node[propName] = propValue
+            }
+        }
+    }
+}
+
+function removeProperty(node, propName, propValue, previous) {
+    if (previous) {
+        var previousValue = previous[propName]
+
+        if (!isHook(previousValue)) {
+            if (propName === "attributes") {
+                for (var attrName in previousValue) {
+                    node.removeAttribute(attrName)
+                }
+            } else if (propName === "style") {
+                for (var i in previousValue) {
+                    node.style[i] = ""
+                }
+            } else if (typeof previousValue === "string") {
+                node[propName] = ""
+            } else {
+                node[propName] = null
+            }
+        } else if (previousValue.unhook) {
+            previousValue.unhook(node, propName, propValue)
+        }
+    }
+}
+
+function patchObject(node, props, previous, propName, propValue) {
+    var previousValue = previous ? previous[propName] : undefined
+
+    // Set attributes
+    if (propName === "attributes") {
+        for (var attrName in propValue) {
+            var attrValue = propValue[attrName]
+
+            if (attrValue === undefined) {
+                node.removeAttribute(attrName)
+            } else {
+                node.setAttribute(attrName, attrValue)
+            }
+        }
+
+        return
+    }
+
+    if(previousValue && isObject(previousValue) &&
+        getPrototype(previousValue) !== getPrototype(propValue)) {
+        node[propName] = propValue
+        return
+    }
+
+    if (!isObject(node[propName])) {
+        node[propName] = {}
+    }
+
+    var replacer = propName === "style" ? "" : undefined
+
+    for (var k in propValue) {
+        var value = propValue[k]
+        node[propName][k] = (value === undefined) ? replacer : value
+    }
+}
+
+function getPrototype(value) {
+    if (Object.getPrototypeOf) {
+        return Object.getPrototypeOf(value)
+    } else if (value.__proto__) {
+        return value.__proto__
+    } else if (value.constructor) {
+        return value.constructor.prototype
+    }
+}
+
+},{"../vnode/is-vhook.js":13,"is-object":3}],6:[function(require,module,exports){
+var document = require("global/document")
+
+var applyProperties = require("./apply-properties")
+
+var isVNode = require("../vnode/is-vnode.js")
+var isVText = require("../vnode/is-vtext.js")
+var isWidget = require("../vnode/is-widget.js")
+var handleThunk = require("../vnode/handle-thunk.js")
+
+module.exports = createElement
+
+function createElement(vnode, opts) {
+    var doc = opts ? opts.document || document : document
+    var warn = opts ? opts.warn : null
+
+    vnode = handleThunk(vnode).a
+
+    if (isWidget(vnode)) {
+        return vnode.init()
+    } else if (isVText(vnode)) {
+        return doc.createTextNode(vnode.text)
+    } else if (!isVNode(vnode)) {
+        if (warn) {
+            warn("Item is not a valid virtual dom node", vnode)
+        }
+        return null
+    }
+
+    var node = (vnode.namespace === null) ?
+        doc.createElement(vnode.tagName) :
+        doc.createElementNS(vnode.namespace, vnode.tagName)
+
+    var props = vnode.properties
+    applyProperties(node, props)
+
+    var children = vnode.children
+
+    for (var i = 0; i < children.length; i++) {
+        var childNode = createElement(children[i], opts)
+        if (childNode) {
+            node.appendChild(childNode)
+        }
+    }
+
+    return node
+}
+
+},{"../vnode/handle-thunk.js":11,"../vnode/is-vnode.js":14,"../vnode/is-vtext.js":15,"../vnode/is-widget.js":16,"./apply-properties":5,"global/document":2}],7:[function(require,module,exports){
+// Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
+// We don't want to read all of the DOM nodes in the tree so we use
+// the in-order tree indexing to eliminate recursion down certain branches.
+// We only recurse into a DOM node if we know that it contains a child of
+// interest.
+
+var noChild = {}
+
+module.exports = domIndex
+
+function domIndex(rootNode, tree, indices, nodes) {
+    if (!indices || indices.length === 0) {
+        return {}
+    } else {
+        indices.sort(ascending)
+        return recurse(rootNode, tree, indices, nodes, 0)
+    }
+}
+
+function recurse(rootNode, tree, indices, nodes, rootIndex) {
+    nodes = nodes || {}
+
+
+    if (rootNode) {
+        if (indexInRange(indices, rootIndex, rootIndex)) {
+            nodes[rootIndex] = rootNode
+        }
+
+        var vChildren = tree.children
+
+        if (vChildren) {
+
+            var childNodes = rootNode.childNodes
+
+            for (var i = 0; i < tree.children.length; i++) {
+                rootIndex += 1
+
+                var vChild = vChildren[i] || noChild
+                var nextIndex = rootIndex + (vChild.count || 0)
+
+                // skip recursion down the tree if there are no nodes down here
+                if (indexInRange(indices, rootIndex, nextIndex)) {
+                    recurse(childNodes[i], vChild, indices, nodes, rootIndex)
+                }
+
+                rootIndex = nextIndex
+            }
+        }
+    }
+
+    return nodes
+}
+
+// Binary search for an index in the interval [left, right]
+function indexInRange(indices, left, right) {
+    if (indices.length === 0) {
+        return false
+    }
+
+    var minIndex = 0
+    var maxIndex = indices.length - 1
+    var currentIndex
+    var currentItem
+
+    while (minIndex <= maxIndex) {
+        currentIndex = ((maxIndex + minIndex) / 2) >> 0
+        currentItem = indices[currentIndex]
+
+        if (minIndex === maxIndex) {
+            return currentItem >= left && currentItem <= right
+        } else if (currentItem < left) {
+            minIndex = currentIndex + 1
+        } else  if (currentItem > right) {
+            maxIndex = currentIndex - 1
+        } else {
+            return true
+        }
+    }
+
+    return false;
+}
+
+function ascending(a, b) {
+    return a > b ? 1 : -1
+}
+
+},{}],8:[function(require,module,exports){
+var applyProperties = require("./apply-properties")
+
+var isWidget = require("../vnode/is-widget.js")
+var VPatch = require("../vnode/vpatch.js")
+
+var render = require("./create-element")
+var updateWidget = require("./update-widget")
+
+module.exports = applyPatch
+
+function applyPatch(vpatch, domNode, renderOptions) {
+    var type = vpatch.type
+    var vNode = vpatch.vNode
+    var patch = vpatch.patch
+
+    switch (type) {
+        case VPatch.REMOVE:
+            return removeNode(domNode, vNode)
+        case VPatch.INSERT:
+            return insertNode(domNode, patch, renderOptions)
+        case VPatch.VTEXT:
+            return stringPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.WIDGET:
+            return widgetPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.VNODE:
+            return vNodePatch(domNode, vNode, patch, renderOptions)
+        case VPatch.ORDER:
+            reorderChildren(domNode, patch)
+            return domNode
+        case VPatch.PROPS:
+            applyProperties(domNode, patch, vNode.properties)
+            return domNode
+        case VPatch.THUNK:
+            return replaceRoot(domNode,
+                renderOptions.patch(domNode, patch, renderOptions))
+        default:
+            return domNode
+    }
+}
+
+function removeNode(domNode, vNode) {
+    var parentNode = domNode.parentNode
+
+    if (parentNode) {
+        parentNode.removeChild(domNode)
+    }
+
+    destroyWidget(domNode, vNode);
+
+    return null
+}
+
+function insertNode(parentNode, vNode, renderOptions) {
+    var newNode = render(vNode, renderOptions)
+
+    if (parentNode) {
+        parentNode.appendChild(newNode)
+    }
+
+    return parentNode
+}
+
+function stringPatch(domNode, leftVNode, vText, renderOptions) {
+    var newNode
+
+    if (domNode.nodeType === 3) {
+        domNode.replaceData(0, domNode.length, vText.text)
+        newNode = domNode
+    } else {
+        var parentNode = domNode.parentNode
+        newNode = render(vText, renderOptions)
+
+        if (parentNode && newNode !== domNode) {
+            parentNode.replaceChild(newNode, domNode)
+        }
+    }
+
+    return newNode
+}
+
+function widgetPatch(domNode, leftVNode, widget, renderOptions) {
+    var updating = updateWidget(leftVNode, widget)
+    var newNode
+
+    if (updating) {
+        newNode = widget.update(leftVNode, domNode) || domNode
+    } else {
+        newNode = render(widget, renderOptions)
+    }
+
+    var parentNode = domNode.parentNode
+
+    if (parentNode && newNode !== domNode) {
+        parentNode.replaceChild(newNode, domNode)
+    }
+
+    if (!updating) {
+        destroyWidget(domNode, leftVNode)
+    }
+
+    return newNode
+}
+
+function vNodePatch(domNode, leftVNode, vNode, renderOptions) {
+    var parentNode = domNode.parentNode
+    var newNode = render(vNode, renderOptions)
+
+    if (parentNode && newNode !== domNode) {
+        parentNode.replaceChild(newNode, domNode)
+    }
+
+    return newNode
+}
+
+function destroyWidget(domNode, w) {
+    if (typeof w.destroy === "function" && isWidget(w)) {
+        w.destroy(domNode)
+    }
+}
+
+function reorderChildren(domNode, moves) {
+    var childNodes = domNode.childNodes
+    var keyMap = {}
+    var node
+    var remove
+    var insert
+
+    for (var i = 0; i < moves.removes.length; i++) {
+        remove = moves.removes[i]
+        node = childNodes[remove.from]
+        if (remove.key) {
+            keyMap[remove.key] = node
+        }
+        domNode.removeChild(node)
+    }
+
+    var length = childNodes.length
+    for (var j = 0; j < moves.inserts.length; j++) {
+        insert = moves.inserts[j]
+        node = keyMap[insert.key]
+        // this is the weirdest bug i've ever seen in webkit
+        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
+    }
+}
+
+function replaceRoot(oldRoot, newRoot) {
+    if (oldRoot && newRoot && oldRoot !== newRoot && oldRoot.parentNode) {
+        oldRoot.parentNode.replaceChild(newRoot, oldRoot)
+    }
+
+    return newRoot;
+}
+
+},{"../vnode/is-widget.js":16,"../vnode/vpatch.js":19,"./apply-properties":5,"./create-element":6,"./update-widget":10}],9:[function(require,module,exports){
+var document = require("global/document")
+var isArray = require("x-is-array")
+
+var domIndex = require("./dom-index")
+var patchOp = require("./patch-op")
+module.exports = patch
+
+function patch(rootNode, patches) {
+    return patchRecursive(rootNode, patches)
+}
+
+function patchRecursive(rootNode, patches, renderOptions) {
+    var indices = patchIndices(patches)
+
+    if (indices.length === 0) {
+        return rootNode
+    }
+
+    var index = domIndex(rootNode, patches.a, indices)
+    var ownerDocument = rootNode.ownerDocument
+
+    if (!renderOptions) {
+        renderOptions = { patch: patchRecursive }
+        if (ownerDocument !== document) {
+            renderOptions.document = ownerDocument
+        }
+    }
+
+    for (var i = 0; i < indices.length; i++) {
+        var nodeIndex = indices[i]
+        rootNode = applyPatch(rootNode,
+            index[nodeIndex],
+            patches[nodeIndex],
+            renderOptions)
+    }
+
+    return rootNode
+}
+
+function applyPatch(rootNode, domNode, patchList, renderOptions) {
+    if (!domNode) {
+        return rootNode
+    }
+
+    var newNode
+
+    if (isArray(patchList)) {
+        for (var i = 0; i < patchList.length; i++) {
+            newNode = patchOp(patchList[i], domNode, renderOptions)
+
+            if (domNode === rootNode) {
+                rootNode = newNode
+            }
+        }
+    } else {
+        newNode = patchOp(patchList, domNode, renderOptions)
+
+        if (domNode === rootNode) {
+            rootNode = newNode
+        }
+    }
+
+    return rootNode
+}
+
+function patchIndices(patches) {
+    var indices = []
+
+    for (var key in patches) {
+        if (key !== "a") {
+            indices.push(Number(key))
+        }
+    }
+
+    return indices
+}
+
+},{"./dom-index":7,"./patch-op":8,"global/document":2,"x-is-array":4}],10:[function(require,module,exports){
+var isWidget = require("../vnode/is-widget.js")
+
+module.exports = updateWidget
+
+function updateWidget(a, b) {
+    if (isWidget(a) && isWidget(b)) {
+        if ("name" in a && "name" in b) {
+            return a.id === b.id
+        } else {
+            return a.init === b.init
+        }
+    }
+
+    return false
+}
+
+},{"../vnode/is-widget.js":16}],11:[function(require,module,exports){
+var isVNode = require("./is-vnode")
+var isVText = require("./is-vtext")
+var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
+
+module.exports = handleThunk
+
+function handleThunk(a, b) {
+    var renderedA = a
+    var renderedB = b
+
+    if (isThunk(b)) {
+        renderedB = renderThunk(b, a)
+    }
+
+    if (isThunk(a)) {
+        renderedA = renderThunk(a, null)
+    }
+
+    return {
+        a: renderedA,
+        b: renderedB
+    }
+}
+
+function renderThunk(thunk, previous) {
+    var renderedThunk = thunk.vnode
+
+    if (!renderedThunk) {
+        renderedThunk = thunk.vnode = thunk.render(previous)
+    }
+
+    if (!(isVNode(renderedThunk) ||
+            isVText(renderedThunk) ||
+            isWidget(renderedThunk))) {
+        throw new Error("thunk did not return a valid node");
+    }
+
+    return renderedThunk
+}
+
+},{"./is-thunk":12,"./is-vnode":14,"./is-vtext":15,"./is-widget":16}],12:[function(require,module,exports){
+module.exports = isThunk
+
+function isThunk(t) {
+    return t && t.type === "Thunk"
+}
+
+},{}],13:[function(require,module,exports){
+module.exports = isHook
+
+function isHook(hook) {
+    return hook &&
+      (typeof hook.hook === "function" && !hook.hasOwnProperty("hook") ||
+       typeof hook.unhook === "function" && !hook.hasOwnProperty("unhook"))
+}
+
+},{}],14:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = isVirtualNode
+
+function isVirtualNode(x) {
+    return x && x.type === "VirtualNode" && x.version === version
+}
+
+},{"./version":17}],15:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = isVirtualText
+
+function isVirtualText(x) {
+    return x && x.type === "VirtualText" && x.version === version
+}
+
+},{"./version":17}],16:[function(require,module,exports){
+module.exports = isWidget
+
+function isWidget(w) {
+    return w && w.type === "Widget"
+}
+
+},{}],17:[function(require,module,exports){
+module.exports = "2"
+
+},{}],18:[function(require,module,exports){
+var version = require("./version")
+var isVNode = require("./is-vnode")
+var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
+var isVHook = require("./is-vhook")
+
+module.exports = VirtualNode
+
+var noProperties = {}
+var noChildren = []
+
+function VirtualNode(tagName, properties, children, key, namespace) {
+    this.tagName = tagName
+    this.properties = properties || noProperties
+    this.children = children || noChildren
+    this.key = key != null ? String(key) : undefined
+    this.namespace = (typeof namespace === "string") ? namespace : null
+
+    var count = (children && children.length) || 0
+    var descendants = 0
+    var hasWidgets = false
+    var hasThunks = false
+    var descendantHooks = false
+    var hooks
+
+    for (var propName in properties) {
+        if (properties.hasOwnProperty(propName)) {
+            var property = properties[propName]
+            if (isVHook(property) && property.unhook) {
+                if (!hooks) {
+                    hooks = {}
+                }
+
+                hooks[propName] = property
+            }
+        }
+    }
+
+    for (var i = 0; i < count; i++) {
+        var child = children[i]
+        if (isVNode(child)) {
+            descendants += child.count || 0
+
+            if (!hasWidgets && child.hasWidgets) {
+                hasWidgets = true
+            }
+
+            if (!hasThunks && child.hasThunks) {
+                hasThunks = true
+            }
+
+            if (!descendantHooks && (child.hooks || child.descendantHooks)) {
+                descendantHooks = true
+            }
+        } else if (!hasWidgets && isWidget(child)) {
+            if (typeof child.destroy === "function") {
+                hasWidgets = true
+            }
+        } else if (!hasThunks && isThunk(child)) {
+            hasThunks = true;
+        }
+    }
+
+    this.count = count + descendants
+    this.hasWidgets = hasWidgets
+    this.hasThunks = hasThunks
+    this.hooks = hooks
+    this.descendantHooks = descendantHooks
+}
+
+VirtualNode.prototype.version = version
+VirtualNode.prototype.type = "VirtualNode"
+
+},{"./is-thunk":12,"./is-vhook":13,"./is-vnode":14,"./is-widget":16,"./version":17}],19:[function(require,module,exports){
+var version = require("./version")
+
+VirtualPatch.NONE = 0
+VirtualPatch.VTEXT = 1
+VirtualPatch.VNODE = 2
+VirtualPatch.WIDGET = 3
+VirtualPatch.PROPS = 4
+VirtualPatch.ORDER = 5
+VirtualPatch.INSERT = 6
+VirtualPatch.REMOVE = 7
+VirtualPatch.THUNK = 8
+
+module.exports = VirtualPatch
+
+function VirtualPatch(type, vNode, patch) {
+    this.type = Number(type)
+    this.vNode = vNode
+    this.patch = patch
+}
+
+VirtualPatch.prototype.version = version
+VirtualPatch.prototype.type = "VirtualPatch"
+
+},{"./version":17}],20:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = VirtualText
+
+function VirtualText(text) {
+    this.text = String(text)
+}
+
+VirtualText.prototype.version = version
+VirtualText.prototype.type = "VirtualText"
+
+},{"./version":17}],21:[function(require,module,exports){
+var isObject = require("is-object")
+var isHook = require("../vnode/is-vhook")
+
+module.exports = diffProps
+
+function diffProps(a, b) {
+    var diff
+
+    for (var aKey in a) {
+        if (!(aKey in b)) {
+            diff = diff || {}
+            diff[aKey] = undefined
+        }
+
+        var aValue = a[aKey]
+        var bValue = b[aKey]
+
+        if (aValue === bValue) {
+            continue
+        } else if (isObject(aValue) && isObject(bValue)) {
+            if (getPrototype(bValue) !== getPrototype(aValue)) {
+                diff = diff || {}
+                diff[aKey] = bValue
+            } else if (isHook(bValue)) {
+                 diff = diff || {}
+                 diff[aKey] = bValue
+            } else {
+                var objectDiff = diffProps(aValue, bValue)
+                if (objectDiff) {
+                    diff = diff || {}
+                    diff[aKey] = objectDiff
+                }
+            }
+        } else {
+            diff = diff || {}
+            diff[aKey] = bValue
+        }
+    }
+
+    for (var bKey in b) {
+        if (!(bKey in a)) {
+            diff = diff || {}
+            diff[bKey] = b[bKey]
+        }
+    }
+
+    return diff
+}
+
+function getPrototype(value) {
+  if (Object.getPrototypeOf) {
+    return Object.getPrototypeOf(value)
+  } else if (value.__proto__) {
+    return value.__proto__
+  } else if (value.constructor) {
+    return value.constructor.prototype
+  }
+}
+
+},{"../vnode/is-vhook":13,"is-object":3}],22:[function(require,module,exports){
+var isArray = require("x-is-array")
+
+var VPatch = require("../vnode/vpatch")
+var isVNode = require("../vnode/is-vnode")
+var isVText = require("../vnode/is-vtext")
+var isWidget = require("../vnode/is-widget")
+var isThunk = require("../vnode/is-thunk")
+var handleThunk = require("../vnode/handle-thunk")
+
+var diffProps = require("./diff-props")
+
+module.exports = diff
+
+function diff(a, b) {
+    var patch = { a: a }
+    walk(a, b, patch, 0)
+    return patch
+}
+
+function walk(a, b, patch, index) {
+    if (a === b) {
+        return
+    }
+
+    var apply = patch[index]
+    var applyClear = false
+
+    if (isThunk(a) || isThunk(b)) {
+        thunks(a, b, patch, index)
+    } else if (b == null) {
+
+        // If a is a widget we will add a remove patch for it
+        // Otherwise any child widgets/hooks must be destroyed.
+        // This prevents adding two remove patches for a widget.
+        if (!isWidget(a)) {
+            clearState(a, patch, index)
+            apply = patch[index]
+        }
+
+        apply = appendPatch(apply, new VPatch(VPatch.REMOVE, a, b))
+    } else if (isVNode(b)) {
+        if (isVNode(a)) {
+            if (a.tagName === b.tagName &&
+                a.namespace === b.namespace &&
+                a.key === b.key) {
+                var propsPatch = diffProps(a.properties, b.properties)
+                if (propsPatch) {
+                    apply = appendPatch(apply,
+                        new VPatch(VPatch.PROPS, a, propsPatch))
+                }
+                apply = diffChildren(a, b, patch, apply, index)
+            } else {
+                apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+                applyClear = true
+            }
+        } else {
+            apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+            applyClear = true
+        }
+    } else if (isVText(b)) {
+        if (!isVText(a)) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+            applyClear = true
+        } else if (a.text !== b.text) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+        }
+    } else if (isWidget(b)) {
+        if (!isWidget(a)) {
+            applyClear = true
+        }
+
+        apply = appendPatch(apply, new VPatch(VPatch.WIDGET, a, b))
+    }
+
+    if (apply) {
+        patch[index] = apply
+    }
+
+    if (applyClear) {
+        clearState(a, patch, index)
+    }
+}
+
+function diffChildren(a, b, patch, apply, index) {
+    var aChildren = a.children
+    var orderedSet = reorder(aChildren, b.children)
+    var bChildren = orderedSet.children
+
+    var aLen = aChildren.length
+    var bLen = bChildren.length
+    var len = aLen > bLen ? aLen : bLen
+
+    for (var i = 0; i < len; i++) {
+        var leftNode = aChildren[i]
+        var rightNode = bChildren[i]
+        index += 1
+
+        if (!leftNode) {
+            if (rightNode) {
+                // Excess nodes in b need to be added
+                apply = appendPatch(apply,
+                    new VPatch(VPatch.INSERT, null, rightNode))
+            }
+        } else {
+            walk(leftNode, rightNode, patch, index)
+        }
+
+        if (isVNode(leftNode) && leftNode.count) {
+            index += leftNode.count
+        }
+    }
+
+    if (orderedSet.moves) {
+        // Reorder nodes last
+        apply = appendPatch(apply, new VPatch(
+            VPatch.ORDER,
+            a,
+            orderedSet.moves
+        ))
+    }
+
+    return apply
+}
+
+function clearState(vNode, patch, index) {
+    // TODO: Make this a single walk, not two
+    unhook(vNode, patch, index)
+    destroyWidgets(vNode, patch, index)
+}
+
+// Patch records for all destroyed widgets must be added because we need
+// a DOM node reference for the destroy function
+function destroyWidgets(vNode, patch, index) {
+    if (isWidget(vNode)) {
+        if (typeof vNode.destroy === "function") {
+            patch[index] = appendPatch(
+                patch[index],
+                new VPatch(VPatch.REMOVE, vNode, null)
+            )
+        }
+    } else if (isVNode(vNode) && (vNode.hasWidgets || vNode.hasThunks)) {
+        var children = vNode.children
+        var len = children.length
+        for (var i = 0; i < len; i++) {
+            var child = children[i]
+            index += 1
+
+            destroyWidgets(child, patch, index)
+
+            if (isVNode(child) && child.count) {
+                index += child.count
+            }
+        }
+    } else if (isThunk(vNode)) {
+        thunks(vNode, null, patch, index)
+    }
+}
+
+// Create a sub-patch for thunks
+function thunks(a, b, patch, index) {
+    var nodes = handleThunk(a, b)
+    var thunkPatch = diff(nodes.a, nodes.b)
+    if (hasPatches(thunkPatch)) {
+        patch[index] = new VPatch(VPatch.THUNK, null, thunkPatch)
+    }
+}
+
+function hasPatches(patch) {
+    for (var index in patch) {
+        if (index !== "a") {
+            return true
+        }
+    }
+
+    return false
+}
+
+// Execute hooks when two nodes are identical
+function unhook(vNode, patch, index) {
+    if (isVNode(vNode)) {
+        if (vNode.hooks) {
+            patch[index] = appendPatch(
+                patch[index],
+                new VPatch(
+                    VPatch.PROPS,
+                    vNode,
+                    undefinedKeys(vNode.hooks)
+                )
+            )
+        }
+
+        if (vNode.descendantHooks || vNode.hasThunks) {
+            var children = vNode.children
+            var len = children.length
+            for (var i = 0; i < len; i++) {
+                var child = children[i]
+                index += 1
+
+                unhook(child, patch, index)
+
+                if (isVNode(child) && child.count) {
+                    index += child.count
+                }
+            }
+        }
+    } else if (isThunk(vNode)) {
+        thunks(vNode, null, patch, index)
+    }
+}
+
+function undefinedKeys(obj) {
+    var result = {}
+
+    for (var key in obj) {
+        result[key] = undefined
+    }
+
+    return result
+}
+
+// List diff, naive left to right reordering
+function reorder(aChildren, bChildren) {
+    // O(M) time, O(M) memory
+    var bChildIndex = keyIndex(bChildren)
+    var bKeys = bChildIndex.keys
+    var bFree = bChildIndex.free
+
+    if (bFree.length === bChildren.length) {
+        return {
+            children: bChildren,
+            moves: null
+        }
+    }
+
+    // O(N) time, O(N) memory
+    var aChildIndex = keyIndex(aChildren)
+    var aKeys = aChildIndex.keys
+    var aFree = aChildIndex.free
+
+    if (aFree.length === aChildren.length) {
+        return {
+            children: bChildren,
+            moves: null
+        }
+    }
+
+    // O(MAX(N, M)) memory
+    var newChildren = []
+
+    var freeIndex = 0
+    var freeCount = bFree.length
+    var deletedItems = 0
+
+    // Iterate through a and match a node in b
+    // O(N) time,
+    for (var i = 0 ; i < aChildren.length; i++) {
+        var aItem = aChildren[i]
+        var itemIndex
+
+        if (aItem.key) {
+            if (bKeys.hasOwnProperty(aItem.key)) {
+                // Match up the old keys
+                itemIndex = bKeys[aItem.key]
+                newChildren.push(bChildren[itemIndex])
+
+            } else {
+                // Remove old keyed items
+                itemIndex = i - deletedItems++
+                newChildren.push(null)
+            }
+        } else {
+            // Match the item in a with the next free item in b
+            if (freeIndex < freeCount) {
+                itemIndex = bFree[freeIndex++]
+                newChildren.push(bChildren[itemIndex])
+            } else {
+                // There are no free items in b to match with
+                // the free items in a, so the extra free nodes
+                // are deleted.
+                itemIndex = i - deletedItems++
+                newChildren.push(null)
+            }
+        }
+    }
+
+    var lastFreeIndex = freeIndex >= bFree.length ?
+        bChildren.length :
+        bFree[freeIndex]
+
+    // Iterate through b and append any new keys
+    // O(M) time
+    for (var j = 0; j < bChildren.length; j++) {
+        var newItem = bChildren[j]
+
+        if (newItem.key) {
+            if (!aKeys.hasOwnProperty(newItem.key)) {
+                // Add any new keyed items
+                // We are adding new items to the end and then sorting them
+                // in place. In future we should insert new items in place.
+                newChildren.push(newItem)
+            }
+        } else if (j >= lastFreeIndex) {
+            // Add any leftover non-keyed items
+            newChildren.push(newItem)
+        }
+    }
+
+    var simulate = newChildren.slice()
+    var simulateIndex = 0
+    var removes = []
+    var inserts = []
+    var simulateItem
+
+    for (var k = 0; k < bChildren.length;) {
+        var wantedItem = bChildren[k]
+        simulateItem = simulate[simulateIndex]
+
+        // remove items
+        while (simulateItem === null && simulate.length) {
+            removes.push(remove(simulate, simulateIndex, null))
+            simulateItem = simulate[simulateIndex]
+        }
+
+        if (!simulateItem || simulateItem.key !== wantedItem.key) {
+            // if we need a key in this position...
+            if (wantedItem.key) {
+                if (simulateItem && simulateItem.key) {
+                    // if an insert doesn't put this key in place, it needs to move
+                    if (bKeys[simulateItem.key] !== k + 1) {
+                        removes.push(remove(simulate, simulateIndex, simulateItem.key))
+                        simulateItem = simulate[simulateIndex]
+                        // if the remove didn't put the wanted item in place, we need to insert it
+                        if (!simulateItem || simulateItem.key !== wantedItem.key) {
+                            inserts.push({key: wantedItem.key, to: k})
+                        }
+                        // items are matching, so skip ahead
+                        else {
+                            simulateIndex++
+                        }
+                    }
+                    else {
+                        inserts.push({key: wantedItem.key, to: k})
+                    }
+                }
+                else {
+                    inserts.push({key: wantedItem.key, to: k})
+                }
+                k++
+            }
+            // a key in simulate has no matching wanted key, remove it
+            else if (simulateItem && simulateItem.key) {
+                removes.push(remove(simulate, simulateIndex, simulateItem.key))
+            }
+        }
+        else {
+            simulateIndex++
+            k++
+        }
+    }
+
+    // remove all the remaining nodes from simulate
+    while(simulateIndex < simulate.length) {
+        simulateItem = simulate[simulateIndex]
+        removes.push(remove(simulate, simulateIndex, simulateItem && simulateItem.key))
+    }
+
+    // If the only moves we have are deletes then we can just
+    // let the delete patch remove these items.
+    if (removes.length === deletedItems && !inserts.length) {
+        return {
+            children: newChildren,
+            moves: null
+        }
+    }
+
+    return {
+        children: newChildren,
+        moves: {
+            removes: removes,
+            inserts: inserts
+        }
+    }
+}
+
+function remove(arr, index, key) {
+    arr.splice(index, 1)
+
+    return {
+        from: index,
+        key: key
+    }
+}
+
+function keyIndex(children) {
+    var keys = {}
+    var free = []
+    var length = children.length
+
+    for (var i = 0; i < length; i++) {
+        var child = children[i]
+
+        if (child.key) {
+            keys[child.key] = i
+        } else {
+            free.push(i)
+        }
+    }
+
+    return {
+        keys: keys,     // A hash of key name to index
+        free: free,     // An array of unkeyed item indices
+    }
+}
+
+function appendPatch(apply, patch) {
+    if (apply) {
+        if (isArray(apply)) {
+            apply.push(patch)
+        } else {
+            apply = [apply, patch]
+        }
+
+        return apply
+    } else {
+        return patch
+    }
+}
+
+},{"../vnode/handle-thunk":11,"../vnode/is-thunk":12,"../vnode/is-vnode":14,"../vnode/is-vtext":15,"../vnode/is-widget":16,"../vnode/vpatch":19,"./diff-props":21,"x-is-array":4}],23:[function(require,module,exports){
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var diff = require('virtual-dom/vtree/diff');
+var patch = require('virtual-dom/vdom/patch');
+var createElement = require('virtual-dom/create-element');
+var isHook = require("virtual-dom/vnode/is-vhook");
+
+
+Elm.Native.VirtualDom = {};
+Elm.Native.VirtualDom.make = function(elm)
+{
+	elm.Native = elm.Native || {};
+	elm.Native.VirtualDom = elm.Native.VirtualDom || {};
+	if (elm.Native.VirtualDom.values)
+	{
+		return elm.Native.VirtualDom.values;
+	}
+
+	var Element = Elm.Native.Graphics.Element.make(elm);
+	var Json = Elm.Native.Json.make(elm);
+	var List = Elm.Native.List.make(elm);
+	var Signal = Elm.Native.Signal.make(elm);
+	var Utils = Elm.Native.Utils.make(elm);
+
+	var ATTRIBUTE_KEY = 'UniqueNameThatOthersAreVeryUnlikelyToUse';
+
+	function listToProperties(list)
+	{
+		var object = {};
+		while (list.ctor !== '[]')
+		{
+			var entry = list._0;
+			if (entry.key === ATTRIBUTE_KEY)
+			{
+				object.attributes = object.attributes || {};
+				object.attributes[entry.value.attrKey] = entry.value.attrValue;
+			}
+			else
+			{
+				object[entry.key] = entry.value;
+			}
+			list = list._1;
+		}
+		return object;
+	}
+
+	function node(name)
+	{
+		return F2(function(propertyList, contents) {
+			return makeNode(name, propertyList, contents);
+		});
+	}
+
+	function makeNode(name, propertyList, contents)
+	{
+		var props = listToProperties(propertyList);
+
+		var key, namespace;
+		// support keys
+		if (props.key !== undefined)
+		{
+			key = props.key;
+			props.key = undefined;
+		}
+
+		// support namespace
+		if (props.namespace !== undefined)
+		{
+			namespace = props.namespace;
+			props.namespace = undefined;
+		}
+
+		// ensure that setting text of an input does not move the cursor
+		var useSoftSet =
+			name === 'input'
+			&& props.value !== undefined
+			&& !isHook(props.value);
+
+		if (useSoftSet)
+		{
+			props.value = SoftSetHook(props.value);
+		}
+
+		return new VNode(name, props, List.toArray(contents), key, namespace);
+	}
+
+	function property(key, value)
+	{
+		return {
+			key: key,
+			value: value
+		};
+	}
+
+	function attribute(key, value)
+	{
+		return {
+			key: ATTRIBUTE_KEY,
+			value: {
+				attrKey: key,
+				attrValue: value
+			}
+		};
+	}
+
+	function on(name, options, decoder, createMessage)
+	{
+		function eventHandler(event)
+		{
+			var value = A2(Json.runDecoderValue, decoder, event);
+			if (value.ctor === 'Ok')
+			{
+				if (options.stopPropagation)
+				{
+					event.stopPropagation();
+				}
+				if (options.preventDefault)
+				{
+					event.preventDefault();
+				}
+				Signal.sendMessage(createMessage(value._0));
+			}
+		}
+		return property('on' + name, eventHandler);
+	}
+
+	function SoftSetHook(value)
+	{
+		if (!(this instanceof SoftSetHook))
+		{
+			return new SoftSetHook(value);
+		}
+
+		this.value = value;
+	}
+
+	SoftSetHook.prototype.hook = function (node, propertyName)
+	{
+		if (node[propertyName] !== this.value)
+		{
+			node[propertyName] = this.value;
+		}
+	};
+
+	function text(string)
+	{
+		return new VText(string);
+	}
+
+	function ElementWidget(element)
+	{
+		this.element = element;
+	}
+
+	ElementWidget.prototype.type = "Widget";
+
+	ElementWidget.prototype.init = function init()
+	{
+		return Element.render(this.element);
+	};
+
+	ElementWidget.prototype.update = function update(previous, node)
+	{
+		return Element.update(node, previous.element, this.element);
+	};
+
+	function fromElement(element)
+	{
+		return new ElementWidget(element);
+	}
+
+	function toElement(width, height, html)
+	{
+		return A3(Element.newElement, width, height, {
+			ctor: 'Custom',
+			type: 'evancz/elm-html',
+			render: render,
+			update: update,
+			model: html
+		});
+	}
+
+	function render(model)
+	{
+		var element = Element.createNode('div');
+		element.appendChild(createElement(model));
+		return element;
+	}
+
+	function update(node, oldModel, newModel)
+	{
+		updateAndReplace(node.firstChild, oldModel, newModel);
+		return node;
+	}
+
+	function updateAndReplace(node, oldModel, newModel)
+	{
+		var patches = diff(oldModel, newModel);
+		var newNode = patch(node, patches);
+		return newNode;
+	}
+
+	function lazyRef(fn, a)
+	{
+		function thunk()
+		{
+			return fn(a);
+		}
+		return new Thunk(fn, [a], thunk);
+	}
+
+	function lazyRef2(fn, a, b)
+	{
+		function thunk()
+		{
+			return A2(fn, a, b);
+		}
+		return new Thunk(fn, [a,b], thunk);
+	}
+
+	function lazyRef3(fn, a, b, c)
+	{
+		function thunk()
+		{
+			return A3(fn, a, b, c);
+		}
+		return new Thunk(fn, [a,b,c], thunk);
+	}
+
+	function Thunk(fn, args, thunk)
+	{
+		this.fn = fn;
+		this.args = args;
+		this.vnode = null;
+		this.key = undefined;
+		this.thunk = thunk;
+	}
+
+	Thunk.prototype.type = "Thunk";
+	Thunk.prototype.update = updateThunk;
+	Thunk.prototype.render = renderThunk;
+
+	function shouldUpdate(current, previous)
+	{
+		if (current.fn !== previous.fn)
+		{
+			return true;
+		}
+
+		// if it's the same function, we know the number of args must match
+		var cargs = current.args;
+		var pargs = previous.args;
+
+		for (var i = cargs.length; i--; )
+		{
+			if (cargs[i] !== pargs[i])
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	function updateThunk(previous, domNode)
+	{
+		if (!shouldUpdate(this, previous))
+		{
+			this.vnode = previous.vnode;
+			return;
+		}
+
+		if (!this.vnode)
+		{
+			this.vnode = this.thunk();
+		}
+
+		var patches = diff(previous.vnode, this.vnode);
+		patch(domNode, patches);
+	}
+
+	function renderThunk()
+	{
+		return this.thunk();
+	}
+
+	return Elm.Native.VirtualDom.values = {
+		node: node,
+		text: text,
+		on: F4(on),
+
+		property: F2(property),
+		attribute: F2(attribute),
+
+		lazy: F2(lazyRef),
+		lazy2: F3(lazyRef2),
+		lazy3: F4(lazyRef3),
+
+		toElement: F3(toElement),
+		fromElement: fromElement,
+
+		render: createElement,
+		updateAndReplace: updateAndReplace
+	};
+};
+
+},{"virtual-dom/create-element":1,"virtual-dom/vdom/patch":9,"virtual-dom/vnode/is-vhook":13,"virtual-dom/vnode/vnode":18,"virtual-dom/vnode/vtext":20,"virtual-dom/vtree/diff":22}],24:[function(require,module,exports){
+
+},{}]},{},[23]);
 
 Elm.Native = Elm.Native || {};
 Elm.Native.Window = {};
@@ -10181,42 +13003,6 @@ Elm.Time.make = function (_elm) {
                       ,since: since};
    return _elm.Time.values;
 };
-Elm.Touch = Elm.Touch || {};
-Elm.Touch.make = function (_elm) {
-   "use strict";
-   _elm.Touch = _elm.Touch || {};
-   if (_elm.Touch.values)
-   return _elm.Touch.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Touch",
-   $Native$Touch = Elm.Native.Touch.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Time = Elm.Time.make(_elm);
-   var taps = $Native$Touch.taps;
-   var touches = $Native$Touch.touches;
-   var Touch = F6(function (a,
-   b,
-   c,
-   d,
-   e,
-   f) {
-      return {_: {}
-             ,id: c
-             ,t0: f
-             ,x: a
-             ,x0: d
-             ,y: b
-             ,y0: e};
-   });
-   _elm.Touch.values = {_op: _op
-                       ,touches: touches
-                       ,taps: taps
-                       ,Touch: Touch};
-   return _elm.Touch.values;
-};
 Elm.Transform2D = Elm.Transform2D || {};
 Elm.Transform2D.make = function (_elm) {
    "use strict";
@@ -10281,6 +13067,71 @@ Elm.Transform2D.make = function (_elm) {
                              ,scaleX: scaleX
                              ,scaleY: scaleY};
    return _elm.Transform2D.values;
+};
+Elm.VirtualDom = Elm.VirtualDom || {};
+Elm.VirtualDom.make = function (_elm) {
+   "use strict";
+   _elm.VirtualDom = _elm.VirtualDom || {};
+   if (_elm.VirtualDom.values)
+   return _elm.VirtualDom.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "VirtualDom",
+   $Basics = Elm.Basics.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$VirtualDom = Elm.Native.VirtualDom.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var lazy3 = $Native$VirtualDom.lazy3;
+   var lazy2 = $Native$VirtualDom.lazy2;
+   var lazy = $Native$VirtualDom.lazy;
+   var defaultOptions = {_: {}
+                        ,preventDefault: false
+                        ,stopPropagation: false};
+   var Options = F2(function (a,
+   b) {
+      return {_: {}
+             ,preventDefault: b
+             ,stopPropagation: a};
+   });
+   var onWithOptions = $Native$VirtualDom.on;
+   var on = F3(function (eventName,
+   decoder,
+   toMessage) {
+      return A4($Native$VirtualDom.on,
+      eventName,
+      defaultOptions,
+      decoder,
+      toMessage);
+   });
+   var attribute = $Native$VirtualDom.attribute;
+   var property = $Native$VirtualDom.property;
+   var Property = {ctor: "Property"};
+   var fromElement = $Native$VirtualDom.fromElement;
+   var toElement = $Native$VirtualDom.toElement;
+   var text = $Native$VirtualDom.text;
+   var node = $Native$VirtualDom.node;
+   var Node = {ctor: "Node"};
+   _elm.VirtualDom.values = {_op: _op
+                            ,text: text
+                            ,node: node
+                            ,toElement: toElement
+                            ,fromElement: fromElement
+                            ,property: property
+                            ,attribute: attribute
+                            ,on: on
+                            ,onWithOptions: onWithOptions
+                            ,defaultOptions: defaultOptions
+                            ,lazy: lazy
+                            ,lazy2: lazy2
+                            ,lazy3: lazy3
+                            ,Options: Options};
+   return _elm.VirtualDom.values;
 };
 Elm.Window = Elm.Window || {};
 Elm.Window.make = function (_elm) {
