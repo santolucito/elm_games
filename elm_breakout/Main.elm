@@ -3,6 +3,7 @@ module Main where
 import Color exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
+import Graphics.Input exposing (button)
 import Keyboard
 import Signal exposing (..)
 import Time exposing (fps, inSeconds, Time)
@@ -27,6 +28,9 @@ type alias Input =
     { delta : Float
     , userInput : UserInput
     }
+    
+--need this for event hack
+globalTime = Time.every Time.second
 
 {-- Part 2: Model the game ----------------------------------------------------
 What information do you need to represent the entire game?
@@ -47,7 +51,7 @@ type alias Player = { x:Float, y:Float, vx:Float, vy:Float, w:Float, h:Float }
 type alias Block = { x:Float, y:Float, w:Float, h:Float }
 
 block x y w h = { x=x, y=y, w=w, h=h }
-(blockWidth, blockHeight) = (40,20)
+(blockWidth, blockHeight) = (40,15)
 
 type alias GameState =
   { ball : Ball
@@ -56,11 +60,14 @@ type alias GameState =
   , fps : Float
   }
 
+blockRow y = List.map (\x -> block (blockWidth * 2 * x) (100+blockHeight*2.5*y) blockWidth blockHeight) [-2..2]
+blockGrid =  List.foldr (\y l -> l ++ (blockRow y)) [] [0..3]
+
 defaultGame : GameState
 defaultGame =
   { ball = { x=0, y=0, vx=200, vy=200, r=8 }
   , player = { x=0, y=20-halfHeight, vx=0, vy=0, w=40, h=10 }
-  , blocks = List.map (\x -> block (blockWidth * 2 * x) (halfHeight / 2) blockWidth blockHeight) [-2..2]
+  , blocks = blockGrid
   , fps = 0
   }
 
@@ -71,17 +78,20 @@ Task: redefine `stepGame` to use the UserInput and GameState
       to break up the work, stepping smaller parts of the game.
 ------------------------------------------------------------------------------}
 
-stepGame : Input -> GameState -> GameState
-stepGame {delta,userInput} ({ball,player,blocks} as gameState) =
+stepGame : (Float,Float,Input) -> GameState -> GameState
+stepGame (restart, gtime, {delta,userInput}) ({ball,player,blocks,fps} as gameState) =
   let
     (ball', blocks') = stepBall delta ball player blocks
     player' = stepPlayer delta userInput.dir player
+    fps' = if (floor ball.x%10)==0 then delta else fps
   in
-    { gameState | ball <- ball'
-                , blocks <- blocks'
-                , player <- player'
-                , fps <- delta
-    }
+    if restart==gtime
+    then defaultGame
+    else 
+      { gameState | ball <- ball'
+                  , blocks <- blocks'
+                  , player <- player'
+                  , fps <- fps'}
 
 stepPlayer delta dir player =
   let player' = stepObj delta { player | vx <- toFloat dir * 200 }
@@ -144,8 +154,11 @@ display (w,h) ({ball,player,blocks,fps} as gameState) =
       , rect player.w player.h
           |> make player
       , group <| List.map (\b -> rect b.w b.h |> make b) blocks
-      , toForm (Markdown.toElement (toString (1/fps)))
+      , toForm (Markdown.toElement (toString (floor (1/fps))++" fps"))
+      , toForm (button (Signal.message gameMail.address True) "Restart") |> moveY 260
       ]
+      
+gameMail = Signal.mailbox False
 
 make obj shape =
   shape
@@ -166,7 +179,10 @@ input =
 
 gameState : Signal GameState
 gameState =
-    foldp stepGame defaultGame input
+  let
+    resetTimes = sampleOn gameMail.signal globalTime
+  in
+    foldp stepGame defaultGame (Signal.map3 (,,) resetTimes globalTime input)
 
 
 main : Signal Element
