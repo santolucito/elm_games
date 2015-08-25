@@ -44,7 +44,7 @@ be an empty list (no objects at the start):
 ------------------------------------------------------------------------------}
 
 (gameWidth,gameHeight) = (400, 600)
-(halfWidth,halfHeight) = (200, 300)
+(halfWidth,halfHeight) = (gameWidth/2,gameHeight/2)
 
 type alias Ball = { x:Float, y:Float, vx:Float, vy:Float, r:Float }
 type alias Player = { x:Float, y:Float, vx:Float, vy:Float, w:Float, h:Float }
