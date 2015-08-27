@@ -89,8 +89,6 @@ type alias Input =
     , userInput : UserInput
     }
     
---need this for event hack
-globalTime = Time.every Time.second
 
 {-- Part 2: Model the game ----------------------------------------------------
 What information do you need to represent the entire game?
@@ -138,14 +136,15 @@ Task: redefine `stepGame` to use the UserInput and GameState
       to break up the work, stepping smaller parts of the game.
 ------------------------------------------------------------------------------}
 
-stepGame : (Float,Float,Input) -> GameState -> GameState
-stepGame (restart, gtime, {delta,userInput}) ({ball,player,blocks,fps} as gameState) =
+stepGame : Input -> GameState -> GameState
+stepGame  {delta,userInput} ({ball,player,blocks,fps} as gameState) =
   let
     (ball', blocks') = stepBall delta ball player blocks
     player' = stepPlayer delta userInput.dir player
     fps' = if (floor ball.x%10)==0 then delta else fps
+    restart' = if ball'.y<(-gameHeight) then True else False
   in
-    if restart==gtime
+    if restart'
     then defaultGame
     else 
       { gameState | ball <- ball'
@@ -215,10 +214,8 @@ display (w,h) ({ball,player,blocks,fps} as gameState) =
           |> make player white
       , group <| List.map (\b -> rect b.w b.h |> make b white) blocks
       , toForm (Markdown.toElement (toString (floor (1/fps))++" fps"))
-      , toForm (button (Signal.message gameMail.address True) "Restart") |> moveY 260
       ]
       
-gameMail = Signal.mailbox False
 
 make obj col shape =
   shape
@@ -239,10 +236,7 @@ input =
 
 gameState : Signal GameState
 gameState =
-  let
-    resetTimes = sampleOn gameMail.signal globalTime
-  in
-    foldp stepGame defaultGame (Signal.map3 (,,) resetTimes globalTime input)
+  foldp stepGame defaultGame input
 
 
 main : Signal Element

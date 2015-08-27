@@ -3628,7 +3628,6 @@ Elm.Main.make = function (_elm) {
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $Graphics$Input = Elm.Graphics.Input.make(_elm),
    $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
    $Markdown = Elm.Markdown.make(_elm),
@@ -3645,7 +3644,6 @@ Elm.Main.make = function (_elm) {
                                     ,_0: obj.x
                                     ,_1: obj.y})($Graphics$Collage.filled(col)(shape));
    });
-   var gameMail = $Signal.mailbox(false);
    var stepObj = F2(function (delta,
    _v0) {
       return function () {
@@ -3693,7 +3691,7 @@ Elm.Main.make = function (_elm) {
                         ,_1: blocks$};
               }();}
          _U.badCase($moduleName,
-         "between lines 177 and 182");
+         "between lines 176 and 181");
       }();
    });
    var GameState = F4(function (a,
@@ -3858,59 +3856,56 @@ Elm.Main.make = function (_elm) {
    _v9) {
       return function () {
          return function () {
-            switch (_v8.ctor)
-            {case "_Tuple3":
-               return function () {
-                    var fps$ = _U.eq(A2($Basics._op["%"],
-                    $Basics.floor(_v9.ball.x),
-                    10),
-                    0) ? _v8._2.delta : _v9.fps;
-                    var player$ = A3(stepPlayer,
-                    _v8._2.delta,
-                    _v8._2.userInput.dir,
-                    _v9.player);
-                    var $ = A4(stepBall,
-                    _v8._2.delta,
-                    _v9.ball,
-                    _v9.player,
-                    _v9.blocks),
-                    ball$ = $._0,
-                    blocks$ = $._1;
-                    return _U.eq(_v8._0,
-                    _v8._1) ? defaultGame : _U.replace([["ball"
-                                                        ,ball$]
-                                                       ,["blocks",blocks$]
-                                                       ,["player",player$]
-                                                       ,["fps",fps$]],
-                    _v9);
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 143 and 154");
+            return function () {
+               var fps$ = _U.eq(A2($Basics._op["%"],
+               $Basics.floor(_v9.ball.x),
+               10),
+               0) ? _v8.delta : _v9.fps;
+               var player$ = A3(stepPlayer,
+               _v8.delta,
+               _v8.userInput.dir,
+               _v9.player);
+               var $ = A4(stepBall,
+               _v8.delta,
+               _v9.ball,
+               _v9.player,
+               _v9.blocks),
+               ball$ = $._0,
+               blocks$ = $._1;
+               var restart$ = _U.cmp(ball$.y,
+               0 - gameHeight) < 0 ? true : false;
+               return restart$ ? defaultGame : _U.replace([["ball"
+                                                           ,ball$]
+                                                          ,["blocks",blocks$]
+                                                          ,["player",player$]
+                                                          ,["fps",fps$]],
+               _v9);
+            }();
          }();
       }();
    });
-   var display = F2(function (_v15,
-   _v16) {
+   var display = F2(function (_v12,
+   _v13) {
       return function () {
          return function () {
-            switch (_v15.ctor)
+            switch (_v12.ctor)
             {case "_Tuple2":
                return A3($Graphics$Element.container,
-                 _v15._0,
-                 _v15._1,
+                 _v12._0,
+                 _v12._1,
                  $Graphics$Element.middle)(A2($Graphics$Collage.collage,
                  gameWidth,
                  gameHeight)(_L.fromArray([$Graphics$Collage.filled($Color.blue)(A2($Graphics$Collage.rect,
                                           gameWidth,
                                           gameHeight))
                                           ,A2(make,
-                                          _v16.ball,
-                                          $Color.white)($Graphics$Collage.circle(_v16.ball.r))
+                                          _v13.ball,
+                                          $Color.white)($Graphics$Collage.circle(_v13.ball.r))
                                           ,A2(make,
-                                          _v16.player,
+                                          _v13.player,
                                           $Color.white)(A2($Graphics$Collage.rect,
-                                          _v16.player.w,
-                                          _v16.player.h))
+                                          _v13.player.w,
+                                          _v13.player.h))
                                           ,$Graphics$Collage.group(A2($List.map,
                                           function (b) {
                                              return A2(make,
@@ -3919,21 +3914,15 @@ Elm.Main.make = function (_elm) {
                                              b.w,
                                              b.h));
                                           },
-                                          _v16.blocks))
+                                          _v13.blocks))
                                           ,$Graphics$Collage.toForm($Markdown.toElement(A2($Basics._op["++"],
-                                          $Basics.toString($Basics.floor(1 / _v16.fps)),
-                                          " fps")))
-                                          ,$Graphics$Collage.moveY(260)($Graphics$Collage.toForm(A2($Graphics$Input.button,
-                                          A2($Signal.message,
-                                          gameMail.address,
-                                          true),
-                                          "Restart")))])));}
+                                          $Basics.toString($Basics.floor(1 / _v13.fps)),
+                                          " fps")))])));}
             _U.badCase($moduleName,
-            "between lines 208 and 219");
+            "between lines 207 and 217");
          }();
       }();
    });
-   var globalTime = $Time.every($Time.second);
    var Input = F2(function (a,b) {
       return {_: {}
              ,delta: a
@@ -3950,10 +3939,10 @@ Elm.Main.make = function (_elm) {
       A2($Maybe.map,f,val));
    });
    var touchInQuadrant = F3(function (q,
-   _v21,
+   _v18,
    touch) {
       return function () {
-         switch (_v21.ctor)
+         switch (_v18.ctor)
          {case "_Tuple2":
             return function () {
                  var $ = function () {
@@ -4008,8 +3997,8 @@ Elm.Main.make = function (_elm) {
                  x = $._0,
                  y = $._1;
                  var $ = {ctor: "_Tuple2"
-                         ,_0: $Basics.toFloat(_v21._0) / 2
-                         ,_1: $Basics.toFloat(_v21._1) / 2},
+                         ,_0: $Basics.toFloat(_v18._0) / 2
+                         ,_1: $Basics.toFloat(_v18._1) / 2},
                  centerX = $._0,
                  centerY = $._1;
                  return qExists ? $Maybe.Just(A2(xCmp,
@@ -4040,19 +4029,19 @@ Elm.Main.make = function (_elm) {
       false,
       $Basics.identity))(touchInQuadrant(2)($));
    };
-   var touchUpper = F2(function (_v26,
+   var touchUpper = F2(function (_v23,
    t) {
       return function () {
-         switch (_v26.ctor)
+         switch (_v23.ctor)
          {case "_Tuple2":
             return A2(touchUpperLeft,
               {ctor: "_Tuple2"
-              ,_0: _v26._0
-              ,_1: _v26._1},
+              ,_0: _v23._0
+              ,_1: _v23._1},
               t) || A2(touchUpperRight,
               {ctor: "_Tuple2"
-              ,_0: _v26._0
-              ,_1: _v26._1},
+              ,_0: _v23._0
+              ,_1: _v23._1},
               t);}
          _U.badCase($moduleName,
          "on line 57, column 22 to 71");
@@ -4061,14 +4050,14 @@ Elm.Main.make = function (_elm) {
    var spaceSignal = function () {
       var f = F3(function (space,
       touches,
-      _v30) {
+      _v27) {
          return function () {
-            switch (_v30.ctor)
+            switch (_v27.ctor)
             {case "_Tuple2":
                return space || A2($List.any,
                  touchUpper({ctor: "_Tuple2"
-                            ,_0: _v30._0
-                            ,_1: _v30._1}),
+                            ,_0: _v27._0
+                            ,_1: _v27._1}),
                  touches);}
             _U.badCase($moduleName,
             "on line 63, column 29 to 73");
@@ -4101,20 +4090,20 @@ Elm.Main.make = function (_elm) {
    var dirSignal = function () {
       var f = F3(function (arrows,
       touches,
-      _v34) {
+      _v31) {
          return function () {
-            switch (_v34.ctor)
+            switch (_v31.ctor)
             {case "_Tuple2":
                return function () {
                     var touchRight = A2($List.any,
                     touchLowerRight({ctor: "_Tuple2"
-                                    ,_0: _v34._0
-                                    ,_1: _v34._1}),
+                                    ,_0: _v31._0
+                                    ,_1: _v31._1}),
                     touches) ? 1 : 0;
                     var touchLeft = A2($List.any,
                     touchLowerLeft({ctor: "_Tuple2"
-                                   ,_0: _v34._0
-                                   ,_1: _v34._1}),
+                                   ,_0: _v31._0
+                                   ,_1: _v31._1}),
                     touches) ? 1 : 0;
                     return arrows.x + touchRight - touchLeft;
                  }();}
@@ -4143,24 +4132,10 @@ Elm.Main.make = function (_elm) {
       delta),
       userInput));
    }();
-   var gameState = function () {
-      var resetTimes = A2($Signal.sampleOn,
-      gameMail.signal,
-      globalTime);
-      return A3($Signal.foldp,
-      stepGame,
-      defaultGame,
-      A4($Signal.map3,
-      F3(function (v0,v1,v2) {
-         return {ctor: "_Tuple3"
-                ,_0: v0
-                ,_1: v1
-                ,_2: v2};
-      }),
-      resetTimes,
-      globalTime,
-      input));
-   }();
+   var gameState = A3($Signal.foldp,
+   stepGame,
+   defaultGame,
+   input);
    var main = A2($Signal._op["~"],
    A2($Signal._op["<~"],
    display,
@@ -4179,7 +4154,6 @@ Elm.Main.make = function (_elm) {
                       ,UserInput: UserInput
                       ,userInput: userInput
                       ,Input: Input
-                      ,globalTime: globalTime
                       ,gameHeight: gameHeight
                       ,gameWidth: gameWidth
                       ,halfHeight: halfHeight
@@ -4203,7 +4177,6 @@ Elm.Main.make = function (_elm) {
                       ,stepV: stepV
                       ,stepObj: stepObj
                       ,display: display
-                      ,gameMail: gameMail
                       ,make: make
                       ,input: input
                       ,gameState: gameState
