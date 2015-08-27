@@ -5,6 +5,7 @@ import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 import Graphics.Input exposing (button)
 import Keyboard
+import Touch
 import Signal exposing (..)
 import Time exposing (fps, inSeconds, Time)
 import Window
@@ -19,10 +20,69 @@ Task: Redefine `UserInput` to include all of the information you need.
       input as described by `UserInput`.
 ------------------------------------------------------------------------------}
 
+
+{-| Check if the user touched one of the four screen quadrants. -}
+touchInQuadrant : Int -> (Int,Int) -> Touch.Touch -> Maybe Bool
+touchInQuadrant q (w,h) touch =
+  let
+    (centerX,centerY) = (toFloat w / 2, toFloat h / 2)
+    (x,y) = (toFloat touch.x, toFloat touch.y)
+    (qExists, xCmp, yCmp) = case q of
+                              1 -> (True, (>), (<))
+                              2 -> (True, (<), (<))
+                              3 -> (True, (<), (>))
+                              4 -> (True, (>), (>))
+                              _ -> (False, (==), (==))
+  in
+    if qExists then Just (x `xCmp` centerX && y `yCmp` centerY) else Nothing
+
+
+maybe : b -> (a -> b) -> Maybe.Maybe a -> b
+maybe def f val = Maybe.withDefault def (Maybe.map f val)
+
+touchUpperRight : (Int,Int) -> Touch.Touch -> Bool
+touchUpperRight = (<<) (maybe False identity) << touchInQuadrant 1
+
+touchUpperLeft : (Int,Int) -> Touch.Touch -> Bool
+touchUpperLeft = (<<) (maybe False identity) << touchInQuadrant 2
+
+touchLowerLeft : (Int,Int) -> Touch.Touch -> Bool
+touchLowerLeft = (<<) (maybe False identity) << touchInQuadrant 3
+
+touchLowerRight : (Int,Int) -> Touch.Touch -> Bool
+touchLowerRight = (<<) (maybe False identity) << touchInQuadrant 4
+
+{-| Was the upper half of the screen touched? -}
+touchUpper : (Int,Int) -> Touch.Touch -> Bool
+touchUpper (w,h) t = touchUpperLeft (w,h) t || touchUpperRight (w,h) t
+
+{-| Touching the upper quadrant can be used to serve like the space key. -}
+spaceSignal : Signal.Signal Bool
+spaceSignal =
+  let
+    f space touches (w,h) = space || List.any (touchUpper (w,h)) touches
+  in
+    Signal.map3 f Keyboard.space Touch.touches Window.dimensions
+
+{-| The paddle can be moved with the arrow keys
+or by touching the lower quadrants. -}
+dirSignal : Signal.Signal Int
+dirSignal =
+  let
+    f arrows touches (w,h) =
+      let
+        touchLeft = if List.any (touchLowerLeft (w,h)) touches then 1 else 0
+        touchRight = if List.any (touchLowerRight (w,h)) touches then 1 else 0
+      in
+        arrows.x + touchRight - touchLeft
+  in
+    Signal.map3 f Keyboard.arrows Touch.touches Window.dimensions
+
+
 type alias UserInput = { dir : Int }
 
 userInput : Signal UserInput
-userInput = UserInput <~ (.x <~ Keyboard.arrows)
+userInput = UserInput <~ (dirSignal)
 
 type alias Input =
     { delta : Float
@@ -43,7 +103,7 @@ be an empty list (no objects at the start):
     defaultGame = { objects = [] }
 ------------------------------------------------------------------------------}
 
-(gameWidth,gameHeight) = (400, 600)
+(gameWidth,gameHeight) = (400,600)
 (halfWidth,halfHeight) = (gameWidth/2,gameHeight/2)
 
 type alias Ball = { x:Float, y:Float, vx:Float, vy:Float, r:Float }
@@ -148,21 +208,21 @@ display (w,h) ({ball,player,blocks,fps} as gameState) =
   container w h middle <|
     collage gameWidth gameHeight <|
       [ rect gameWidth gameHeight
-          |> filled green
+          |> filled blue
       , circle ball.r
-          |> make ball
+          |> make ball white
       , rect player.w player.h
-          |> make player
-      , group <| List.map (\b -> rect b.w b.h |> make b) blocks
+          |> make player white
+      , group <| List.map (\b -> rect b.w b.h |> make b white) blocks
       , toForm (Markdown.toElement (toString (floor (1/fps))++" fps"))
       , toForm (button (Signal.message gameMail.address True) "Restart") |> moveY 260
       ]
       
 gameMail = Signal.mailbox False
 
-make obj shape =
+make obj col shape =
   shape
-    |> filled white
+    |> filled col
     |> move (obj.x, obj.y)
 
 {-- That's all folks! ---------------------------------------------------------

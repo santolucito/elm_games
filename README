@@ -19,7 +19,7 @@ Finally, zip that shit up and send it to Phonegap Build. all done!
 
 alias adv-build='pushd .;cd ~/ElmApps/elm-adventure/; elm-make Adventure.elm; mv elm.js ~/ElmApps/phonegap-start/www/js; cd ~/ElmApps/; zip -r phonegap-start.zip phonegap-start/; mv phonegap-start.zip ~/Downloads/; popd'
 
-# to add .elm to vi syntax
+# to add .elm to vi syntax, put this in .vimrc
 syntax on
 filetype on
-au BufNewFile,BufRead *.lmx set filetype=mysql
+au BufNewFile,BufRead *.elm set filetype=haskell

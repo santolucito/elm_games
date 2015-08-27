@@ -2681,6 +2681,36 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,Element: Element
                                   ,Position: Position};
    return _elm.Graphics.Element.values;
+};Elm.Graphics = Elm.Graphics || {};
+Elm.Graphics.Input = Elm.Graphics.Input || {};
+Elm.Graphics.Input.make = function (_elm) {
+   "use strict";
+   _elm.Graphics = _elm.Graphics || {};
+   _elm.Graphics.Input = _elm.Graphics.Input || {};
+   if (_elm.Graphics.Input.values)
+   return _elm.Graphics.Input.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graphics.Input",
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var clickable = $Native$Graphics$Input.clickable;
+   var hoverable = $Native$Graphics$Input.hoverable;
+   var dropDown = $Native$Graphics$Input.dropDown;
+   var checkbox = $Native$Graphics$Input.checkbox;
+   var customButton = $Native$Graphics$Input.customButton;
+   var button = $Native$Graphics$Input.button;
+   _elm.Graphics.Input.values = {_op: _op
+                                ,button: button
+                                ,customButton: customButton
+                                ,checkbox: checkbox
+                                ,dropDown: dropDown
+                                ,hoverable: hoverable
+                                ,clickable: clickable};
+   return _elm.Graphics.Input.values;
 };Elm.Html = Elm.Html || {};
 Elm.Html.make = function (_elm) {
    "use strict";
@@ -3585,6 +3615,7 @@ Elm.Main.make = function (_elm) {
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
    $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
    $Markdown = Elm.Markdown.make(_elm),
@@ -3592,6 +3623,7 @@ Elm.Main.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm),
+   $Touch = Elm.Touch.make(_elm),
    $Window = Elm.Window.make(_elm);
    var make = F2(function (obj,
    shape) {
@@ -3599,6 +3631,7 @@ Elm.Main.make = function (_elm) {
                                     ,_0: obj.x
                                     ,_1: obj.y})($Graphics$Collage.filled($Color.white)(shape));
    });
+   var gameMail = $Signal.mailbox(false);
    var stepObj = F2(function (delta,
    _v0) {
       return function () {
@@ -3646,7 +3679,7 @@ Elm.Main.make = function (_elm) {
                         ,_1: blocks$};
               }();}
          _U.badCase($moduleName,
-         "between lines 105 and 110");
+         "between lines 177 and 182");
       }();
    });
    var GameState = F4(function (a,
@@ -3661,7 +3694,7 @@ Elm.Main.make = function (_elm) {
    });
    var $ = {ctor: "_Tuple2"
            ,_0: 40
-           ,_1: 20},
+           ,_1: 15},
    blockWidth = $._0,
    blockHeight = $._1;
    var block = F4(function (x,
@@ -3674,6 +3707,25 @@ Elm.Main.make = function (_elm) {
              ,x: x
              ,y: y};
    });
+   var blockRow = function (y) {
+      return A2($List.map,
+      function (x) {
+         return A4(block,
+         blockWidth * 2 * x,
+         100 + blockHeight * 2.5 * y,
+         blockWidth,
+         blockHeight);
+      },
+      _L.range(-2,2));
+   };
+   var blockGrid = A3($List.foldr,
+   F2(function (y,l) {
+      return A2($Basics._op["++"],
+      l,
+      blockRow(y));
+   }),
+   _L.fromArray([]),
+   _L.range(0,3));
    var Block = F4(function (a,
    b,
    c,
@@ -3711,8 +3763,13 @@ Elm.Main.make = function (_elm) {
              ,y: b};
    });
    var $ = {ctor: "_Tuple2"
-           ,_0: 200
-           ,_1: 300},
+           ,_0: 400
+           ,_1: 600},
+   gameWidth = $._0,
+   gameHeight = $._1;
+   var $ = {ctor: "_Tuple2"
+           ,_0: gameWidth / 2
+           ,_1: gameHeight / 2},
    halfWidth = $._0,
    halfHeight = $._1;
    var defaultGame = {_: {}
@@ -3722,15 +3779,7 @@ Elm.Main.make = function (_elm) {
                             ,vy: 200
                             ,x: 0
                             ,y: 0}
-                     ,blocks: A2($List.map,
-                     function (x) {
-                        return A4(block,
-                        blockWidth * 2 * x,
-                        halfHeight / 2,
-                        blockWidth,
-                        blockHeight);
-                     },
-                     _L.range(-2,2))
+                     ,blocks: blockGrid
                      ,fps: 0
                      ,player: {_: {}
                               ,h: 10
@@ -3795,64 +3844,76 @@ Elm.Main.make = function (_elm) {
    _v9) {
       return function () {
          return function () {
-            return function () {
-               var player$ = A3(stepPlayer,
-               _v8.delta,
-               _v8.userInput.dir,
-               _v9.player);
-               var $ = A4(stepBall,
-               _v8.delta,
-               _v9.ball,
-               _v9.player,
-               _v9.blocks),
-               ball$ = $._0,
-               blocks$ = $._1;
-               return _U.replace([["ball"
-                                  ,ball$]
-                                 ,["blocks",blocks$]
-                                 ,["player",player$]
-                                 ,["fps",_v8.delta]],
-               _v9);
-            }();
+            switch (_v8.ctor)
+            {case "_Tuple3":
+               return function () {
+                    var fps$ = _U.eq(A2($Basics._op["%"],
+                    $Basics.floor(_v9.ball.x),
+                    10),
+                    0) ? _v8._2.delta : _v9.fps;
+                    var player$ = A3(stepPlayer,
+                    _v8._2.delta,
+                    _v8._2.userInput.dir,
+                    _v9.player);
+                    var $ = A4(stepBall,
+                    _v8._2.delta,
+                    _v9.ball,
+                    _v9.player,
+                    _v9.blocks),
+                    ball$ = $._0,
+                    blocks$ = $._1;
+                    return _U.eq(_v8._0,
+                    _v8._1) ? defaultGame : _U.replace([["ball"
+                                                        ,ball$]
+                                                       ,["blocks",blocks$]
+                                                       ,["player",player$]
+                                                       ,["fps",fps$]],
+                    _v9);
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 143 and 154");
          }();
       }();
    });
-   var $ = {ctor: "_Tuple2"
-           ,_0: 400
-           ,_1: 600},
-   gameWidth = $._0,
-   gameHeight = $._1;
-   var display = F2(function (_v12,
-   _v13) {
+   var display = F2(function (_v15,
+   _v16) {
       return function () {
          return function () {
-            switch (_v12.ctor)
+            switch (_v15.ctor)
             {case "_Tuple2":
                return A3($Graphics$Element.container,
-                 _v12._0,
-                 _v12._1,
+                 _v15._0,
+                 _v15._1,
                  $Graphics$Element.middle)(A2($Graphics$Collage.collage,
                  gameWidth,
                  gameHeight)(_L.fromArray([$Graphics$Collage.filled($Color.green)(A2($Graphics$Collage.rect,
                                           gameWidth,
                                           gameHeight))
-                                          ,make(_v13.ball)($Graphics$Collage.circle(_v13.ball.r))
-                                          ,make(_v13.player)(A2($Graphics$Collage.rect,
-                                          _v13.player.w,
-                                          _v13.player.h))
+                                          ,make(_v16.ball)($Graphics$Collage.circle(_v16.ball.r))
+                                          ,make(_v16.player)(A2($Graphics$Collage.rect,
+                                          _v16.player.w,
+                                          _v16.player.h))
                                           ,$Graphics$Collage.group(A2($List.map,
                                           function (b) {
                                              return make(b)(A2($Graphics$Collage.rect,
                                              b.w,
                                              b.h));
                                           },
-                                          _v13.blocks))
-                                          ,$Graphics$Collage.toForm($Markdown.toElement($Basics.toString(1 / _v13.fps)))])));}
+                                          _v16.blocks))
+                                          ,$Graphics$Collage.toForm($Markdown.toElement(A2($Basics._op["++"],
+                                          $Basics.toString($Basics.floor(1 / _v16.fps)),
+                                          " fps")))
+                                          ,$Graphics$Collage.moveY(260)($Graphics$Collage.toForm(A2($Graphics$Input.button,
+                                          A2($Signal.message,
+                                          gameMail.address,
+                                          true),
+                                          "Restart")))])));}
             _U.badCase($moduleName,
-            "between lines 136 and 146");
+            "between lines 208 and 219");
          }();
       }();
    });
+   var globalTime = $Time.every($Time.second);
    var Input = F2(function (a,b) {
       return {_: {}
              ,delta: a
@@ -3861,13 +3922,195 @@ Elm.Main.make = function (_elm) {
    var UserInput = function (a) {
       return {_: {},dir: a};
    };
+   var maybe = F3(function (def,
+   f,
+   val) {
+      return A2($Maybe.withDefault,
+      def,
+      A2($Maybe.map,f,val));
+   });
+   var touchInQuadrant = F3(function (q,
+   _v21,
+   touch) {
+      return function () {
+         switch (_v21.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var $ = function () {
+                    switch (q)
+                    {case 1: return {ctor: "_Tuple3"
+                                    ,_0: true
+                                    ,_1: F2(function (x,y) {
+                                       return _U.cmp(x,y) > 0;
+                                    })
+                                    ,_2: F2(function (x,y) {
+                                       return _U.cmp(x,y) < 0;
+                                    })};
+                       case 2: return {ctor: "_Tuple3"
+                                      ,_0: true
+                                      ,_1: F2(function (x,y) {
+                                         return _U.cmp(x,y) < 0;
+                                      })
+                                      ,_2: F2(function (x,y) {
+                                         return _U.cmp(x,y) < 0;
+                                      })};
+                       case 3: return {ctor: "_Tuple3"
+                                      ,_0: true
+                                      ,_1: F2(function (x,y) {
+                                         return _U.cmp(x,y) < 0;
+                                      })
+                                      ,_2: F2(function (x,y) {
+                                         return _U.cmp(x,y) > 0;
+                                      })};
+                       case 4: return {ctor: "_Tuple3"
+                                      ,_0: true
+                                      ,_1: F2(function (x,y) {
+                                         return _U.cmp(x,y) > 0;
+                                      })
+                                      ,_2: F2(function (x,y) {
+                                         return _U.cmp(x,y) > 0;
+                                      })};}
+                    return {ctor: "_Tuple3"
+                           ,_0: false
+                           ,_1: F2(function (x,y) {
+                              return _U.eq(x,y);
+                           })
+                           ,_2: F2(function (x,y) {
+                              return _U.eq(x,y);
+                           })};
+                 }(),
+                 qExists = $._0,
+                 xCmp = $._1,
+                 yCmp = $._2;
+                 var $ = {ctor: "_Tuple2"
+                         ,_0: $Basics.toFloat(touch.x)
+                         ,_1: $Basics.toFloat(touch.y)},
+                 x = $._0,
+                 y = $._1;
+                 var $ = {ctor: "_Tuple2"
+                         ,_0: $Basics.toFloat(_v21._0) / 2
+                         ,_1: $Basics.toFloat(_v21._1) / 2},
+                 centerX = $._0,
+                 centerY = $._1;
+                 return qExists ? $Maybe.Just(A2(xCmp,
+                 x,
+                 centerX) && A2(yCmp,
+                 y,
+                 centerY)) : $Maybe.Nothing;
+              }();}
+         _U.badCase($moduleName,
+         "between lines 27 and 37");
+      }();
+   });
+   var touchUpperRight = function ($) {
+      return F2(function (x,y) {
+         return function ($) {
+            return x(y($));
+         };
+      })(A2(maybe,
+      false,
+      $Basics.identity))(touchInQuadrant(1)($));
+   };
+   var touchUpperLeft = function ($) {
+      return F2(function (x,y) {
+         return function ($) {
+            return x(y($));
+         };
+      })(A2(maybe,
+      false,
+      $Basics.identity))(touchInQuadrant(2)($));
+   };
+   var touchUpper = F2(function (_v26,
+   t) {
+      return function () {
+         switch (_v26.ctor)
+         {case "_Tuple2":
+            return A2(touchUpperLeft,
+              {ctor: "_Tuple2"
+              ,_0: _v26._0
+              ,_1: _v26._1},
+              t) || A2(touchUpperRight,
+              {ctor: "_Tuple2"
+              ,_0: _v26._0
+              ,_1: _v26._1},
+              t);}
+         _U.badCase($moduleName,
+         "on line 57, column 22 to 71");
+      }();
+   });
+   var spaceSignal = function () {
+      var f = F3(function (space,
+      touches,
+      _v30) {
+         return function () {
+            switch (_v30.ctor)
+            {case "_Tuple2":
+               return space || A2($List.any,
+                 touchUpper({ctor: "_Tuple2"
+                            ,_0: _v30._0
+                            ,_1: _v30._1}),
+                 touches);}
+            _U.badCase($moduleName,
+            "on line 63, column 29 to 73");
+         }();
+      });
+      return A4($Signal.map3,
+      f,
+      $Keyboard.space,
+      $Touch.touches,
+      $Window.dimensions);
+   }();
+   var touchLowerLeft = function ($) {
+      return F2(function (x,y) {
+         return function ($) {
+            return x(y($));
+         };
+      })(A2(maybe,
+      false,
+      $Basics.identity))(touchInQuadrant(3)($));
+   };
+   var touchLowerRight = function ($) {
+      return F2(function (x,y) {
+         return function ($) {
+            return x(y($));
+         };
+      })(A2(maybe,
+      false,
+      $Basics.identity))(touchInQuadrant(4)($));
+   };
+   var dirSignal = function () {
+      var f = F3(function (arrows,
+      touches,
+      _v34) {
+         return function () {
+            switch (_v34.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var touchRight = A2($List.any,
+                    touchLowerRight({ctor: "_Tuple2"
+                                    ,_0: _v34._0
+                                    ,_1: _v34._1}),
+                    touches) ? 1 : 0;
+                    var touchLeft = A2($List.any,
+                    touchLowerLeft({ctor: "_Tuple2"
+                                   ,_0: _v34._0
+                                   ,_1: _v34._1}),
+                    touches) ? 1 : 0;
+                    return arrows.x + touchRight - touchLeft;
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 73 and 77");
+         }();
+      });
+      return A4($Signal.map3,
+      f,
+      $Keyboard.arrows,
+      $Touch.touches,
+      $Window.dimensions);
+   }();
    var userInput = A2($Signal._op["<~"],
    UserInput,
-   A2($Signal._op["<~"],
-   function (_) {
-      return _.x;
-   },
-   $Keyboard.arrows));
+   dirSignal);
    var input = function () {
       var delta = A2($Signal._op["<~"],
       $Time.inSeconds,
@@ -3880,19 +4123,43 @@ Elm.Main.make = function (_elm) {
       delta),
       userInput));
    }();
-   var gameState = A3($Signal.foldp,
-   stepGame,
-   defaultGame,
-   input);
+   var gameState = function () {
+      var resetTimes = A2($Signal.sampleOn,
+      gameMail.signal,
+      globalTime);
+      return A3($Signal.foldp,
+      stepGame,
+      defaultGame,
+      A4($Signal.map3,
+      F3(function (v0,v1,v2) {
+         return {ctor: "_Tuple3"
+                ,_0: v0
+                ,_1: v1
+                ,_2: v2};
+      }),
+      resetTimes,
+      globalTime,
+      input));
+   }();
    var main = A2($Signal._op["~"],
    A2($Signal._op["<~"],
    display,
    $Window.dimensions),
    gameState);
    _elm.Main.values = {_op: _op
+                      ,touchInQuadrant: touchInQuadrant
+                      ,maybe: maybe
+                      ,touchUpperRight: touchUpperRight
+                      ,touchUpperLeft: touchUpperLeft
+                      ,touchLowerLeft: touchLowerLeft
+                      ,touchLowerRight: touchLowerRight
+                      ,touchUpper: touchUpper
+                      ,spaceSignal: spaceSignal
+                      ,dirSignal: dirSignal
                       ,UserInput: UserInput
                       ,userInput: userInput
                       ,Input: Input
+                      ,globalTime: globalTime
                       ,gameHeight: gameHeight
                       ,gameWidth: gameWidth
                       ,halfHeight: halfHeight
@@ -3904,6 +4171,8 @@ Elm.Main.make = function (_elm) {
                       ,blockHeight: blockHeight
                       ,blockWidth: blockWidth
                       ,GameState: GameState
+                      ,blockRow: blockRow
+                      ,blockGrid: blockGrid
                       ,defaultGame: defaultGame
                       ,stepGame: stepGame
                       ,stepPlayer: stepPlayer
@@ -3914,6 +4183,7 @@ Elm.Main.make = function (_elm) {
                       ,stepV: stepV
                       ,stepObj: stepObj
                       ,display: display
+                      ,gameMail: gameMail
                       ,make: make
                       ,input: input
                       ,gameState: gameState
@@ -6660,6 +6930,478 @@ Elm.Native.Graphics.Element.make = function(localRuntime) {
 
 		block: block,
 		markdown: markdown
+	};
+
+};
+// setup
+Elm.Native = Elm.Native || {};
+Elm.Native.Graphics = Elm.Native.Graphics || {};
+Elm.Native.Graphics.Input = Elm.Native.Graphics.Input || {};
+
+// definition
+Elm.Native.Graphics.Input.make = function(localRuntime) {
+	'use strict';
+
+	// attempt to short-circuit
+	if ('values' in Elm.Native.Graphics.Input) {
+		return Elm.Native.Graphics.Input.values;
+	}
+
+	var Color = Elm.Native.Color.make(localRuntime);
+	var List = Elm.Native.List.make(localRuntime);
+	var Signal = Elm.Native.Signal.make(localRuntime);
+	var Text = Elm.Native.Text.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+
+	var Element = Elm.Native.Graphics.Element.make(localRuntime);
+
+
+	function renderDropDown(model)
+	{
+		var drop = Element.createNode('select');
+		drop.style.border = '0 solid';
+		drop.style.pointerEvents = 'auto';
+		drop.style.display = 'block';
+
+		drop.elm_values = List.toArray(model.values);
+		drop.elm_handler = model.handler;
+		var values = drop.elm_values;
+
+		for (var i = 0; i < values.length; ++i)
+		{
+			var option = Element.createNode('option');
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+			drop.appendChild(option);
+		}
+		drop.addEventListener('change', function() {
+			Signal.sendMessage(drop.elm_handler(drop.elm_values[drop.selectedIndex]._1));
+		});
+
+		return drop;
+	}
+
+	function updateDropDown(node, oldModel, newModel)
+	{
+		node.elm_values = List.toArray(newModel.values);
+		node.elm_handler = newModel.handler;
+
+		var values = node.elm_values;
+		var kids = node.childNodes;
+		var kidsLength = kids.length;
+
+		var i = 0;
+		for (; i < kidsLength && i < values.length; ++i)
+		{
+			var option = kids[i];
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+		}
+		for (; i < kidsLength; ++i)
+		{
+			node.removeChild(node.lastChild);
+		}
+		for (; i < values.length; ++i)
+		{
+			var option = Element.createNode('option');
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+			node.appendChild(option);
+		}
+		return node;
+	}
+
+	function dropDown(handler, values)
+	{
+		return A3(Element.newElement, 100, 24, {
+			ctor: 'Custom',
+			type: 'DropDown',
+			render: renderDropDown,
+			update: updateDropDown,
+			model: {
+				values: values,
+				handler: handler
+			}
+		});
+	}
+
+	function renderButton(model)
+	{
+		var node = Element.createNode('button');
+		node.style.display = 'block';
+		node.style.pointerEvents = 'auto';
+		node.elm_message = model.message;
+		function click()
+		{
+			Signal.sendMessage(node.elm_message);
+		}
+		node.addEventListener('click', click);
+		node.innerHTML = model.text;
+		return node;
+	}
+
+	function updateButton(node, oldModel, newModel)
+	{
+		node.elm_message = newModel.message;
+		var txt = newModel.text;
+		if (oldModel.text !== txt)
+		{
+			node.innerHTML = txt;
+		}
+		return node;
+	}
+
+	function button(message, text)
+	{
+		return A3(Element.newElement, 100, 40, {
+			ctor: 'Custom',
+			type: 'Button',
+			render: renderButton,
+			update: updateButton,
+			model: {
+				message: message,
+				text:text
+			}
+		});
+	}
+
+	function renderCustomButton(model)
+	{
+		var btn = Element.createNode('div');
+		btn.style.pointerEvents = 'auto';
+		btn.elm_message = model.message;
+
+		btn.elm_up    = Element.render(model.up);
+		btn.elm_hover = Element.render(model.hover);
+		btn.elm_down  = Element.render(model.down);
+
+		btn.elm_up.style.display = 'block';
+		btn.elm_hover.style.display = 'none';
+		btn.elm_down.style.display = 'none';
+
+		btn.appendChild(btn.elm_up);
+		btn.appendChild(btn.elm_hover);
+		btn.appendChild(btn.elm_down);
+
+		function swap(visibleNode, hiddenNode1, hiddenNode2)
+		{
+			visibleNode.style.display = 'block';
+			hiddenNode1.style.display = 'none';
+			hiddenNode2.style.display = 'none';
+		}
+
+		var overCount = 0;
+		function over(e)
+		{
+			if (overCount++ > 0) return;
+			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
+		}
+		function out(e)
+		{
+			if (btn.contains(e.toElement || e.relatedTarget)) return;
+			overCount = 0;
+			swap(btn.elm_up, btn.elm_down, btn.elm_hover);
+		}
+		function up()
+		{
+			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
+			Signal.sendMessage(btn.elm_message);
+		}
+		function down()
+		{
+			swap(btn.elm_down, btn.elm_hover, btn.elm_up);
+		}
+
+		btn.addEventListener('mouseover', over);
+		btn.addEventListener('mouseout' , out);
+		btn.addEventListener('mousedown', down);
+		btn.addEventListener('mouseup'  , up);
+
+		return btn;
+	}
+
+	function updateCustomButton(node, oldModel, newModel)
+	{
+		node.elm_message = newModel.message;
+
+		var kids = node.childNodes;
+		var styleUp    = kids[0].style.display;
+		var styleHover = kids[1].style.display;
+		var styleDown  = kids[2].style.display;
+
+		Element.updateAndReplace(kids[0], oldModel.up, newModel.up);
+		Element.updateAndReplace(kids[1], oldModel.hover, newModel.hover);
+		Element.updateAndReplace(kids[2], oldModel.down, newModel.down);
+
+		var kids = node.childNodes;
+		kids[0].style.display = styleUp;
+		kids[1].style.display = styleHover;
+		kids[2].style.display = styleDown;
+
+		return node;
+	}
+
+	function max3(a,b,c)
+	{
+		var ab = a > b ? a : b;
+		return ab > c ? ab : c;
+	}
+
+	function customButton(message, up, hover, down)
+	{
+		return A3(Element.newElement,
+				  max3(up.props.width, hover.props.width, down.props.width),
+				  max3(up.props.height, hover.props.height, down.props.height),
+				  { ctor: 'Custom',
+					type: 'CustomButton',
+					render: renderCustomButton,
+					update: updateCustomButton,
+					model: {
+						message: message,
+						up: up,
+						hover: hover,
+						down: down
+					}
+				  });
+	}
+
+	function renderCheckbox(model)
+	{
+		var node = Element.createNode('input');
+		node.type = 'checkbox';
+		node.checked = model.checked;
+		node.style.display = 'block';
+		node.style.pointerEvents = 'auto';
+		node.elm_handler = model.handler;
+		function change()
+		{
+			Signal.sendMessage(node.elm_handler(node.checked));
+		}
+		node.addEventListener('change', change);
+		return node;
+	}
+
+	function updateCheckbox(node, oldModel, newModel)
+	{
+		node.elm_handler = newModel.handler;
+		node.checked = newModel.checked;
+		return node;
+	}
+
+	function checkbox(handler, checked)
+	{
+		return A3(Element.newElement, 13, 13, {
+			ctor: 'Custom',
+			type: 'CheckBox',
+			render: renderCheckbox,
+			update: updateCheckbox,
+			model: { handler:handler, checked:checked }
+		});
+	}
+
+	function setRange(node, start, end, dir)
+	{
+		if (node.parentNode)
+		{
+			node.setSelectionRange(start, end, dir);
+		}
+		else
+		{
+			setTimeout(function(){node.setSelectionRange(start, end, dir);}, 0);
+		}
+	}
+
+	function updateIfNeeded(css, attribute, latestAttribute)
+	{
+		if (css[attribute] !== latestAttribute)
+		{
+			css[attribute] = latestAttribute;
+		}
+	}
+	function cssDimensions(dimensions)
+	{
+		return dimensions.top    + 'px ' +
+			   dimensions.right  + 'px ' +
+			   dimensions.bottom + 'px ' +
+			   dimensions.left   + 'px';
+	}
+	function updateFieldStyle(css, style)
+	{
+		updateIfNeeded(css, 'padding', cssDimensions(style.padding));
+
+		var outline = style.outline;
+		updateIfNeeded(css, 'border-width', cssDimensions(outline.width));
+		updateIfNeeded(css, 'border-color', Color.toCss(outline.color));
+		updateIfNeeded(css, 'border-radius', outline.radius + 'px');
+
+		var highlight = style.highlight;
+		if (highlight.width === 0)
+		{
+			css.outline = 'none';
+		}
+		else
+		{
+			updateIfNeeded(css, 'outline-width', highlight.width + 'px');
+			updateIfNeeded(css, 'outline-color', Color.toCss(highlight.color));
+		}
+
+		var textStyle = style.style;
+		updateIfNeeded(css, 'color', Color.toCss(textStyle.color));
+		if (textStyle.typeface.ctor !== '[]')
+		{
+			updateIfNeeded(css, 'font-family', Text.toTypefaces(textStyle.typeface));
+		}
+		if (textStyle.height.ctor !== "Nothing")
+		{
+			updateIfNeeded(css, 'font-size', textStyle.height._0 + 'px');
+		}
+		updateIfNeeded(css, 'font-weight', textStyle.bold ? 'bold' : 'normal');
+		updateIfNeeded(css, 'font-style', textStyle.italic ? 'italic' : 'normal');
+		if (textStyle.line.ctor !== 'Nothing')
+		{
+			updateIfNeeded(css, 'text-decoration', Text.toLine(textStyle.line._0));
+		}
+	}
+
+	function renderField(model)
+	{
+		var field = Element.createNode('input');
+		updateFieldStyle(field.style, model.style);
+		field.style.borderStyle = 'solid';
+		field.style.pointerEvents = 'auto';
+
+		field.type = model.type;
+		field.placeholder = model.placeHolder;
+		field.value = model.content.string;
+
+		field.elm_handler = model.handler;
+		field.elm_old_value = field.value;
+
+		function inputUpdate(event)
+		{
+			var curr = field.elm_old_value;
+			var next = field.value;
+			if (curr === next)
+			{
+				return;
+			}
+
+			var direction = field.selectionDirection === 'forward' ? 'Forward' : 'Backward';
+			var start = field.selectionStart;
+			var end = field.selectionEnd;
+			field.value = field.elm_old_value;
+
+			Signal.sendMessage(field.elm_handler({
+				_:{},
+				string: next,
+				selection: {
+					_:{},
+					start: start,
+					end: end,
+					direction: { ctor: direction }
+				}
+			}));
+		}
+
+		field.addEventListener('input', inputUpdate);
+		field.addEventListener('focus', function() {
+			field.elm_hasFocus = true;
+		});
+		field.addEventListener('blur', function() {
+			field.elm_hasFocus = false;
+		});
+
+		return field;
+	}
+
+	function updateField(field, oldModel, newModel)
+	{
+		if (oldModel.style !== newModel.style)
+		{
+			updateFieldStyle(field.style, newModel.style);
+		}
+		field.elm_handler = newModel.handler;
+
+		field.type = newModel.type;
+		field.placeholder = newModel.placeHolder;
+		var value = newModel.content.string;
+		field.value = value;
+		field.elm_old_value = value;
+		if (field.elm_hasFocus)
+		{
+			var selection = newModel.content.selection;
+			var direction = selection.direction.ctor === 'Forward' ? 'forward' : 'backward';
+			setRange(field, selection.start, selection.end, direction);
+		}
+		return field;
+	}
+
+	function mkField(type)
+	{
+		function field(style, handler, placeHolder, content)
+		{
+			var padding = style.padding;
+			var outline = style.outline.width;
+			var adjustWidth = padding.left + padding.right + outline.left + outline.right;
+			var adjustHeight = padding.top + padding.bottom + outline.top + outline.bottom;
+			return A3(Element.newElement, 200, 30, {
+				ctor: 'Custom',
+				type: type + 'Field',
+				adjustWidth: adjustWidth,
+				adjustHeight: adjustHeight,
+				render: renderField,
+				update: updateField,
+				model: {
+					handler:handler,
+					placeHolder:placeHolder,
+					content:content,
+					style:style,
+					type:type
+				}
+			});
+		}
+		return F4(field);
+	}
+
+	function hoverable(handler, elem)
+	{
+		function onHover(bool)
+		{
+			Signal.sendMessage(handler(bool));
+		}
+		var props = Utils.replace([['hover',onHover]], elem.props);
+		return {
+			props: props,
+			element: elem.element
+		};
+	}
+
+	function clickable(message, elem)
+	{
+		function onClick()
+		{
+			Signal.sendMessage(message);
+		}
+		var props = Utils.replace([['click',onClick]], elem.props);
+		return {
+			props: props,
+			element: elem.element
+		};
+	}
+
+	return Elm.Native.Graphics.Input.values = {
+		button: F2(button),
+		customButton: F4(customButton),
+		checkbox: F2(checkbox),
+		dropDown: F2(dropDown),
+		field: mkField('text'),
+		email: mkField('email'),
+		password: mkField('password'),
+		hoverable: F2(hoverable),
+		clickable: F2(clickable)
 	};
 
 };
@@ -9920,6 +10662,183 @@ Elm.Native.Time.make = function(localRuntime)
 	};
 
 };
+Elm.Native = Elm.Native || {};
+Elm.Native.Touch = {};
+Elm.Native.Touch.make = function(localRuntime) {
+
+    localRuntime.Native = localRuntime.Native || {};
+    localRuntime.Native.Touch = localRuntime.Native.Touch || {};
+    if (localRuntime.Native.Touch.values)
+    {
+        return localRuntime.Native.Touch.values;
+    }
+
+    var Signal = Elm.Signal.make(localRuntime);
+    var NS = Elm.Native.Signal.make(localRuntime);
+    var List = Elm.Native.List.make(localRuntime);
+    var Utils = Elm.Native.Utils.make(localRuntime);
+
+    function Dict() {
+        this.keys = [];
+        this.values = [];
+
+        this.insert = function(key,value) {
+            this.keys.push(key);
+            this.values.push(value);
+        };
+        this.lookup = function(key) {
+            var i = this.keys.indexOf(key)
+            return i >= 0 ? this.values[i] : {x:0,y:0,t:0};
+        };
+        this.remove = function(key) {
+            var i = this.keys.indexOf(key);
+            if (i < 0) return;
+            var t = this.values[i];
+            this.keys.splice(i,1);
+            this.values.splice(i,1);
+            return t;
+        };
+        this.clear = function() {
+            this.keys = [];
+            this.values = [];
+        };
+    }
+
+    var root = NS.input('touch', []),
+    tapTime = 500,
+    hasTap = false,
+    tap = {_:{},x:0,y:0},
+    dict = new Dict();
+
+    function touch(t) {
+        var r = dict.lookup(t.identifier);
+        var point = Utils.getXY(t);
+        return {
+            _ : {},
+            id: t.identifier,
+            x : point._0,
+            y : point._1,
+            x0: r.x,
+            y0: r.y,
+            t0: r.t
+         };
+    }
+
+    var node = localRuntime.isFullscreen()
+        ? document
+        : localRuntime.node;
+
+    function start(e) {
+        var point = Utils.getXY(e);
+        dict.insert(e.identifier, {
+            x: point._0,
+            y: point._1,
+            t: localRuntime.timer.now()
+        });
+    }
+    function end(e) {
+        var t = dict.remove(e.identifier);
+        if (localRuntime.timer.now() - t.t < tapTime)
+        {
+            hasTap = true;
+            tap = {
+                _: {},
+                x: t.x,
+                y: t.y
+            };
+        }
+    }
+
+    function listen(name, f) {
+        function update(e) {
+            for (var i = e.changedTouches.length; i--; ) {
+                f(e.changedTouches[i]);
+            }
+            var ts = new Array(e.touches.length);
+            for (var i = e.touches.length; i--; ) {
+                ts[i] = touch(e.touches[i]);
+            }
+            localRuntime.notify(root.id, ts);
+            e.preventDefault();
+        }
+        localRuntime.addListener([root.id], node, name, update);
+    }
+
+    listen("touchstart", start);
+    listen("touchmove", function(_){});
+    listen("touchend", end);
+    listen("touchcancel", end);
+    listen("touchleave", end);
+
+    var mouseID = -1;
+    function move(e) {
+        var point = Utils.getXY(e);
+        for (var i = root.value.length; i--; ) {
+            if (root.value[i].id === mouseID)
+            {
+                root.value[i].x = point._0;
+                root.value[i].y = point._1;
+                localRuntime.notify(root.id, root.value);
+                break;
+            }
+        }
+    }
+    localRuntime.addListener([root.id], node, "mousedown", function down(e) {
+        node.addEventListener("mousemove", move);
+        e.identifier = mouseID;
+        start(e);
+        root.value.push(touch(e));
+        localRuntime.notify(root.id, root.value);
+    });
+    localRuntime.addListener([root.id], document, "mouseup", function up(e) {
+        node.removeEventListener("mousemove", move);
+        e.identifier = mouseID;
+        end(e);
+        for (var i = root.value.length; i--; ) {
+            if (root.value[i].id === mouseID)
+            {
+                root.value.splice(i, 1);
+                --mouseID;
+                break;
+            }
+        }
+        localRuntime.notify(root.id, root.value);
+    });
+    localRuntime.addListener([root.id], node, "blur", function blur(e) {
+        node.removeEventListener("mousemove", move);
+        if (root.value.length > 0)
+        {
+            localRuntime.notify(root.id, []);
+            --mouseID;
+        }
+        dict.clear();
+    });
+
+    function dependency(f) {
+        var sig = A2( Signal.map, f, root );
+        root.defaultNumberOfKids += 1;
+        sig.defaultNumberOfKids = 0;
+        return sig;
+    }
+
+    var touches = dependency(List.fromArray);
+
+    var taps = function() {
+        var sig = dependency(function(_) { return tap; });
+        sig.defaultNumberOfKids = 1;
+        function pred(_) {
+            var b = hasTap;
+            hasTap = false;
+            return b;
+        }
+        var sig2 = A3( Signal.filter, pred, {_:{},x:0,y:0}, sig);
+        sig2.defaultNumberOfKids = 0;
+        return sig2;
+    }();
+
+    return localRuntime.Native.Touch.values = { touches: touches, taps: taps };
+
+};
 Elm.Native.Transform2D = {};
 Elm.Native.Transform2D.make = function(localRuntime) {
 
@@ -12958,6 +13877,41 @@ Elm.Time.make = function (_elm) {
                       ,delay: delay
                       ,since: since};
    return _elm.Time.values;
+};Elm.Touch = Elm.Touch || {};
+Elm.Touch.make = function (_elm) {
+   "use strict";
+   _elm.Touch = _elm.Touch || {};
+   if (_elm.Touch.values)
+   return _elm.Touch.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Touch",
+   $Native$Touch = Elm.Native.Touch.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var taps = $Native$Touch.taps;
+   var touches = $Native$Touch.touches;
+   var Touch = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,id: c
+             ,t0: f
+             ,x: a
+             ,x0: d
+             ,y: b
+             ,y0: e};
+   });
+   _elm.Touch.values = {_op: _op
+                       ,touches: touches
+                       ,taps: taps
+                       ,Touch: Touch};
+   return _elm.Touch.values;
 };Elm.Transform2D = Elm.Transform2D || {};
 Elm.Transform2D.make = function (_elm) {
    "use strict";
